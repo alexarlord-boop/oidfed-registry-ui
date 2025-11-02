@@ -33,10 +33,7 @@ export const Dashboard = () => {
 
   return (
     <div className="w-full">
-      <div className="mb-8">
-        <h1 className="text-4xl font-bold mb-2">Dashboard</h1>
-        <p className="text-muted-foreground">Overview of your system</p>
-      </div>
+      
 
       {loading && (
         <div className="text-center py-8">

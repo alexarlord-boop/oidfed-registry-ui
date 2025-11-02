@@ -20,69 +20,6 @@ import { ChevronUp, User, Code, ShieldCheck, FileText, Key, } from "lucide-react
 export function AppSidebar() {
   const location = useLocation();
 
-  const menuItems = [
-    {
-      title: "Home",
-      url: "/",
-      icon: Home,
-      section: "Explore"
-    },
-    {
-      title: "Dashboard",
-      url: "/dashboard",
-      icon: LayoutDashboard,
-      section: "Explore"
-    },
-    {
-      title: "API",
-      url: "/api",
-      icon: Code,
-      section: "Explore"
-    },
-
-    // TODO
-    {
-      title: "Audit",
-      url: "/audit",
-      icon: Braces,
-      section: "Explore"
-    },
-
-    {
-      title: "Entities",
-      url: "/entities",
-      icon: User,
-      section: "Management"
-    },
-
-    {
-      title: "Trust Chains",
-      url: "/trust-chains",
-      icon: ShieldCheck,
-      section: "Management"
-    },
-
-    {
-      title: "Trust Marks",
-      url: "/trust-marks",
-      icon: ShieldCheck,
-      section: "Management"
-    },
-
-    {
-      title: "Policies",
-      url: "/policies",
-      icon: FileText,
-      section: "Management"
-    },
-
-    {
-      title: "Keys",
-      url: "/keys",
-      icon: Key,
-      section: "Management"
-    },
-  ];
 
   return (
     <Sidebar>
@@ -174,3 +111,70 @@ export function AppSidebar() {
     </Sidebar>
   );
 }
+
+export const menuItems = [
+  {
+    title: "Home",
+    url: "/",
+    icon: Home,
+    section: "Explore",
+    desciption: "Overview of your system"
+  },
+  {
+    title: "Dashboard",
+    url: "/dashboard",
+    icon: LayoutDashboard,
+    section: "Explore",
+    desciption: "Stats & KPIs"
+  },
+  {
+    title: "API",
+    url: "/api",
+    icon: Code,
+    section: "Explore",
+    desciption: "Overview of client API endpoints"
+  },
+
+  // TODO
+  {
+    title: "Audit",
+    url: "/audit",
+    icon: Braces,
+    section: "Explore"
+  },
+
+  {
+    title: "Entities",
+    url: "/entities",
+    icon: User,
+    section: "Management"
+  },
+
+  {
+    title: "Trust Chains",
+    url: "/trust-chains",
+    icon: ShieldCheck,
+    section: "Management"
+  },
+
+  {
+    title: "Trust Marks",
+    url: "/trust-marks",
+    icon: ShieldCheck,
+    section: "Management"
+  },
+
+  {
+    title: "Policies",
+    url: "/policies",
+    icon: FileText,
+    section: "Management"
+  },
+
+  {
+    title: "Keys",
+    url: "/keys",
+    icon: Key,
+    section: "Management"
+  },
+];

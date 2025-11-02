@@ -11,7 +11,7 @@ export function App() {
     <Routes>
       <Route path="/" element={<Layout />}>
         <Route index element={<Home />} />
-        <Route path="dashboard" element={<Dashboard />} />
+        <Route path="dashboard" element={<Dashboard />}  />
         <Route path="api" element={<Api />} />
         <Route path="entities" element={<Empty title="Entities" description="Manage entities" />} />
         <Route path="trust-chains" element={<Empty title="Trust Chains" description="Manage trust chains" />} />
