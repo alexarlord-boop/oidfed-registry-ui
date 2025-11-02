@@ -14,7 +14,7 @@ import {
 } from "@/components/ui/sidebar";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { User2 } from "lucide-react";
-import { ChevronUp } from "lucide-react";
+import { ChevronUp, Code } from "lucide-react";
 
 export function AppSidebar() {
   const location = useLocation();
@@ -29,6 +29,11 @@ export function AppSidebar() {
       title: "Dashboard",
       url: "/dashboard",
       icon: LayoutDashboard,
+    },
+    {
+      title: "API",
+      url: "/api",
+      icon: Code,
     },
   ];
 
