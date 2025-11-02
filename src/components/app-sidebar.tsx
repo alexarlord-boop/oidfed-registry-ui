@@ -93,7 +93,7 @@ export function AppSidebar() {
           </div>
           <div className="flex flex-col">
             <span className="text-sm font-semibold">OIDFED Registry</span>
-            <span className="text-xs text-muted-foreground">Trust & Identity Incubator</span>
+            <span className="text-xs text-muted-foreground">by Trust & Identity Incubator</span>
           </div>
         </div>
       </SidebarHeader>

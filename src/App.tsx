@@ -18,7 +18,7 @@ export function App() {
         <Route path="trust-marks" element={<Empty title="Trust Marks" description="Manage trust marks" />} />
         <Route path="policies" element={<Empty title="Policies" description="Manage policies" />} />
         <Route path="keys" element={<Empty title="Keys" description="Manage keys" />} />
-        <Route path="audit" element={<Empty title="Audit" description="Manage audit" />} />
+        <Route path="audit" element={<Empty title="Audit" description="Trace logs, check requests" />} />
       </Route>
     </Routes>
   );
