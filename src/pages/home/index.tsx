@@ -6,28 +6,29 @@ import reactLogo from "../../react.svg";
 
 export function Home() {
   return (
-    <div className="w-full text-center">
-      <div className="flex justify-center items-center gap-8 mb-8">
-        <img
-          src={logo}
-          alt="Bun Logo"
-          className="h-36 p-6 transition-all duration-300 hover:drop-shadow-[0_0_2em_#646cffaa] scale-120"
-        />
-        <img
-          src={reactLogo}
-          alt="React Logo"
-          className="h-36 p-6 transition-all duration-300 hover:drop-shadow-[0_0_2em_#61dafbaa] [animation:spin_20s_linear_infinite]"
-        />
-      </div>
+    <div className="w-full text-center grid gap-4">
+      
       <Card>
         <CardHeader className="gap-4">
-          <CardTitle className="text-3xl font-bold">Bun + React</CardTitle>
+          <CardTitle className="text-3xl font-bold">OIDFed Registry</CardTitle>
           <CardDescription>
             Welcome to the OIDFED Registry UI
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <APITester />
+          {/* content */}
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardHeader className="gap-4">
+          <CardTitle className="text-3xl font-bold">OIDFed Registry</CardTitle>
+          <CardDescription>
+            Welcome to the OIDFED Registry UI
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          {/* content */}
         </CardContent>
       </Card>
     </div>
