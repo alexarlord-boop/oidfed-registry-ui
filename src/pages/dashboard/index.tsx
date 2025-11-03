@@ -1,5 +1,7 @@
 import { useEffect, useState } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { ChartPieSimple } from "@/components/chart-pie-simple"
+import { ChartLineStep } from "@/components/chart-line-step"
 
 interface DashboardStats {
   totalUsers: number;
@@ -49,12 +51,25 @@ export const Dashboard = () => {
         </Card>
       )}
 
+      <div className="pb-4">
+      <Card>
+            <CardHeader>
+              <CardTitle>Overview Status</CardTitle>
+              <CardDescription>Some valuable info</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="text-4xl font-bold"></div>
+            </CardContent>
+          </Card>
+      </div>
+
+
       {stats && (
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-4 pb-4">
           <Card>
             <CardHeader>
-              <CardTitle>Total Users</CardTitle>
-              <CardDescription>All registered users</CardDescription>
+              <CardTitle>Total</CardTitle>
+              <CardDescription>Some valuable info</CardDescription>
             </CardHeader>
             <CardContent>
               <div className="text-4xl font-bold">{stats.totalUsers.toLocaleString()}</div>
@@ -63,8 +78,18 @@ export const Dashboard = () => {
 
           <Card>
             <CardHeader>
-              <CardTitle>Active Users</CardTitle>
-              <CardDescription>Currently active</CardDescription>
+              <CardTitle>Active</CardTitle>
+              <CardDescription>Some valuable info</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="text-4xl font-bold">{stats.totalUsers.toLocaleString()}</div>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader>
+              <CardTitle>Expiring</CardTitle>
+              <CardDescription>Some valuable info</CardDescription>
             </CardHeader>
             <CardContent>
               <div className="text-4xl font-bold text-primary">
@@ -75,8 +100,8 @@ export const Dashboard = () => {
 
           <Card>
             <CardHeader>
-              <CardTitle>Last Updated</CardTitle>
-              <CardDescription>Data freshness</CardDescription>
+              <CardTitle>Trust Marks</CardTitle>
+              <CardDescription>Some valuable info</CardDescription>
             </CardHeader>
             <CardContent>
               <div className="text-sm text-muted-foreground">
@@ -86,6 +111,47 @@ export const Dashboard = () => {
           </Card>
         </div>
       )}
+
+      <div className=" grid grid-cols-1 md:grid-cols-[1fr_2fr] gap-4">
+        <Card>
+              <CardHeader>
+                <CardTitle>Charts</CardTitle>
+                <CardDescription>Some valuable info</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <ChartPieSimple/>
+              </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader>
+            <CardTitle>Recent Activity</CardTitle>
+            <CardDescription>Some valuable info</CardDescription>
+          </CardHeader>
+          <CardContent>
+          <ChartLineStep/>
+          </CardContent>
+        </Card>
+
+      </div>
+
+      
+
+      <div className="pt-4">
+      <Card>
+            <CardHeader>
+              <CardTitle>Entity Highlights</CardTitle>
+              <CardDescription>Some valuable info</CardDescription>
+            </CardHeader>
+            <CardContent>
+             
+            </CardContent>
+          </Card>
+      </div>
+
+      
     </div>
+
+    
   );
 };

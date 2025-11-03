@@ -113,13 +113,7 @@ export function AppSidebar() {
 }
 
 export const menuItems = [
-  {
-    title: "Home",
-    url: "/",
-    icon: Home,
-    section: "Explore",
-    desciption: "Overview of your system"
-  },
+  
   {
     title: "Dashboard",
     url: "/dashboard",
