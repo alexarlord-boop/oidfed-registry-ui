@@ -4,7 +4,7 @@ import { Separator } from "@/components/ui/separator";
 import { AppSidebar } from "@/components/app-sidebar"
 import { useLocation } from "react-router-dom";
 import { menuItems } from "@/components/app-sidebar";
-import { PageHeader } from "./components/page-header";
+import { PageHeader } from "../components/page-header";
 
 
 export default function Layout() {

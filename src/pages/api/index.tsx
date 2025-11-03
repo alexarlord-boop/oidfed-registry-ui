@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { APITester } from "@/APITester";
+import { APITester } from "@/components/APITester";
 
 
 export const Api = () => {

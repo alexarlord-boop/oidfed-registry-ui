@@ -1,5 +1,5 @@
 import { serve } from "bun";
-import index from "./index.html";
+import index from "./app/index.html";
 import { hello } from "./api/hello";
 import { dashboard } from "./api/dashboard";
 import { test } from "./api/test";
