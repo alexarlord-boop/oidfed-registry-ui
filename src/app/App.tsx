@@ -1,4 +1,6 @@
 import { Routes, Route } from "react-router-dom";
+import { ThemeProvider } from "@/components/theme-provider"
+
 import { Dashboard } from "@/pages/dashboard";
 import { Home } from "@/pages/home";
 import { Api } from "@/pages/api";
@@ -9,6 +11,7 @@ import "./index.css";
 
 export function App() {
   return (
+    <ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme">
     <Routes>
       <Route path="/" element={<Layout />}>
         {/* Explore */}
@@ -28,6 +31,7 @@ export function App() {
         <Route path="language" element={<Language />} />
       </Route>
     </Routes>
+    </ThemeProvider>
   );
 }
 

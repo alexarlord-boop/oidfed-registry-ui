@@ -6,6 +6,7 @@ import { useLocation } from "react-router-dom";
 import { menuItems } from "@/components/app-sidebar";
 import { PageHeader } from "../components/page-header";
 
+import { ModeToggle } from "@/components/mode-toggle";
 
 export default function Layout() {
     const location = useLocation();
@@ -21,6 +22,9 @@ export default function Layout() {
           <SidebarTrigger />
           <Separator orientation="vertical" className="max-h-10"/>
           <PageHeader title={title} description={description}/>
+          
+          {/* Non-page settings */}
+          <ModeToggle/>
           
         </header>
         <div className="flex flex-1 flex-col gap-4 p-4">

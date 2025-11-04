@@ -35,7 +35,7 @@ export const API_ENDPOINTS: ApiEndpoint[] = [
                         "data": {
                               "totalUsers": 1234,
                               "activeUsers": 567,
-                              "lastUpdated": "2025-11-03T20:54:01.613Z"
+                              "lastUpdated": "2025-11-04T18:23:35.070Z"
                         }
                   }
             }
