@@ -1,5 +1,6 @@
 import { Link, useLocation } from "react-router-dom";
-import { Braces, Home, LayoutDashboard } from "lucide-react";
+import { useTranslation } from 'react-i18next';
+import { Braces, Home, Languages, LayoutDashboard } from "lucide-react";
 import {
   Sidebar,
   SidebarContent,
@@ -19,6 +20,7 @@ import { ChevronUp, User, Code, ShieldCheck, FileText, Key, } from "lucide-react
 
 export function AppSidebar() {
   const location = useLocation();
+  const { t, i18n } = useTranslation();
 
 
   return (
@@ -36,7 +38,7 @@ export function AppSidebar() {
       </SidebarHeader>
       <SidebarContent>
         <SidebarGroup>
-          <SidebarGroupLabel>Explore</SidebarGroupLabel>
+          <SidebarGroupLabel>{t('Explore')}</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
               {menuItems.filter(item => item.section === "Explore").map((item) => (
@@ -47,7 +49,7 @@ export function AppSidebar() {
                   >
                     <Link to={item.url}>
                       <item.icon />
-                      <span>{item.title}</span>
+                      <span>{t(item.title)}</span>
                     </Link>
                   </SidebarMenuButton>
                 </SidebarMenuItem>
@@ -57,7 +59,7 @@ export function AppSidebar() {
         </SidebarGroup>
 
         <SidebarGroup>
-          <SidebarGroupLabel>Management</SidebarGroupLabel>
+          <SidebarGroupLabel>{t('Management')}</SidebarGroupLabel>
           <SidebarGroupContent>
           <SidebarMenu>
               {menuItems.filter(item => item.section === "Management").map((item) => (
@@ -68,13 +70,33 @@ export function AppSidebar() {
                   >
                     <Link to={item.url}>
                       <item.icon />
-                      <span>{item.title}</span>
+                      <span>{t(item.title)}</span>
                     </Link>
                   </SidebarMenuButton>
                 </SidebarMenuItem>
               ))}
             </SidebarMenu>
-            
+          </SidebarGroupContent>
+        </SidebarGroup>
+
+        <SidebarGroup>
+          <SidebarGroupLabel>{t('Settings')}</SidebarGroupLabel>
+          <SidebarGroupContent>
+          <SidebarMenu>
+              {menuItems.filter(item => item.section === "Settings").map((item) => (
+                <SidebarMenuItem key={item.url}>
+                  <SidebarMenuButton
+                    asChild
+                    isActive={location.pathname === item.url}
+                  >
+                    <Link to={item.url}>
+                      <item.icon />
+                      <span>{t(item.title)}</span>
+                    </Link>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+              ))}
+            </SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>
 
@@ -171,4 +193,13 @@ export const menuItems = [
     icon: Key,
     section: "Management"
   },
+
+  {
+    title: "Language",
+    url: "/language",
+    icon: Languages,
+    section: "Settings"
+  },
+
+
 ];
