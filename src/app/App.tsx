@@ -5,6 +5,7 @@ import { Dashboard } from "@/pages/dashboard";
 import { Home } from "@/pages/home";
 import { Api } from "@/pages/api";
 import { Language } from "@/pages/language";
+import { Account } from "@/pages/account";
 import { Empty } from "@/pages/default/empty";
 import Layout from "./layout";
 import "./index.css";
@@ -29,6 +30,9 @@ export function App() {
         
         {/* Settings */}
         <Route path="language" element={<Language />} />
+
+        {/* User */}
+        <Route path="account" element={<Account />} />
       </Route>
     </Routes>
     </ThemeProvider>

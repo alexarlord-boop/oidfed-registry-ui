@@ -1,6 +1,8 @@
 import { Link, useLocation } from "react-router-dom";
 import { useTranslation } from 'react-i18next';
 import { Braces, Home, Languages, LayoutDashboard } from "lucide-react";
+import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
+
 import {
   Sidebar,
   SidebarContent,
@@ -108,7 +110,12 @@ export function AppSidebar() {
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <SidebarMenuButton>
-                    <User2 /> Username
+                    
+                  <Avatar>
+                        <AvatarImage src="https://github.com/shadcn.png" alt="@shadcn"/>
+                        <AvatarFallback>CN</AvatarFallback>
+                    </Avatar>
+                     Username
                     <ChevronUp className="ml-auto" />
                   </SidebarMenuButton>
                 </DropdownMenuTrigger>
@@ -117,10 +124,11 @@ export function AppSidebar() {
                   className="w-[--radix-popper-anchor-width]"
                 >
                   <DropdownMenuItem>
-                    <span>Account</span>
-                  </DropdownMenuItem>
-                  <DropdownMenuItem>
-                    <span>Billing</span>
+                    <Link to="/account">
+                        
+                        <span>Account</span>
+                      </Link>
+                    
                   </DropdownMenuItem>
                   <DropdownMenuItem>
                     <span>Sign out</span>
@@ -199,6 +207,13 @@ export const menuItems = [
     url: "/language",
     icon: Languages,
     section: "Settings"
+  },
+
+  {
+    title: "Account",
+    url: "/account",
+    icon: Languages,
+    section: "User"
   },
 
 
