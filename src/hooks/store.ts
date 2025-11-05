@@ -1,14 +1,15 @@
 import { create } from 'zustand'
 
-enum pageType {
-    home = "HOME",
-    dashboard = "DASHBOARD"
-}
+export type Theme = "dark" | "light" | "system";
 
-export const useAppState = create((set) => ({
-  appState: {
-    currentPage: pageType,
-    updatePage: (newPage: pageType) => set({ currentPage: newPage }),
+type AppState = {
+  theme: Theme;
+  setTheme: (theme: Theme) => void;
+};
+
+export const useAppState = create<AppState>((set) => ({
+  theme: "system",
+  setTheme: (theme) => {
+    set({ theme });
   },
-
-}))
+}));
