@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { ChartPieSimple } from "@/components/chart-pie-simple"
 import { ChartLineStep } from "@/components/chart-line-step"
+import { Button } from "@/components/ui/button";
 
 interface DashboardStats {
   totalUsers: number;
@@ -59,6 +60,7 @@ export const Dashboard = () => {
             </CardHeader>
             <CardContent>
               <div className="text-4xl font-bold"></div>
+              <Button className="flex ml-auto">Test</Button>
             </CardContent>
           </Card>
       </div>
@@ -72,7 +74,7 @@ export const Dashboard = () => {
               <CardDescription>Some valuable info</CardDescription>
             </CardHeader>
             <CardContent>
-              <div className="text-4xl font-bold">{stats.totalUsers.toLocaleString()}</div>
+              <div className="text-4xl font-bold text-primary">{stats.totalUsers.toLocaleString()}</div>
             </CardContent>
           </Card>
 
@@ -82,7 +84,7 @@ export const Dashboard = () => {
               <CardDescription>Some valuable info</CardDescription>
             </CardHeader>
             <CardContent>
-              <div className="text-4xl font-bold">{stats.totalUsers.toLocaleString()}</div>
+              <div className="text-4xl font-bold text-primary">{stats.totalUsers.toLocaleString()}</div>
             </CardContent>
           </Card>
 
