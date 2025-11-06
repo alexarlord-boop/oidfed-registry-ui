@@ -12,8 +12,8 @@ export const Account = () => {
                 </CardHeader>
                 <CardContent className="flex items-start gap-4">
                     
-                    <Avatar>
-                        <AvatarImage src="https://github.com/shadcn.png" alt="@shadcn"/>
+                    <Avatar className="size-20">
+                        <AvatarImage src="https://avatar.iran.liara.run/public/33" alt="@shadcn"/>
                         <AvatarFallback>CN</AvatarFallback>
                     </Avatar>
 

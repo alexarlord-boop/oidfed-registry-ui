@@ -114,7 +114,7 @@ export function AppSidebar() {
                   <SidebarMenuButton>
                     
                   <Avatar>
-                        <AvatarImage src="https://github.com/shadcn.png" alt="@shadcn"/>
+                        <AvatarImage src="https://avatar.iran.liara.run/public/33" alt="@shadcn"/>
                         <AvatarFallback>CN</AvatarFallback>
                     </Avatar>
                      Username
