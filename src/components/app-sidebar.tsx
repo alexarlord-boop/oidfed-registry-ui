@@ -1,5 +1,6 @@
 import { Link, useLocation } from "react-router-dom";
 import { useTranslation } from 'react-i18next';
+import { useAppState, type Lang } from "@/hooks/store"
 import { Braces, Home, Languages, LayoutDashboard } from "lucide-react";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 
@@ -22,6 +23,7 @@ import { ChevronUp, User, Code, ShieldCheck, FileText, Key, } from "lucide-react
 
 export function AppSidebar() {
   const location = useLocation();
+  const { language } = useAppState();
   const { t, i18n } = useTranslation();
 
 

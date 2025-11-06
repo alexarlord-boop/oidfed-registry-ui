@@ -1,11 +1,15 @@
 import React from 'react';
+import { useEffect } from "react";
 import { useTranslation } from 'react-i18next';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { useAppState, type Lang } from "@/hooks/store"
+
 
 export const Language = () => {
-    const { t, i18n } = useTranslation();
+    const { t, i18n } = useTranslation();  
+    const { language } = useAppState();
 
     const languages = [
         { code: 'en', name: 'English' },
@@ -14,7 +18,14 @@ export const Language = () => {
 
     const handleLanguageChange = (lang: string) => {
         i18n.changeLanguage(lang);
+        useAppState.getState().setLanguage(lang as Lang);
     };
+
+    useEffect(() => {
+        if (i18n.language !== language) {
+          i18n.changeLanguage(language);
+        }
+      }, [language, i18n]);
 
     return (
         <div className="w-full">
