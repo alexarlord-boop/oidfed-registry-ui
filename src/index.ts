@@ -1,8 +1,8 @@
 import { serve } from "bun";
 import index from "./app/index.html";
-import { hello } from "./api/hello";
-import { dashboard } from "./api/dashboard";
-import { test } from "./api/test";
+import { hello } from "./old-api/hello";
+import { dashboard } from "./old-api/dashboard";
+import { test } from "./old-api/test";
 
 const server = serve({
   routes: {
