@@ -4,12 +4,11 @@ import { ChartPieSimple } from "@/components/chart-pie-simple"
 import { ChartLineStep } from "@/components/chart-line-step"
 import { Button } from "@/components/ui/button";
 
-import { 
-  useStatus, 
-  useListAccounts, 
-  useListTrustMarkTypes,
-  useGetLogs 
- } from "@/api/apiComponents"
+import { useStatus } from "@/api/apiComponents"
+import DevLogin from "@/components/dev/DevLogin";
+import AccountsPreview from "@/components/dashboard/AccountsPreview";
+import TrustMarkTypesPreview from "@/components/dashboard/TrustMarkTypesPreview";
+import LogsPreview from "@/components/dashboard/LogsPreview";
 
 interface DashboardStats {
   totalUsers: number;
@@ -22,51 +21,83 @@ export const Dashboard = () => {
   // const [loading, setLoading] = useState(true);
   // const [error, setError] = useState<string | null>(null);
 
-  // TESTING
+  // TESTING - use the generated hook
   const status = useStatus({})
-  const [data, setData] = useState(null)
+  const [data, setData] = useState<any | null>(null)
   const [loading, setLoading] = useState(false)
+  // dev auth handled by `DevLogin` component (stores values in localStorage)
 
   const testStatus = async () => {
     setLoading(true)
     try {
-      const result = await apiFetch({
-        url: '/status',
-        method: 'get'
-      })
-      setData(result)
-    } catch (error) {
-      console.error('Error:', error)
-      setData({ error: error.message })
+      const result = await status.refetch()
+      setData(result.data ?? result)
+    } catch (error: any) {
+      console.error("Error:", error)
+      setData({ error: error?.message ?? String(error) })
     } finally {
       setLoading(false)
     }
   }
 
   return (
-    <div style={{ padding: '20px' }}>
-      <h2>Direct API Test</h2>
-      <button 
-        onClick={testStatus} 
-        disabled={loading}
-        style={{ padding: '10px 20px', fontSize: '16px' }}
-      >
-        {loading ? 'Testing...' : 'Test Status Endpoint'}
-      </button>
-      
-      {data && (
-        <div style={{ marginTop: '20px' }}>
-          <h3>Response:</h3>
-          <pre style={{ 
-            background: '#f5f5f5', 
-            padding: '15px', 
-            borderRadius: '5px',
-            overflow: 'auto'
-          }}>
-            {JSON.stringify(data, null, 2)}
-          </pre>
-        </div>
-      )}
+    <div className="space-y-4 p-4">
+      <DevLogin />
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <Card>
+          <CardHeader>
+            <CardTitle>Overview Status</CardTitle>
+            <CardDescription>Admin node status</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="flex items-center justify-between">
+              <div className="text-lg font-medium">{status.data?.status ?? 'Unknown'}</div>
+              <Button onClick={testStatus} disabled={loading}>{loading ? 'Testing…' : 'Refresh'}</Button>
+            </div>
+            {data && (
+              <pre className="mt-3 text-xs bg-slate-50 p-2 rounded max-h-40 overflow-auto">{JSON.stringify(data, null, 2)}</pre>
+            )}
+          </CardContent>
+        </Card>
+
+        <AccountsPreview />
+        <TrustMarkTypesPreview />
+      </div>
+
+      <div className="grid grid-cols-1 md:grid-cols-[1fr_2fr] gap-4">
+        <Card>
+          <CardHeader>
+            <CardTitle>Charts</CardTitle>
+            <CardDescription>Example data visualisations</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <ChartPieSimple />
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader>
+            <CardTitle>Recent Activity</CardTitle>
+            <CardDescription>Recent metrics</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <ChartLineStep />
+          </CardContent>
+        </Card>
+      </div>
+
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <LogsPreview limit={8} />
+        <Card>
+          <CardHeader>
+            <CardTitle>Entity Highlights</CardTitle>
+            <CardDescription>Demo content</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="text-sm text-muted-foreground">Placeholder for entity highlights.</div>
+          </CardContent>
+        </Card>
+      </div>
     </div>
   )
 

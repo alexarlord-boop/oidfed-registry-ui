@@ -1,4 +1,4 @@
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useTranslation } from 'react-i18next';
 import { useAppState, type Lang } from "@/hooks/store"
 import { Braces, Home, Languages, LayoutDashboard } from "lucide-react";
@@ -20,9 +20,11 @@ import {
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { User2 } from "lucide-react";
 import { ChevronUp, User, Code, ShieldCheck, FileText, Key, } from "lucide-react";
+import { setDevAuth } from "@/lib/devAuth";
 
 export function AppSidebar() {
   const location = useLocation();
+  const navigate = useNavigate();
   const { language } = useAppState();
   const { t, i18n } = useTranslation();
 
@@ -132,8 +134,21 @@ export function AppSidebar() {
                       </Link>
                     
                   </DropdownMenuItem>
-                  <DropdownMenuItem>
-                    <span>Sign out</span>
+                  <DropdownMenuItem asChild>
+                    <button
+                      onClick={() => {
+                        try {
+                          setDevAuth(null, null);
+                        } catch (e) {}
+                        try {
+                          navigate('/login');
+                        } catch (e) {}
+                      }}
+                      role="menuitem"
+                      className="w-full text-left"
+                    >
+                      <span>Sign out</span>
+                    </button>
                   </DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>
