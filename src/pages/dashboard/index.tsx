@@ -55,9 +55,11 @@ export const Dashboard = () => {
               <div className="text-lg font-medium">{status.data?.status ?? 'Unknown'}</div>
               <Button onClick={testStatus} disabled={loading}>{loading ? 'Testing…' : 'Refresh'}</Button>
             </div>
-            {data && (
-              <pre className="mt-3 text-xs bg-slate-50 p-2 rounded max-h-40 overflow-auto">{JSON.stringify(data, null, 2)}</pre>
-            )}
+            <div className="mt-3">
+              <div className="h-16 overflow-auto bg-slate-50 dark:bg-slate-800 p-2 rounded text-xs font-mono text-slate-900 dark:text-slate-100">
+                <pre className="whitespace-pre-wrap">{JSON.stringify(status.data ?? data ?? {}, null, 2)}</pre>
+              </div>
+            </div>
           </CardContent>
         </Card>
 
