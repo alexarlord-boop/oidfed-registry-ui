@@ -15,16 +15,20 @@ export const TrustMarkTypesPreview: React.FC = () => {
         {isLoading && <div>Loading trust mark types…</div>}
         {error && <div className="text-destructive">Error loading types</div>}
         {!isLoading && !error && (
-          <div className="text-sm">
-            {types.length === 0 ? (
-              <div>No types</div>
-            ) : (
-              <ul className="list-disc pl-5 max-h-40 overflow-auto">
-                {types.slice(0, 8).map((t: any) => (
-                  <li key={t.id}>{t.name ?? t.identifier ?? t.id}</li>
-                ))}
-              </ul>
-            )}
+          <div className="space-y-2">
+            <div className="text-sm text-muted-foreground">Total types: {types.length}</div>
+            <div className="divide-y rounded border overflow-hidden">
+              {types.length === 0 && <div className="p-2 text-sm">No types</div>}
+              {types.slice(0, 8).map((t: any) => (
+                <div key={t.id} className="flex items-center justify-between p-2">
+                  <div>
+                    <div className="font-medium">{t.identifier ?? t.id}</div>
+                    <div className="text-xs text-muted-foreground">{t.createdAt ? new Date(t.createdAt).toLocaleDateString() : ''}</div>
+                  </div>
+                  <div className="text-xs text-muted-foreground">{t.id?.slice(0, 8)}</div>
+                </div>
+              ))}
+            </div>
           </div>
         )}
       </CardContent>

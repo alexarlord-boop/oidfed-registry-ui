@@ -220,6 +220,13 @@ export const menuItems = [
   },
 
   {
+    title: "System",
+    url: "/system",
+    icon: Code,
+    section: "Settings"
+  },
+
+  {
     title: "Account",
     url: "/account",
     icon: Languages,

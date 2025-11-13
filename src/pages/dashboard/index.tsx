@@ -1,11 +1,13 @@
 import { useEffect, useState } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { ChartPieSimple } from "@/components/chart-pie-simple"
-import { ChartLineStep } from "@/components/chart-line-step"
+import ChartLogsPie from "@/components/dashboard/ChartLogsPie";
+import ChartLogsLine from "@/components/dashboard/ChartLogsLine";
+import KeysCard from "@/components/dashboard/KeysCard";
+import MetadataCard from "@/components/dashboard/MetadataCard";
+import ReceivedTrustMarksCard from "@/components/dashboard/ReceivedTrustMarksCard";
 import { Button } from "@/components/ui/button";
 
 import { useStatus } from "@/api/apiComponents"
-import DevLogin from "@/components/dev/DevLogin";
 import AccountsPreview from "@/components/dashboard/AccountsPreview";
 import TrustMarkTypesPreview from "@/components/dashboard/TrustMarkTypesPreview";
 import LogsPreview from "@/components/dashboard/LogsPreview";
@@ -42,8 +44,7 @@ export const Dashboard = () => {
 
   return (
     <div className="space-y-4 p-4">
-      <DevLogin />
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <Card>
           <CardHeader>
             <CardTitle>Overview Status</CardTitle>
@@ -61,43 +62,25 @@ export const Dashboard = () => {
         </Card>
 
         <AccountsPreview />
-        <TrustMarkTypesPreview />
-      </div>
-
-      <div className="grid grid-cols-1 md:grid-cols-[1fr_2fr] gap-4">
-        <Card>
-          <CardHeader>
-            <CardTitle>Charts</CardTitle>
-            <CardDescription>Example data visualisations</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <ChartPieSimple />
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader>
-            <CardTitle>Recent Activity</CardTitle>
-            <CardDescription>Recent metrics</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <ChartLineStep />
-          </CardContent>
-        </Card>
+       
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <LogsPreview limit={8} />
-        <Card>
-          <CardHeader>
-            <CardTitle>Entity Highlights</CardTitle>
-            <CardDescription>Demo content</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="text-sm text-muted-foreground">Placeholder for entity highlights.</div>
-          </CardContent>
-        </Card>
+       
+        <KeysCard />
+        <MetadataCard />
+       
       </div>
+
+
+      <div className="grid grid-cols-1 md:grid-cols-1 gap-4">
+       
+       
+        <TrustMarkTypesPreview />
+      </div>
+
+
+      
     </div>
   )
 

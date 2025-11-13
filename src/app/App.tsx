@@ -4,6 +4,7 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { ThemeProvider } from "@/components/theme-provider"
 
 import { Dashboard } from "@/pages/dashboard";
+import System from "@/pages/system";
 import { Home } from "@/pages/home";
 import { Language } from "@/pages/language";
 import { Account } from "@/pages/account";
@@ -36,6 +37,7 @@ export function App() {
             
             {/* Settings */}
             <Route path="language" element={<Language />} />
+            <Route path="system" element={<RequireAuth><System /></RequireAuth>} />
 
             {/* User */}
             <Route path="account" element={<RequireAuth><Account /></RequireAuth>} />
