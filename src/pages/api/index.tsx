@@ -1,17 +1,4 @@
-import { useEffect, useState } from "react";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { APITester } from "@/components/APITester";
+import React from "react";
 
-
-export const Api = () => {
-  
-
-  return (
-    <div className="w-full">
-    <div className="flex flex-col gap-4">
-      <APITester />
-    </div>
-
-    </div>
-  );
-};
+// API page removed — kept as a harmless placeholder to avoid import errors.
+export const Api = () => null;

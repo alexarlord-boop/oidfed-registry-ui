@@ -5,7 +5,6 @@ import { ThemeProvider } from "@/components/theme-provider"
 
 import { Dashboard } from "@/pages/dashboard";
 import { Home } from "@/pages/home";
-import { Api } from "@/pages/api";
 import { Language } from "@/pages/language";
 import { Account } from "@/pages/account";
 import { Empty } from "@/pages/default/empty";
@@ -23,7 +22,6 @@ export function App() {
             {/* Explore */}
             <Route index element={<Home />} />
             <Route path="dashboard" element={<Dashboard />}  />
-            <Route path="api" element={<Api />} />
 
             {/* Management */}
             <Route path="entities" element={<Empty title="Entities" description="Manage entities" />} />

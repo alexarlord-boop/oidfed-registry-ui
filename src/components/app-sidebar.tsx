@@ -153,13 +153,6 @@ export const menuItems = [
     section: "Explore",
     desciption: "Stats & KPIs"
   },
-  {
-    title: "API",
-    url: "/api",
-    icon: Code,
-    section: "Explore",
-    desciption: "Overview of client API endpoints"
-  },
 
   // TODO
   {

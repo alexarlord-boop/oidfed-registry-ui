@@ -4,10 +4,10 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "dev": "bun run generate:endpoints & bun --hot src/index.ts",
+    "dev": "bun --hot src/index.ts",
     "start": "NODE_ENV=production bun src/index.ts",
     "build": "bun run build.ts",
-    "generate:endpoints": "bun run scripts/generate-api-endpoints.ts --watch"
+    
   },
   "dependencies": {
     "@openapitools/openapi-generator-cli": "^2.25.0",
