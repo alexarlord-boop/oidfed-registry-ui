@@ -1,65 +1,160 @@
 import React, { useState } from "react";
-import { useNavigate, useLocation } from "react-router-dom";
+import { useNavigate, useLocation, Navigate } from "react-router-dom";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { makeDummyJwt, setDevAuth } from "@/lib/devAuth";
+import { useAuth, useAuthAdapters } from "@/auth";
 
 export function Login() {
   const navigate = useNavigate();
   const location = useLocation() as any;
   const from = location.state?.from?.pathname ?? "/";
-
+  
+  const { login, isLoading, error, isAuthenticated } = useAuth();
+  const { currentAdapter } = useAuthAdapters();
+  
   const [username, setUsername] = useState("admin");
   const [password, setPassword] = useState("admin");
-  const [error, setError] = useState<string | null>(null);
+  const [localError, setLocalError] = useState<string | null>(null);
 
-  const submit = (e: React.FormEvent) => {
+  // Redirect if already authenticated
+  if (isAuthenticated) {
+    return <Navigate to={from} replace />;
+  }
+
+  const submit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // simple dev login: accept admin/admin or any non-empty values
-    if (!username) return setError("Username required");
-    if (!password) return setError("Password required");
-
-    // for demo, require admin/admin as default credentials but accept any credentials
-    if (username !== "admin" || password !== "admin") {
-      // allow but warn
-      console.warn("Non-default credentials used for dev login");
+    setLocalError(null);
+    
+    if (!username || !password) {
+      setLocalError("Username and password required");
+      return;
     }
 
-    const token = makeDummyJwt(username);
-    setDevAuth(token, username);
-    navigate(from, { replace: true });
+    try {
+      const result = await login({ username, password });
+      
+      if (result.success) {
+        navigate(from, { replace: true });
+      } else if (result.redirectUrl) {
+        // OAuth flow - redirect to authorization server
+        window.location.href = result.redirectUrl;
+      } else {
+        setLocalError(result.error || "Login failed");
+      }
+    } catch (err) {
+      setLocalError(err instanceof Error ? err.message : "Login failed");
+    }
   };
 
+  const displayError = localError || error;
+  const isOAuthFlow = currentAdapter === 'oauth';
+  
+  // Dynamic title and description based on auth method
+  const getAuthDisplayInfo = () => {
+    switch (currentAdapter) {
+      case 'dev':
+        return {
+          title: 'Developer Login',
+          description: 'Demo-only login (defaults: admin / admin)'
+        };
+      case 'oauth':
+      case 'oidc':
+        return {
+          title: 'OIDFED Registry',
+          description: 'You will be redirected to complete authentication'
+        };
+      case 'basic':
+      default:
+        return {
+          title: 'OIDFED Registry',
+          description: 'Enter your credentials to access the admin panel'
+        };
+    }
+  };
+  
+  const { title, description } = getAuthDisplayInfo();
+
   return (
-    <div className="max-w-md mx-auto py-12">
-      <Card>
-        <CardHeader>
-          <CardTitle>Developer Login</CardTitle>
-          <CardDescription>Demo-only login (defaults: admin / admin)</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <form onSubmit={submit} className="space-y-3">
-            <div>
-              <Label>Username</Label>
-              <Input value={username} onChange={(e) => setUsername(e.target.value)} />
-            </div>
+    <div className="min-h-screen flex items-center justify-center bg-background">
+      <div className="max-w-md w-full px-4">
+        <Card>
+          <CardHeader className="text-center">
+            <CardTitle>{title}</CardTitle>
+            <CardDescription>{description}</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <form onSubmit={submit} className="space-y-4">
+              {!isOAuthFlow && (
+                <>
+                  <div>
+                    <Label htmlFor="username">Username</Label>
+                    <Input 
+                      id="username"
+                      value={username} 
+                      onChange={(e) => setUsername(e.target.value)}
+                      disabled={isLoading}
+                      autoFocus
+                    />
+                  </div>
 
-            <div>
-              <Label>Password</Label>
-              <Input type="password" value={password} onChange={(e) => setPassword(e.target.value)} />
-            </div>
+                  <div>
+                    <Label htmlFor="password">Password</Label>
+                    <Input 
+                      id="password"
+                      type="password" 
+                      value={password} 
+                      onChange={(e) => setPassword(e.target.value)}
+                      disabled={isLoading}
+                    />
+                  </div>
+                </>
+              )}
 
-            {error && <div className="text-destructive">{error}</div>}
+              {displayError && (
+                <div className="text-destructive text-sm bg-destructive/10 p-3 rounded">
+                  {displayError}
+                </div>
+              )}
 
-            <div className="flex gap-2">
-              <Button type="submit">Sign in</Button>
-              <Button variant="ghost" onClick={() => { setUsername('admin'); setPassword('admin'); }}>Use defaults</Button>
-            </div>
-          </form>
-        </CardContent>
-      </Card>
+              <Button 
+                type="submit" 
+                className="w-full" 
+                disabled={isLoading}
+              >
+                {isLoading 
+                  ? 'Signing in...' 
+                  : isOAuthFlow 
+                    ? 'Continue with SSO' 
+                    : 'Sign in'
+                }
+              </Button>
+              
+              {currentAdapter === 'dev' && (
+                <div className="flex gap-2">
+                  <Button 
+                    type="button"
+                    variant="ghost" 
+                    onClick={() => { setUsername('admin'); setPassword('admin'); }}
+                    disabled={isLoading}
+                    className="w-full"
+                  >
+                    Use defaults
+                  </Button>
+                </div>
+              )}
+            </form>
+            
+            {currentAdapter === 'dev' && (
+              <div className="mt-4 p-3 bg-muted rounded text-sm text-muted-foreground">
+                <strong>Development Mode:</strong> Any credentials accepted. 
+                Default: admin / admin
+              </div>
+            )}
+          </CardContent>
+        </Card>
+      </div>
     </div>
   );
 }

@@ -2,6 +2,7 @@ import { Routes, Route } from "react-router-dom";
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 
 import { ThemeProvider } from "@/components/theme-provider"
+import { AuthProvider, RequireAuth, OAuthCallback } from "@/auth"
 
 import { Dashboard } from "@/pages/dashboard";
 import System from "@/pages/system";
@@ -11,7 +12,6 @@ import { Account } from "@/pages/account";
 import { Empty } from "@/pages/default/empty";
 import Layout from "./layout";
 import Login from "@/pages/login";
-import RequireAuth from "@/components/auth/RequireAuth";
 import "./index.css";
 
 const queryClient = new QueryClient()
@@ -20,9 +20,11 @@ export function App() {
   return (
     <QueryClientProvider client={queryClient}>
       <ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme">
-        <Routes>
-          <Route path="/login" element={<Login />} />
-          <Route path="/" element={<Layout />}>
+        <AuthProvider config="auto">
+          <Routes>s>
+            <Route path="/login" element={<Login />} />
+            <Route path="/auth/callback" element={<OAuthCallback />} />
+            <Route path="/" element={<Layout />}>
             {/* Explore */}
             <Route index element={<Home />} />
             <Route path="dashboard" element={<RequireAuth><Dashboard /></RequireAuth>}  />
@@ -42,7 +44,8 @@ export function App() {
             {/* User */}
             <Route path="account" element={<RequireAuth><Account /></RequireAuth>} />
           </Route>
-        </Routes>
+          </Routes>
+        </AuthProvider>
       </ThemeProvider>
     </QueryClientProvider>
   );
