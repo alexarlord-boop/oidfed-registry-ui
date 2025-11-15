@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { useAppState, type Lang } from "@/hooks/store"
 import { Braces, Home, Languages, LayoutDashboard } from "lucide-react";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
+import { useAuth } from "@/hooks/useAuth";
 
 import {
   Sidebar,
@@ -20,13 +21,13 @@ import {
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { User2 } from "lucide-react";
 import { ChevronUp, User, Code, ShieldCheck, FileText, Key, } from "lucide-react";
-import { setDevAuth } from "@/lib/devAuth";
 
 export function AppSidebar() {
   const location = useLocation();
   const navigate = useNavigate();
   const { language } = useAppState();
   const { t, i18n } = useTranslation();
+  const { user, logout } = useAuth();
 
 
   return (
@@ -114,12 +115,16 @@ export function AppSidebar() {
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <SidebarMenuButton>
-                    
-                  <Avatar>
-                        <AvatarImage src="https://avatar.iran.liara.run/public/33" alt="@shadcn"/>
-                        <AvatarFallback>CN</AvatarFallback>
+                    <Avatar>
+                      <AvatarImage 
+                        src={user?.metadata?.avatarUrl || `https://avatar.iran.liara.run/public/${Math.abs((user?.username || 'user').split('').reduce((a, b) => a + b.charCodeAt(0), 0)) % 100}`} 
+                        alt={user?.username || 'User'}
+                      />
+                      <AvatarFallback>
+                        {(user?.username || 'U').substring(0, 2).toUpperCase()}
+                      </AvatarFallback>
                     </Avatar>
-                     Username
+                    <span className="truncate">{user?.username || 'User'}</span>
                     <ChevronUp className="ml-auto" />
                   </SidebarMenuButton>
                 </DropdownMenuTrigger>
@@ -127,28 +132,26 @@ export function AppSidebar() {
                   side="top"
                   className="w-[--radix-popper-anchor-width]"
                 >
-                  <DropdownMenuItem>
-                    <Link to="/account">
-                        
-                        <span>Account</span>
-                      </Link>
-                    
-                  </DropdownMenuItem>
                   <DropdownMenuItem asChild>
-                    <button
-                      onClick={() => {
-                        try {
-                          setDevAuth(null, null);
-                        } catch (e) {}
-                        try {
-                          navigate('/login');
-                        } catch (e) {}
-                      }}
-                      role="menuitem"
-                      className="w-full text-left"
-                    >
-                      <span>Sign out</span>
-                    </button>
+                    <Link to="/account" className="flex items-center gap-2">
+                      <User className="h-4 w-4" />
+                      <span>Account</span>
+                    </Link>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem 
+                    onClick={async () => {
+                      try {
+                        await logout();
+                        navigate('/login');
+                      } catch (error) {
+                        console.error('Logout failed:', error);
+                        // Fallback: force navigation to login
+                        navigate('/login');
+                      }
+                    }}
+                    className="cursor-pointer"
+                  >
+                    <span>Sign out</span>
                   </DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>

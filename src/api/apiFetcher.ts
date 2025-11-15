@@ -39,46 +39,33 @@ export async function apiFetch<
 >): Promise<TData> {
   let error: ErrorWrapper<TError>;
   try {
-    // Allow runtime-configurable bearer token and account username for testing.
-    // Priority: localStorage 'API_BEARER' -> import.meta.env.VITE_API_BEARER
-    let runtimeToken: string | undefined;
-    try {
-      if (typeof window !== "undefined") {
-        runtimeToken = window.localStorage.getItem("API_BEARER") ?? undefined;
-      }
-    } catch (e) {
-      // ignore
-    }
-    try {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const envToken = (typeof import.meta !== "undefined" ? (import.meta as any).env?.VITE_API_BEARER : undefined) as
-        | string
-        | undefined;
-      if (!runtimeToken && envToken) runtimeToken = envToken;
-    } catch (e) {
-      // ignore
-    }
+    // Simple auth system integration
+    let authHeaders: HeadersInit = {
+      "Content-Type": "application/json",
+    };
 
-    // read optional account username from localStorage so devs can override without code changes
-    let runtimeAccount: string | undefined;
     try {
-      if (typeof window !== "undefined") {
-        runtimeAccount = window.localStorage.getItem("API_ACCOUNT_USERNAME") ?? undefined;
+      const { getAuth } = await import('../lib/auth');
+      const auth = getAuth();
+      const authHeader = await auth.getAuthHeader();
+      
+      if (authHeader) {
+        (authHeaders as Record<string, string>)["Authorization"] = authHeader;
+      }
+      
+      // Get username for legacy API compatibility
+      const authState = await auth.getState();
+      if (authState.user?.username) {
+        (authHeaders as Record<string, string>)["X-Account-Username"] = authState.user.username;
       }
     } catch (e) {
-      // ignore
+      console.warn('Failed to get auth headers:', e);
     }
 
     const requestHeaders: HeadersInit = {
-      "Content-Type": "application/json",
-      ...(runtimeAccount ? { ["X-Account-Username"]: runtimeAccount } : {}),
+      ...authHeaders,
       ...headers,
     };
-
-    if (runtimeToken) {
-      // only add Authorization if a token is set at runtime
-      (requestHeaders as Record<string, string>)["Authorization"] = `Bearer ${runtimeToken}`;
-    }
 
     /**
      * As the fetch API is being used, when multipart/form-data is specified
