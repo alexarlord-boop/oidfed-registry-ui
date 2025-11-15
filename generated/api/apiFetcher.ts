@@ -1,6 +1,6 @@
 import type { ApiContext } from "./apiContext";
 
-const baseUrl = "http://127.0.0.1:4010"; // default to local Prism mock
+const baseUrl = "http://localhost:8765";
 
 export type ErrorWrapper<TError> =
   | TError
@@ -39,31 +39,8 @@ export async function apiFetch<
 >): Promise<TData> {
   let error: ErrorWrapper<TError>;
   try {
-    // Simple auth system integration
-    let authHeaders: HeadersInit = {
-      "Content-Type": "application/json",
-    };
-
-    try {
-      const { getAuth } = await import('../lib/auth');
-      const auth = getAuth();
-      const authHeader = await auth.getAuthHeader();
-      
-      if (authHeader) {
-        (authHeaders as Record<string, string>)["Authorization"] = authHeader;
-      }
-      
-      // Get username for legacy API compatibility
-      const authState = await auth.getState();
-      if (authState.user?.username) {
-        (authHeaders as Record<string, string>)["X-Account-Username"] = authState.user.username;
-      }
-    } catch (e) {
-      console.warn('Failed to get auth headers:', e);
-    }
-
     const requestHeaders: HeadersInit = {
-      ...authHeaders,
+      "Content-Type": "application/json",
       ...headers,
     };
 
@@ -81,31 +58,8 @@ export async function apiFetch<
       delete requestHeaders["Content-Type"];
     }
 
-    // allow overriding base url at runtime via localStorage (key: API_BASE_URL)
-    let effectiveBase = baseUrl;
-    try {
-      if (typeof window !== "undefined") {
-        const v = window.localStorage.getItem("API_BASE_URL");
-        if (v) effectiveBase = v;
-      }
-    } catch (e) {}
-
-    // debug: surface whether we are sending an Authorization header (mask token)
-    try {
-      const hasAuth = !!(requestHeaders as Record<string, string>)["Authorization"];
-      // do not print token value
-      // eslint-disable-next-line no-console
-      console.debug("[apiFetch]", method.toUpperCase(), `${effectiveBase}${resolveUrl(url, queryParams, pathParams)}`, {
-        authorizationPresent: hasAuth,
-        account: (requestHeaders as Record<string, string>)["X-Account-Username"],
-        base: effectiveBase,
-      });
-    } catch (e) {
-      // ignore logging errors
-    }
-
     const response = await window.fetch(
-      `${effectiveBase}${resolveUrl(url, queryParams, pathParams)}`,
+      `${baseUrl}${resolveUrl(url, queryParams, pathParams)}`,
       {
         signal,
         method: method.toUpperCase(),

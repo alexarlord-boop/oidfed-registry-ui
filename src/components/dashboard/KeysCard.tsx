@@ -1,16 +1,16 @@
 import React from "react";
-import { useListKeys } from "@/api/apiComponents";
+import { useGetKeys } from "@/api/client";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 
 const KeysCard: React.FC = () => {
-  const { data, isLoading, error } = useListKeys({});
+  const { data, isLoading, error } = useGetKeys({});
   const jwks = (data as any)?.jwks ?? [];
 
   return (
     <Card>
       <CardHeader>
         <CardTitle>Keys</CardTitle>
-        <CardDescription>GET /keys</CardDescription>
+        <CardDescription>Entity keys</CardDescription>
       </CardHeader>
       <CardContent>
         <div className="flex items-center justify-between">

@@ -1,4 +1,3 @@
----
 openapi: 3.0.2
 info:
   title: Federation Admin
@@ -919,7 +918,7 @@ paths:
       operationId: deleteGeneralAdditionalClaim
       summary: Delete a general additional claim
 
-  /additional-claims:
+  /subordinates/{subordinateID}/additional-claims:
     summary: Manage subordinate-specific additional custom claims.
     description:
       Endpoints to list, add, and update additional custom claims (rows: claim, value, crit) for a specific subordinate.
@@ -1357,7 +1356,8 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/TrustMarkOwner'
-          description: Created owner.    
+          description: Created owner.
+    
   /api/v1/admin/trust-marks/owners/{ownerID}:
     get:
       tags:
@@ -3075,7 +3075,7 @@ paths:
           $ref: '#/components/responses/ServerError'
       operationId: deleteSubordinateAllowedEntityType
       summary: Delete subordinate allowed entity type
-  # /subordinates/metadata-policies-crit: { }
+  /subordinates/metadata-policies-crit: { }
   /subordinates/{subordinateID}/metadata/{entityType}/{claim}:
     get:
       tags:
@@ -3686,7 +3686,7 @@ components:
     AnyValue:
       description: Any JSON value. This intentionally permits any type.
       type: object
-      additionalProperties: {}
+      additionalProperties: true
     ErrorResponse:
       title: Root Type for ErrorResponse
       description: Standard error response with code and description.
@@ -3708,7 +3708,7 @@ components:
       example: https://entity.oidfed.org
     InternalID:
       oneOf:
-        # - type: string
+        - type: string
         - type: integer
     AuthorityHint:
       description: The Entity ID of a superior
