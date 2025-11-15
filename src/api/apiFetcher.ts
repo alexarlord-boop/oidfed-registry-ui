@@ -39,46 +39,27 @@ export async function apiFetch<
 >): Promise<TData> {
   let error: ErrorWrapper<TError>;
   try {
-    // New unified auth system integration
+    // Simple auth system integration
     let authHeaders: HeadersInit = {
       "Content-Type": "application/json",
     };
 
-    // Try to get auth headers from the unified auth system
     try {
-      const { getAuthenticatedHeaders } = await import('../auth/components/AuthProvider');
-      authHeaders = await getAuthenticatedHeaders();
-    } catch (e) {
-      // Fallback to legacy auth system for backwards compatibility
-      try {
-        let runtimeToken: string | undefined;
-        let runtimeAccount: string | undefined;
-
-        if (typeof window !== "undefined") {
-          runtimeToken = window.localStorage.getItem("API_BEARER") ?? undefined;
-          runtimeAccount = window.localStorage.getItem("API_ACCOUNT_USERNAME") ?? undefined;
-        }
-
-        // Check environment variables as fallback
-        try {
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          const envToken = (typeof import.meta !== "undefined" ? (import.meta as any).env?.VITE_API_BEARER : undefined) as string | undefined;
-          if (!runtimeToken && envToken) runtimeToken = envToken;
-        } catch (envError) {
-          // ignore
-        }
-
-        authHeaders = {
-          "Content-Type": "application/json",
-          ...(runtimeAccount ? { ["X-Account-Username"]: runtimeAccount } : {}),
-        };
-
-        if (runtimeToken) {
-          (authHeaders as Record<string, string>)["Authorization"] = `Bearer ${runtimeToken}`;
-        }
-      } catch (legacyError) {
-        console.warn('Failed to get legacy auth headers:', legacyError);
+      const { getAuth } = await import('../lib/auth');
+      const auth = getAuth();
+      const authHeader = await auth.getAuthHeader();
+      
+      if (authHeader) {
+        (authHeaders as Record<string, string>)["Authorization"] = authHeader;
       }
+      
+      // Get username for legacy API compatibility
+      const authState = await auth.getState();
+      if (authState.user?.username) {
+        (authHeaders as Record<string, string>)["X-Account-Username"] = authState.user.username;
+      }
+    } catch (e) {
+      console.warn('Failed to get auth headers:', e);
     }
 
     const requestHeaders: HeadersInit = {

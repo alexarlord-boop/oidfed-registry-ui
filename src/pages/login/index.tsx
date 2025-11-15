@@ -4,7 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { useAuth, useAuthAdapters } from "@/auth";
+import { useAuth } from "@/hooks/useAuth";
 
 export function Login() {
   const navigate = useNavigate();
@@ -12,7 +12,6 @@ export function Login() {
   const from = location.state?.from?.pathname ?? "/";
   
   const { login, isLoading, error, isAuthenticated } = useAuth();
-  const { currentAdapter } = useAuthAdapters();
   
   const [username, setUsername] = useState("admin");
   const [password, setPassword] = useState("admin");
@@ -37,9 +36,6 @@ export function Login() {
       
       if (result.success) {
         navigate(from, { replace: true });
-      } else if (result.redirectUrl) {
-        // OAuth flow - redirect to authorization server
-        window.location.href = result.redirectUrl;
       } else {
         setLocalError(result.error || "Login failed");
       }
@@ -49,32 +45,10 @@ export function Login() {
   };
 
   const displayError = localError || error;
-  const isOAuthFlow = currentAdapter === 'oauth';
   
-  // Dynamic title and description based on auth method
-  const getAuthDisplayInfo = () => {
-    switch (currentAdapter) {
-      case 'dev':
-        return {
-          title: 'Developer Login',
-          description: 'Demo-only login (defaults: admin / admin)'
-        };
-      case 'oauth':
-      case 'oidc':
-        return {
-          title: 'OIDFED Registry',
-          description: 'You will be redirected to complete authentication'
-        };
-      case 'basic':
-      default:
-        return {
-          title: 'OIDFED Registry',
-          description: 'Enter your credentials to access the admin panel'
-        };
-    }
-  };
-  
-  const { title, description } = getAuthDisplayInfo();
+  // Simple login form for development
+  const title = 'OIDFED Registry';
+  const description = 'Enter your credentials to access the admin panel';
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-background">
@@ -86,8 +60,6 @@ export function Login() {
           </CardHeader>
           <CardContent>
             <form onSubmit={submit} className="space-y-4">
-              {!isOAuthFlow && (
-                <>
                   <div>
                     <Label htmlFor="username">Username</Label>
                     <Input 
@@ -109,8 +81,6 @@ export function Login() {
                       disabled={isLoading}
                     />
                   </div>
-                </>
-              )}
 
               {displayError && (
                 <div className="text-destructive text-sm bg-destructive/10 p-3 rounded">
@@ -123,35 +93,26 @@ export function Login() {
                 className="w-full" 
                 disabled={isLoading}
               >
-                {isLoading 
-                  ? 'Signing in...' 
-                  : isOAuthFlow 
-                    ? 'Continue with SSO' 
-                    : 'Sign in'
-                }
+                {isLoading ? 'Signing in...' : 'Sign in'}
               </Button>
               
-              {currentAdapter === 'dev' && (
-                <div className="flex gap-2">
-                  <Button 
-                    type="button"
-                    variant="ghost" 
-                    onClick={() => { setUsername('admin'); setPassword('admin'); }}
-                    disabled={isLoading}
-                    className="w-full"
-                  >
-                    Use defaults
-                  </Button>
-                </div>
-              )}
+              <div className="flex gap-2">
+                <Button 
+                  type="button"
+                  variant="ghost" 
+                  onClick={() => { setUsername('admin'); setPassword('admin'); }}
+                  disabled={isLoading}
+                  className="w-full"
+                >
+                  Use defaults
+                </Button>
+              </div>
             </form>
             
-            {currentAdapter === 'dev' && (
-              <div className="mt-4 p-3 bg-muted rounded text-sm text-muted-foreground">
-                <strong>Development Mode:</strong> Any credentials accepted. 
-                Default: admin / admin
-              </div>
-            )}
+            <div className="mt-4 p-3 bg-muted rounded text-sm text-muted-foreground">
+              <strong>Development Mode:</strong> Any credentials accepted. 
+              Default: admin / admin
+            </div>
           </CardContent>
         </Card>
       </div>
