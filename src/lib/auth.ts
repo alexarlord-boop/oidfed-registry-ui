@@ -3,12 +3,15 @@
  * Clean, minimal authentication system with generic interface and dev implementation
  */
 
+import { UserRole } from '@/types/auth';
+
 // Core types
 export interface AuthUser {
   id: string;
   username: string;
   email?: string;
-  roles: string[];
+  role: UserRole | string;
+  roles: string[];  // Legacy field for backward compatibility
 }
 
 export interface AuthState {
@@ -186,6 +189,7 @@ export class DevAuth implements AuthProvider {
         id: payload.sub,
         username: payload.preferred_username || username,
         email: payload.email,
+        role: payload.role || UserRole.PENDING,
         roles: payload.roles || []
       };
 
@@ -259,6 +263,7 @@ export class DevAuth implements AuthProvider {
         id: payload.sub,
         username: payload.preferred_username,
         email: payload.email,
+        role: payload.role || UserRole.PENDING,
         roles: payload.roles || []
       };
 

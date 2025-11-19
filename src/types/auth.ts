@@ -3,6 +3,39 @@
  * Type definitions for OIDC, JWT tokens, and user profiles
  */
 
+// User Role Enumeration
+export enum UserRole {
+  ADMIN = 'admin',
+  TECHNICAL_CONTACT = 'technical_contact',
+  PENDING = 'pending',
+}
+
+// Role checking utilities
+export function hasRole(user: { role?: UserRole | string } | null, role: UserRole): boolean {
+  if (!user || !user.role) return false;
+  return user.role === role || user.role === role.valueOf();
+}
+
+export function isAdmin(user: { role?: UserRole | string } | null): boolean {
+  return hasRole(user, UserRole.ADMIN);
+}
+
+export function isTechnicalContact(user: { role?: UserRole | string } | null): boolean {
+  return hasRole(user, UserRole.TECHNICAL_CONTACT);
+}
+
+export function isPending(user: { role?: UserRole | string } | null): boolean {
+  return hasRole(user, UserRole.PENDING);
+}
+
+export function canManageUsers(user: { role?: UserRole | string } | null): boolean {
+  return isAdmin(user);
+}
+
+export function canManageEntities(user: { role?: UserRole | string } | null): boolean {
+  return isAdmin(user) || isTechnicalContact(user);
+}
+
 // OIDC Provider Configuration
 export type ProviderId = 'local' | 'keycloak';
 

@@ -4,6 +4,7 @@
  */
 
 import { Button } from '@/components/ui/button';
+import { KeyRound } from 'lucide-react';
 import type { OIDCProviderConfig } from '@/types/auth';
 
 interface SSOLoginButtonProps {
@@ -22,13 +23,10 @@ export function SSOLoginButton({ config, onClick, isLoading }: SSOLoginButtonPro
       disabled={isLoading}
       style={config.color ? { borderColor: config.color } : undefined}
     >
-      {config.logo && (
-        <img 
-          src={config.logo} 
-          alt={config.name}
-          className="w-5 h-5 mr-2"
-        />
-      )}
+      
+       
+        <KeyRound className="w-5 h-5 mr-2" />
+      
       <span>Continue with {config.name}</span>
     </Button>
   );

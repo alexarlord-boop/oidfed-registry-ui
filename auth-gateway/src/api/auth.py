@@ -88,6 +88,7 @@ async def token_endpoint(
             user_id=user.id,
             email=user.email,
             username=user.username,
+            role=user.role.value if user.role else "pending",
             roles=user.roles or [],
             org_id=user.organization,
         )
@@ -162,6 +163,7 @@ async def token_endpoint(
             user_id=user.id,
             email=user.email,
             username=user.username,
+            role=user.role.value if user.role else "pending",
             roles=user.roles or [],
             org_id=user.organization,
         )
@@ -230,6 +232,7 @@ async def token_endpoint(
             user_id=user.id,
             email=user.email,
             username=user.username,
+            role=user.role.value if user.role else "pending",
             roles=user.roles or [],
             org_id=user.organization,
         )

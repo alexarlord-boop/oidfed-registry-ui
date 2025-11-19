@@ -6,6 +6,7 @@ Pydantic models for user management
 from pydantic import BaseModel, EmailStr, Field, field_validator
 from typing import Optional, List
 from datetime import datetime
+from src.models.user import UserRole
 
 
 class UserBase(BaseModel):
@@ -19,7 +20,8 @@ class UserBase(BaseModel):
 class UserCreate(UserBase):
     """Schema for creating a user"""
     password: str = Field(..., min_length=8, max_length=255)
-    roles: List[str] = Field(default_factory=lambda: ["technical-contact"])
+    role: UserRole = Field(default=UserRole.PENDING)
+    roles: List[str] = Field(default_factory=list)  # Legacy field, deprecated
     is_active: bool = True
     is_approved: bool = False  # Requires admin approval
     
@@ -38,7 +40,8 @@ class UserUpdate(BaseModel):
     full_name: Optional[str] = None
     organization: Optional[str] = None
     password: Optional[str] = Field(None, min_length=8)
-    roles: Optional[List[str]] = None
+    role: Optional[UserRole] = None
+    roles: Optional[List[str]] = None  # Legacy field
     is_active: Optional[bool] = None
     is_approved: Optional[bool] = None
     is_superuser: Optional[bool] = None
@@ -47,7 +50,8 @@ class UserUpdate(BaseModel):
 class UserResponse(UserBase):
     """Schema for user response"""
     id: str
-    roles: List[str]
+    role: UserRole
+    roles: List[str]  # Legacy field
     is_active: bool
     is_superuser: bool
     is_approved: bool
@@ -66,7 +70,8 @@ class UserProfile(BaseModel):
     email: str
     full_name: Optional[str] = None
     organization: Optional[str] = None
-    roles: List[str]
+    role: UserRole
+    roles: List[str]  # Legacy field
     
     class Config:
         from_attributes = True

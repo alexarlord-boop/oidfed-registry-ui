@@ -12,7 +12,7 @@ import { getAuth, setAuth } from "@/lib/auth";
 export function Login() {
   const navigate = useNavigate();
   const location = useLocation() as any;
-  const from = location.state?.from?.pathname ?? "/";
+  const from = location.state?.from?.pathname ?? "/dashboard";
   
   const { login, isLoading, error, isAuthenticated } = useAuth();
   const [localError, setLocalError] = useState<string | null>(null);
@@ -33,7 +33,16 @@ export function Login() {
         await new Promise(resolve => setTimeout(resolve, 100));
         navigate(from, { replace: true });
       } else {
-        setLocalError(result.error || "Login failed");
+        // Parse error message to detect specific issues
+        const errorMsg = result.error || "Login failed";
+        
+        if (errorMsg.includes("pending approval") || errorMsg.includes("Account pending approval")) {
+          setLocalError("Your account is pending approval by an administrator. You will receive an email notification once your account is approved.");
+        } else if (errorMsg.includes("disabled") || errorMsg.includes("Account is disabled")) {
+          setLocalError("Your account has been disabled. Please contact an administrator for assistance.");
+        } else {
+          setLocalError(errorMsg);
+        }
       }
     } catch (err) {
       setLocalError(err instanceof Error ? err.message : "Login failed");

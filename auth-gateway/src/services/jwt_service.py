@@ -22,7 +22,8 @@ class JWTService:
         user_id: str,
         email: str,
         username: str,
-        roles: list[str],
+        role: str,  # Single role string
+        roles: list[str],  # Legacy roles array
         org_id: Optional[str] = None,
     ) -> str:
         """Create JWT access token"""
@@ -33,7 +34,8 @@ class JWTService:
             "sub": user_id,
             "email": email,
             "preferred_username": username,
-            "roles": roles,
+            "role": role,  # Primary role field
+            "roles": roles,  # Legacy compatibility
             "iss": settings.JWT_ISSUER,
             "aud": settings.JWT_AUDIENCE,
             "exp": int(expires_at.timestamp()),
