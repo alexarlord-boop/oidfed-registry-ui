@@ -29,6 +29,8 @@ export function Login() {
       const result = await login({ username, password });
       
       if (result.success) {
+        // Small delay to ensure tokens are persisted before navigation
+        await new Promise(resolve => setTimeout(resolve, 100));
         navigate(from, { replace: true });
       } else {
         setLocalError(result.error || "Login failed");

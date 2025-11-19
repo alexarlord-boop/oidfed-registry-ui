@@ -42,8 +42,8 @@ export const env = {
   // Auth Gateway
   AUTH_GATEWAY_URL: getEnv('VITE_AUTH_GATEWAY_URL', 'http://localhost:9000'),
   
-  // API
-  API_BASE_URL: getEnv('VITE_API_BASE_URL', 'http://localhost:9000/api'),
+  // API - Gateway handles /api prefix, so base URL should not include it
+  API_BASE_URL: getEnv('VITE_API_BASE_URL', 'http://localhost:9000'),
   
   // Local Authentication
   LOCAL_AUTH_ENABLED: getEnvBoolean('VITE_LOCAL_AUTH_ENABLED', true),

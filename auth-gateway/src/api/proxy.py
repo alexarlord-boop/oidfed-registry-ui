@@ -3,17 +3,23 @@ Admin API Proxy
 Forwards authenticated requests to Admin API with JWT injection
 """
 
-from fastapi import APIRouter, Request, Response, HTTPException
+from fastapi import APIRouter, Request, Response, HTTPException, Depends
 from fastapi.responses import StreamingResponse
 import httpx
 
 from src.config.settings import settings
+from src.middleware.auth_middleware import get_current_user
+from src.models.user import User
 
 router = APIRouter()
 
 
 @router.api_route("/api/{path:path}", methods=["GET", "POST", "PUT", "DELETE", "PATCH"])
-async def proxy_to_admin_api(path: str, request: Request):
+async def proxy_to_admin_api(
+    path: str, 
+    request: Request,
+    current_user: User = Depends(get_current_user)
+):
     """
     Proxy all /api/* requests to Admin API
     Injects JWT from Auth Gateway
@@ -59,7 +65,11 @@ async def proxy_to_admin_api(path: str, request: Request):
 
 @router.api_route("/subordinates", methods=["GET", "POST", "PUT", "DELETE", "PATCH"])
 @router.api_route("/subordinates/{path:path}", methods=["GET", "POST", "PUT", "DELETE", "PATCH"])
-async def proxy_subordinates(path: str = "", request: Request = None):
+async def proxy_subordinates(
+    request: Request,
+    path: str = "",
+    current_user: User = Depends(get_current_user)
+):
     """
     Proxy /subordinates/* requests to Admin API (legacy paths without /api prefix)
     """

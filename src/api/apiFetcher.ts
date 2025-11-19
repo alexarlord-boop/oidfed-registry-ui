@@ -59,24 +59,21 @@ export async function apiFetch<
       "Content-Type": "application/json",
     };
 
+    console.log('[apiFetch] START: Attempting to get auth headers');
+    
     try {
       const { getAuth } = await import('../lib/auth');
-      const { getTokenManager } = await import('../lib/tokenManager');
-      
       const auth = getAuth();
       
-      // For OIDC auth, use token manager for automatic refresh
-      const tokenManager = getTokenManager();
-      const validToken = await tokenManager.getValidToken();
+      console.log('[apiFetch] Getting auth header...');
       
-      if (validToken) {
-        (authHeaders as Record<string, string>)["Authorization"] = `Bearer ${validToken}`;
-      } else {
-        // Fallback to DevAuth header
-        const authHeader = await auth.getAuthHeader();
-        if (authHeader) {
-          (authHeaders as Record<string, string>)["Authorization"] = authHeader;
-        }
+      // Get auth header (includes Bearer token)
+      const authHeader = await auth.getAuthHeader();
+      
+      console.log('[apiFetch] Auth header result:', authHeader ? 'Present' : 'Missing');
+      
+      if (authHeader) {
+        (authHeaders as Record<string, string>)["Authorization"] = authHeader;
       }
       
       // Get username for legacy API compatibility
@@ -84,8 +81,10 @@ export async function apiFetch<
       if (authState.user?.username) {
         (authHeaders as Record<string, string>)["X-Account-Username"] = authState.user.username;
       }
+      
+      console.log('[apiFetch] Auth headers set successfully');
     } catch (e) {
-      console.warn('Failed to get auth headers:', e);
+      console.warn('[apiFetch] Failed to get auth headers:', e);
     }
 
     const requestHeaders: HeadersInit = {
@@ -120,8 +119,7 @@ export async function apiFetch<
     try {
       const hasAuth = !!(requestHeaders as Record<string, string>)["Authorization"];
       // do not print token value
-      // eslint-disable-next-line no-console
-      console.debug("[apiFetch]", method.toUpperCase(), `${effectiveBase}${resolveUrl(url, queryParams, pathParams)}`, {
+      console.log("[apiFetch]", method.toUpperCase(), `${effectiveBase}${resolveUrl(url, queryParams, pathParams)}`, {
         authorizationPresent: hasAuth,
         account: (requestHeaders as Record<string, string>)["X-Account-Username"],
         base: effectiveBase,

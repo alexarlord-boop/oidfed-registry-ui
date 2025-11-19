@@ -29,7 +29,6 @@ except ImportError:
 async def seed_data():
     """Seed initial data."""
     settings = get_settings()
-    password_service = PasswordService()
     
     print("🌱 Seeding initial data...")
     
@@ -43,11 +42,9 @@ async def seed_data():
     
     # Create database session
     async for db in get_db():
-        user_service = UserService(db, password_service)
-        
         # Create admin user
         admin_username = "admin"
-        admin_user = await user_service.get_by_username(admin_username)
+        admin_user = await UserService.get_user_by_username(db, admin_username)
         
         if not admin_user:
             print(f"✓ Creating admin user '{admin_username}'...")
@@ -55,9 +52,11 @@ async def seed_data():
                 username=admin_username,
                 email="admin@example.com",
                 password="admin123",  # Change in production!
-                roles=["admin", "technical_contact"]
+                roles=["admin", "technical_contact"],
+                is_active=True,
+                is_approved=True
             )
-            admin_user = await user_service.create(admin_data, is_approved=True)
+            admin_user = await UserService.create_user(db, admin_data)
             print(f"  → Created admin user (ID: {admin_user.id})")
             print(f"  → Username: {admin_username}")
             print(f"  → Password: admin123")
@@ -71,22 +70,26 @@ async def seed_data():
                 "username": "tc_alice",
                 "email": "alice@university.edu",
                 "password": "password123",
-                "roles": ["technical_contact"]
+                "roles": ["technical_contact"],
+                "is_active": True,
+                "is_approved": True
             },
             {
                 "username": "tc_bob",
                 "email": "bob@research.org",
                 "password": "password123",
-                "roles": ["technical_contact"]
+                "roles": ["technical_contact"],
+                "is_active": True,
+                "is_approved": True
             },
         ]
         
         for user_data in test_users:
-            existing = await user_service.get_by_username(user_data["username"])
+            existing = await UserService.get_user_by_username(db, user_data["username"])
             if not existing:
                 print(f"✓ Creating test user '{user_data['username']}'...")
                 user_create = UserCreate(**user_data)
-                user = await user_service.create(user_create, is_approved=True)
+                user = await UserService.create_user(db, user_create)
                 print(f"  → Created test user (ID: {user.id})")
             else:
                 print(f"✓ Test user '{user_data['username']}' already exists")
