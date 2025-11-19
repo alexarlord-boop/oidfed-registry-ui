@@ -38,7 +38,8 @@ app.include_router(auth.router, prefix="/auth", tags=["Authentication"])
 app.include_router(oidc.router, prefix="/.well-known", tags=["OIDC Discovery"])
 app.include_router(users.router, prefix="/users", tags=["Users"])
 app.include_router(admin.router, prefix="/admin", tags=["Admin"])
-app.include_router(proxy.router, prefix="/api", tags=["Admin API Proxy"])
+# Proxy mounted at root to match Admin API paths directly
+app.include_router(proxy.router, prefix="", tags=["Admin API Proxy"])
 
 
 @app.on_event("startup")

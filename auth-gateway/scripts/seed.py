@@ -20,7 +20,10 @@ from src.services.user_service import UserService
 from src.schemas.user import UserCreate
 
 # Import key generation
-from src.config.keys.generate_keys import main as generate_keys
+try:
+    from src.config.keys import generate_keys
+except ImportError:
+    generate_keys = None
 
 
 async def seed_data():
@@ -32,10 +35,11 @@ async def seed_data():
     
     # Generate JWT keys if they don't exist
     print("✓ Checking JWT keys...")
-    try:
-        generate_keys()
-    except Exception as e:
-        print(f"⚠️  Key generation: {e}")
+    if generate_keys:
+        try:
+            generate_keys.main()
+        except Exception as e:
+            print(f"⚠️  Key generation: {e}")
     
     # Create database session
     async for db in get_db():

@@ -5,10 +5,20 @@
 
 /**
  * Get environment variable value
- * Works with both Vite (import.meta.env) and runtime environments
+ * Works with Bun (Bun.env), Node (process.env), and Vite (import.meta.env)
  */
 export function getEnv(key: string, fallback: string = ''): string {
-  // Check if import.meta.env is available (Vite/build time)
+  // Check Bun.env (Bun runtime)
+  if (typeof Bun !== 'undefined' && Bun.env && Bun.env[key]) {
+    return Bun.env[key];
+  }
+  
+  // Check process.env (Node/Bun)
+  if (typeof process !== 'undefined' && process.env && process.env[key]) {
+    return process.env[key];
+  }
+  
+  // Check import.meta.env (Vite/build time)
   if (typeof import.meta !== 'undefined' && import.meta.env && import.meta.env[key]) {
     return import.meta.env[key];
   }
@@ -47,3 +57,10 @@ export const env = {
   // Keycloak
   KEYCLOAK_ENABLED: getEnvBoolean('VITE_KEYCLOAK_ENABLED', true),
 };
+
+// Debug: log environment configuration on module load
+console.log('[env] Environment configuration loaded:', {
+  AUTH_GATEWAY_URL: env.AUTH_GATEWAY_URL,
+  API_BASE_URL: env.API_BASE_URL,
+  LOCAL_AUTH_ENABLED: env.LOCAL_AUTH_ENABLED,
+});

@@ -12,14 +12,61 @@ from src.config.settings import settings
 router = APIRouter()
 
 
-@router.api_route("/{path:path}", methods=["GET", "POST", "PUT", "DELETE", "PATCH"])
+@router.api_route("/api/{path:path}", methods=["GET", "POST", "PUT", "DELETE", "PATCH"])
 async def proxy_to_admin_api(path: str, request: Request):
     """
-    Proxy all requests to Admin API
+    Proxy all /api/* requests to Admin API
     Injects JWT from Auth Gateway
     """
+    # Build target URL - path already includes /api prefix from route
+    target_url = f"{settings.ADMIN_API_URL}/api/{path}"
+    
+    # Forward headers (Authorization already set by AuthMiddleware)
+    headers = dict(request.headers)
+    headers.pop("host", None)  # Remove host header
+    
+    # Forward query params
+    query_params = dict(request.query_params)
+    
+    # Forward request
+    async with httpx.AsyncClient() as client:
+        try:
+            # Get request body
+            body = await request.body()
+            
+            response = await client.request(
+                method=request.method,
+                url=target_url,
+                headers=headers,
+                params=query_params,
+                content=body,
+                timeout=30.0,
+            )
+            
+            # Return response
+            return Response(
+                content=response.content,
+                status_code=response.status_code,
+                headers=dict(response.headers),
+            )
+        
+        except httpx.RequestError as e:
+            raise HTTPException(
+                status_code=502,
+                detail=f"Error connecting to Admin API: {str(e)}"
+            )
+
+
+@router.api_route("/subordinates", methods=["GET", "POST", "PUT", "DELETE", "PATCH"])
+@router.api_route("/subordinates/{path:path}", methods=["GET", "POST", "PUT", "DELETE", "PATCH"])
+async def proxy_subordinates(path: str = "", request: Request = None):
+    """
+    Proxy /subordinates/* requests to Admin API (legacy paths without /api prefix)
+    """
     # Build target URL
-    target_url = f"{settings.ADMIN_API_URL}/{path}"
+    target_url = f"{settings.ADMIN_API_URL}/subordinates"
+    if path:
+        target_url = f"{target_url}/{path}"
     
     # Forward headers (Authorization already set by AuthMiddleware)
     headers = dict(request.headers)

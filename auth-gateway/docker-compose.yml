@@ -26,7 +26,7 @@ services:
     environment:
       DATABASE_URL: postgresql+asyncpg://oidfed:oidfed@postgres:5432/oidfed_auth
       JWT_ISSUER: http://localhost:9000
-      ADMIN_API_URL: http://localhost:8765
+      ADMIN_API_URL: http://host.docker.internal:8765
       ALLOWED_ORIGINS: http://localhost:3000,http://localhost:5173
       KEYCLOAK_ENABLED: ${KEYCLOAK_ENABLED:-false}
       DEBUG: "true"
@@ -36,7 +36,17 @@ services:
     volumes:
       - ./src:/app/src
       - ./src/config/keys:/app/src/config/keys
-    command: uvicorn src.main:app --host 0.0.0.0 --port 9000 --reload
+      - ./alembic:/app/alembic
+      - ./alembic.ini:/app/alembic.ini
+    command: >
+      sh -c "
+        echo 'Generating JWT keys...' &&
+        python src/config/keys/generate_keys.py &&
+        echo 'Running migrations...' &&
+        alembic upgrade head &&
+        echo 'Starting server...' &&
+        uvicorn src.main:app --host 0.0.0.0 --port 9000 --reload
+      "
 
   # Keycloak (optional)
   keycloak:

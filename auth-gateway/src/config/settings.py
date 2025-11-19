@@ -4,7 +4,8 @@ Pydantic settings with environment variable loading
 """
 
 from pydantic_settings import BaseSettings, SettingsConfigDict
-from typing import List
+from pydantic import field_validator
+from typing import List, Union
 
 
 class Settings(BaseSettings):
@@ -47,8 +48,16 @@ class Settings(BaseSettings):
     KEYCLOAK_TOKEN_ENDPOINT: str = ""
     KEYCLOAK_USERINFO_ENDPOINT: str = ""
     
-    # CORS
-    ALLOWED_ORIGINS: List[str] = ["http://localhost:3000", "http://localhost:5173"]
+    # CORS (can be comma-separated string or list)
+    ALLOWED_ORIGINS: Union[str, List[str]] = "http://localhost:3000,http://localhost:5173"
+    
+    @field_validator('ALLOWED_ORIGINS', mode='before')
+    @classmethod
+    def parse_allowed_origins(cls, v):
+        """Parse ALLOWED_ORIGINS from comma-separated string or list"""
+        if isinstance(v, str):
+            return [origin.strip() for origin in v.split(',') if origin.strip()]
+        return v
     
     # Security
     SECRET_KEY: str = "change-this-secret-key-in-production"
@@ -73,3 +82,8 @@ class Settings(BaseSettings):
 
 # Global settings instance
 settings = Settings()
+
+
+def get_settings() -> Settings:
+    """Get settings instance (for dependency injection)"""
+    return settings
