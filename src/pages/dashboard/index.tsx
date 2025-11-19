@@ -1,16 +1,16 @@
 import { useEffect, useState } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import ChartLogsPie from "@/components/dashboard/ChartLogsPie";
-import ChartLogsLine from "@/components/dashboard/ChartLogsLine";
+// import ChartLogsPie from "@/components/dashboard/ChartLogsPie";
+// import ChartLogsLine from "@/components/dashboard/ChartLogsLine";
 import KeysCard from "@/components/dashboard/KeysCard";
 import MetadataCard from "@/components/dashboard/MetadataCard";
 import ReceivedTrustMarksCard from "@/components/dashboard/ReceivedTrustMarksCard";
 import { Button } from "@/components/ui/button";
 
-import { useStatus } from "@/api/apiComponents"
+import { useListSubordinates } from "@/api/client"
 import AccountsPreview from "@/components/dashboard/AccountsPreview";
 import TrustMarkTypesPreview from "@/components/dashboard/TrustMarkTypesPreview";
-import LogsPreview from "@/components/dashboard/LogsPreview";
+// import LogsPreview from "@/components/dashboard/LogsPreview";
 
 interface DashboardStats {
   totalUsers: number;
@@ -23,8 +23,8 @@ export const Dashboard = () => {
   // const [loading, setLoading] = useState(true);
   // const [error, setError] = useState<string | null>(null);
 
-  // TESTING - use the generated hook
-  const status = useStatus({})
+  // Use subordinates hook for health check (no dedicated status endpoint)
+  const status = useListSubordinates({})
   const [data, setData] = useState<any | null>(null)
   const [loading, setLoading] = useState(false)
   // dev auth handled by `DevLogin` component (stores values in localStorage)
@@ -33,7 +33,12 @@ export const Dashboard = () => {
     setLoading(true)
     try {
       const result = await status.refetch()
-      setData(result.data ?? result)
+      const subordinates = result.data as any
+      setData({ 
+        status: "Connected", 
+        subordinatesCount: Array.isArray(subordinates) ? subordinates.length : 0,
+        lastChecked: new Date().toLocaleTimeString()
+      })
     } catch (error: any) {
       console.error("Error:", error)
       setData({ error: error?.message ?? String(error) })
@@ -52,12 +57,14 @@ export const Dashboard = () => {
           </CardHeader>
           <CardContent>
             <div className="flex items-center justify-between">
-              <div className="text-lg font-medium">{status.data?.status ?? 'Unknown'}</div>
+              <div className="text-lg font-medium">
+                {status.isLoading ? 'Loading...' : (Array.isArray(status.data) ? 'Connected' : 'Unknown')}
+              </div>
               <Button onClick={testStatus} disabled={loading}>{loading ? 'Testing…' : 'Refresh'}</Button>
             </div>
             <div className="mt-3">
               <div className="h-16 overflow-auto bg-slate-50 dark:bg-slate-800 p-2 rounded text-xs font-mono text-slate-900 dark:text-slate-100">
-                <pre className="whitespace-pre-wrap">{JSON.stringify(status.data ?? data ?? {}, null, 2)}</pre>
+                <pre className="whitespace-pre-wrap">{JSON.stringify(data ?? status.data ?? {}, null, 2)}</pre>
               </div>
             </div>
           </CardContent>
@@ -67,17 +74,13 @@ export const Dashboard = () => {
        
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-       
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         <KeysCard />
         <MetadataCard />
-       
+        <ReceivedTrustMarksCard />
       </div>
 
-
       <div className="grid grid-cols-1 md:grid-cols-1 gap-4">
-       
-       
         <TrustMarkTypesPreview />
       </div>
 

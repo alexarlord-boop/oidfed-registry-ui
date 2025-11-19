@@ -1,10 +1,10 @@
 import React from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { useListTrustMarkTypes } from "@/api/apiComponents";
+import { useGetTrustMarkTypes } from "@/api/client";
 
 export const TrustMarkTypesPreview: React.FC = () => {
-  const { data, isLoading, error } = useListTrustMarkTypes({});
-  const types = (data as any)?.trustMarkTypes ?? [];
+  const { data, isLoading, error } = useGetTrustMarkTypes({});
+  const types = Array.isArray(data) ? data : [];
 
   return (
     <Card>
@@ -22,7 +22,7 @@ export const TrustMarkTypesPreview: React.FC = () => {
               {types.slice(0, 8).map((t: any) => (
                 <div key={t.id} className="flex items-center justify-between p-2">
                   <div>
-                    <div className="font-medium">{t.identifier ?? t.id}</div>
+                    <div className="font-medium">{t.trust_mark_type ?? t.id}</div>
                     <div className="text-xs text-muted-foreground">{t.createdAt ? new Date(t.createdAt).toLocaleDateString() : ''}</div>
                   </div>
                   <div className="text-xs text-muted-foreground">{t.id?.slice(0, 8)}</div>

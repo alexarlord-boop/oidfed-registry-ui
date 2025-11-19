@@ -13,7 +13,7 @@ This file contains concise, actionable information to help AI coding agents be p
 **Critical workflows / commands**
 - Install deps: `bun install` (project generated with Bun).
 - Dev (recommended): `bun --hot src/index.ts` (this branch removed the automatic API generator).
-- Regenerate API client: The OpenAPI codegen is still the authoritative source, but this branch has retired the local generator script. To regenerate client code use the OpenAPI generator directly (see `openapi-codegen.config.ts`) or reintroduce a project-specific script.
+- Regenerate API client: The OpenAPI codegen is still the authoritative source, but this branch has retired the local generator script. To regenerate client code use the OpenAPI generator directly (see `openapi-codegen.config.ts`): `bun openapi-codegen gen api`
 - Build for production: `bun run build.ts` (see `build.ts` for build steps).
 
 **Project-specific conventions & patterns**
