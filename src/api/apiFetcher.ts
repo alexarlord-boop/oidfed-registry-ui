@@ -64,18 +64,29 @@ export async function apiFetch<
 >): Promise<TData> {
   let error: ErrorWrapper<TError>;
   try {
-    // Simple auth system integration
+    // Simple auth system integration with automatic token refresh
     let authHeaders: HeadersInit = {
       "Content-Type": "application/json",
     };
 
     try {
       const { getAuth } = await import('../lib/auth');
-      const auth = getAuth();
-      const authHeader = await auth.getAuthHeader();
+      const { getTokenManager } = await import('../lib/tokenManager');
       
-      if (authHeader) {
-        (authHeaders as Record<string, string>)["Authorization"] = authHeader;
+      const auth = getAuth();
+      
+      // For OIDC auth, use token manager for automatic refresh
+      const tokenManager = getTokenManager();
+      const validToken = await tokenManager.getValidToken();
+      
+      if (validToken) {
+        (authHeaders as Record<string, string>)["Authorization"] = `Bearer ${validToken}`;
+      } else {
+        // Fallback to DevAuth header
+        const authHeader = await auth.getAuthHeader();
+        if (authHeader) {
+          (authHeaders as Record<string, string>)["Authorization"] = authHeader;
+        }
       }
       
       // Get username for legacy API compatibility

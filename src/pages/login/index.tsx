@@ -1,10 +1,13 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { useNavigate, useLocation, Navigate } from "react-router-dom";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
-import { Label } from "@/components/ui/label";
-import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
 import { useAuth } from "@/hooks/useAuth";
+import { LoginForm } from "@/components/auth/LoginForm";
+import { SSOLoginButton } from "@/components/auth/SSOLoginButton";
+import { LoginDivider } from "@/components/auth/LoginDivider";
+import { enabledOIDCProviders, isLocalAuthEnabled } from "@/config/oidc.config";
+import { OIDCAuth } from "@/lib/oidcAuth";
+import { getAuth, setAuth } from "@/lib/auth";
 
 export function Login() {
   const navigate = useNavigate();
@@ -12,9 +15,6 @@ export function Login() {
   const from = location.state?.from?.pathname ?? "/";
   
   const { login, isLoading, error, isAuthenticated } = useAuth();
-  
-  const [username, setUsername] = useState("admin");
-  const [password, setPassword] = useState("admin");
   const [localError, setLocalError] = useState<string | null>(null);
 
   // Redirect if already authenticated
@@ -22,14 +22,8 @@ export function Login() {
     return <Navigate to={from} replace />;
   }
 
-  const submit = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const handleLocalLogin = async (username: string, password: string) => {
     setLocalError(null);
-    
-    if (!username || !password) {
-      setLocalError("Username and password required");
-      return;
-    }
 
     try {
       const result = await login({ username, password });
@@ -44,74 +38,67 @@ export function Login() {
     }
   };
 
+  const handleOIDCLogin = async () => {
+    try {
+      // Ensure we have OIDC auth provider
+      let auth = getAuth();
+      if (!(auth instanceof OIDCAuth)) {
+        auth = new OIDCAuth('keycloak');
+        setAuth(auth);
+        await auth.initialize();
+      }
+
+      // Start OIDC flow (will redirect to Auth Gateway)
+      await (auth as OIDCAuth).loginWithOIDC(from);
+    } catch (err) {
+      setLocalError(err instanceof Error ? err.message : "SSO login failed");
+    }
+  };
+
   const displayError = localError || error;
-  
-  // Simple login form for development
-  const title = 'OIDFED Registry';
-  const description = 'Enter your credentials to access the admin panel';
+  const hasOIDC = enabledOIDCProviders.length > 0;
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-background">
       <div className="max-w-md w-full px-4">
         <Card>
           <CardHeader className="text-center">
-            <CardTitle>{title}</CardTitle>
-            <CardDescription>{description}</CardDescription>
+            <CardTitle>OIDFED Registry</CardTitle>
+            <CardDescription>Sign in to access the admin panel</CardDescription>
           </CardHeader>
           <CardContent>
-            <form onSubmit={submit} className="space-y-4">
-                  <div>
-                    <Label htmlFor="username">Username</Label>
-                    <Input 
-                      id="username"
-                      value={username} 
-                      onChange={(e) => setUsername(e.target.value)}
-                      disabled={isLoading}
-                      autoFocus
-                    />
-                  </div>
-
-                  <div>
-                    <Label htmlFor="password">Password</Label>
-                    <Input 
-                      id="password"
-                      type="password" 
-                      value={password} 
-                      onChange={(e) => setPassword(e.target.value)}
-                      disabled={isLoading}
-                    />
-                  </div>
-
-              {displayError && (
-                <div className="text-destructive text-sm bg-destructive/10 p-3 rounded">
-                  {displayError}
-                </div>
-              )}
-
-              <Button 
-                type="submit" 
-                className="w-full" 
-                disabled={isLoading}
-              >
-                {isLoading ? 'Signing in...' : 'Sign in'}
-              </Button>
-              
-              <div className="flex gap-2">
-                <Button 
-                  type="button"
-                  variant="ghost" 
-                  onClick={() => { setUsername('admin'); setPassword('admin'); }}
-                  disabled={isLoading}
-                  className="w-full"
-                >
-                  Use defaults
-                </Button>
+            {/* SSO Login Options */}
+            {hasOIDC && (
+              <div className="space-y-3">
+                {enabledOIDCProviders.map((provider) => (
+                  <SSOLoginButton
+                    key={provider.id}
+                    config={provider}
+                    onClick={handleOIDCLogin}
+                    isLoading={isLoading}
+                  />
+                ))}
               </div>
-            </form>
-            
-            <div className="mt-4 p-3 bg-muted rounded text-sm text-muted-foreground">
-              <strong>Development Mode:</strong> Any credentials accepted. 
-              Default: admin / admin
+            )}
+
+            {/* Divider if both local and SSO are enabled */}
+            {isLocalAuthEnabled && hasOIDC && <LoginDivider />}
+
+            {/* Local Login Form */}
+            {isLocalAuthEnabled && (
+              <LoginForm
+                onSubmit={handleLocalLogin}
+                isLoading={isLoading}
+                error={displayError}
+              />
+            )}
+
+            {/* Registration Link */}
+            <div className="mt-6 text-center text-sm text-muted-foreground">
+              Don't have an account?{' '}
+              <a href="/register" className="text-primary hover:underline">
+                Request access
+              </a>
             </div>
           </CardContent>
         </Card>

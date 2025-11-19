@@ -3,6 +3,7 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 
 import { ThemeProvider } from "@/components/theme-provider"
 import { RequireAuth } from "@/components/auth/RequireAuth"
+import { AuthCallback } from "./AuthCallback"
 
 import { Dashboard } from "@/pages/dashboard";
 import System from "@/pages/system";
@@ -22,6 +23,7 @@ export function App() {
       <ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme">
           <Routes>
             <Route path="/login" element={<Login />} />
+            <Route path="/auth/callback" element={<AuthCallback />} />
             <Route path="/" element={<Layout />}>
             {/* Explore */}
             <Route index element={<Home />} />

@@ -1,26 +1,31 @@
 /**
  * API environment setup - configures the generated API client without modifying generated files
- * Simple base URL override to point to mock server
+ * Handles Auth Gateway URL configuration and base URL override
  */
+
+import { env } from '../lib/env';
+
+// Environment configuration
+export const AUTH_GATEWAY_URL = env.AUTH_GATEWAY_URL;
+export const API_BASE_URL = env.API_BASE_URL;
 
 // Store the original fetch function
 let originalFetch: typeof window.fetch | undefined;
 
 /**
- * Simple fetch interceptor that only handles base URL override
+ * Simple fetch interceptor that handles base URL override
  */
 function createApiInterceptor() {
   return async function interceptedFetch(input: RequestInfo | URL, init?: RequestInit): Promise<Response> {
     const request = new Request(input, init);
     let url = request.url;
     
-    // Override base URL to point to mock server
+    // Override base URL to point to configured API or mock server
     const originalBaseUrl = 'http://localhost:8765';
-    const mockBaseUrl = 'http://127.0.0.1:4010';
     
     if (url.startsWith(originalBaseUrl)) {
-      url = url.replace(originalBaseUrl, mockBaseUrl);
-      console.debug('[API]', request.method, 'redirected to mock:', url);
+      url = url.replace(originalBaseUrl, API_BASE_URL);
+      console.debug('[API]', request.method, 'redirected to:', url);
     }
     
     // Make the actual request with the modified URL
@@ -37,6 +42,6 @@ if (typeof window !== 'undefined' && window.fetch) {
     originalFetch = window.fetch;
     // Install our interceptor
     window.fetch = createApiInterceptor() as typeof fetch;
-    console.debug('[API] Environment configured to use mock server at http://127.0.0.1:4010');
+    console.debug('[API] Environment configured - Auth Gateway:', AUTH_GATEWAY_URL, 'API Base:', API_BASE_URL);
   }
 }
