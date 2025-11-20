@@ -80,6 +80,7 @@ export interface OIDCUserInfo {
   family_name?: string;
   preferred_username?: string;
   picture?: string;
+  role?: string; // User role from auth-gateway
   roles?: string[];
   groups?: string[];
   org_id?: string;

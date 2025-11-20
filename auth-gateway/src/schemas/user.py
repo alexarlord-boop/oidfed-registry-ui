@@ -19,16 +19,20 @@ class UserBase(BaseModel):
 
 class UserCreate(UserBase):
     """Schema for creating a user"""
-    password: str = Field(..., min_length=8, max_length=255)
+    password: Optional[str] = Field(None, min_length=8, max_length=255)
     role: UserRole = Field(default=UserRole.PENDING)
     roles: List[str] = Field(default_factory=list)  # Legacy field, deprecated
     is_active: bool = True
     is_approved: bool = False  # Requires admin approval
+    oidc_provider: Optional[str] = None  # For OIDC users
     
     @field_validator('password')
     @classmethod
     def validate_password(cls, v):
-        """Validate password strength"""
+        """Validate password strength (if provided)"""
+        # Allow empty/None password for OIDC users
+        if v is None or v == '':
+            return v
         if len(v) < 8:
             raise ValueError('Password must be at least 8 characters')
         return v

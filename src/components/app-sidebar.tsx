@@ -4,7 +4,7 @@ import { useAppState, type Lang } from "@/hooks/store"
 import { Braces, Home, Languages, LayoutDashboard } from "lucide-react";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { useAuth } from "@/hooks/useAuth";
-import { UserRole, isAdmin } from "@/types/auth";
+import { UserRole, isAdmin, isTechnicalContact, canManageEntities } from "@/types/auth";
 
 import {
   Sidebar,
@@ -32,12 +32,12 @@ export function AppSidebar() {
 
   // Filter menu items based on user role
   const visibleMenuItems = menuItems.filter(item => {
-    // Admin-only sections
+    // Admin-only items
     if (item.adminOnly && !isAdmin(user)) {
       return false;
     }
-    // Hide management section for pending users
-    if (item.section === "Management" && user?.role === UserRole.PENDING) {
+    // Management section requires at least technical contact role
+    if (item.section === "Management" && !canManageEntities(user)) {
       return false;
     }
     return true;
@@ -103,26 +103,29 @@ export function AppSidebar() {
           </SidebarGroup>
         )}
 
-        <SidebarGroup>
-          <SidebarGroupLabel>{t('Management')}</SidebarGroupLabel>
-          <SidebarGroupContent>
-          <SidebarMenu>
-              {visibleMenuItems.filter(item => item.section === "Management").map((item) => (
-                <SidebarMenuItem key={item.url}>
-                  <SidebarMenuButton
-                    asChild
-                    isActive={location.pathname === item.url}
-                  >
-                    <Link to={item.url}>
-                      <item.icon />
-                      <span>{t(item.title)}</span>
-                    </Link>
-                  </SidebarMenuButton>
-                </SidebarMenuItem>
-              ))}
-            </SidebarMenu>
-          </SidebarGroupContent>
-        </SidebarGroup>
+        {/* Management section - for technical contacts and admins */}
+        {canManageEntities(user) && (
+          <SidebarGroup>
+            <SidebarGroupLabel>{t('Management')}</SidebarGroupLabel>
+            <SidebarGroupContent>
+            <SidebarMenu>
+                {visibleMenuItems.filter(item => item.section === "Management").map((item) => (
+                  <SidebarMenuItem key={item.url}>
+                    <SidebarMenuButton
+                      asChild
+                      isActive={location.pathname === item.url}
+                    >
+                      <Link to={item.url}>
+                        <item.icon />
+                        <span>{t(item.title)}</span>
+                      </Link>
+                    </SidebarMenuButton>
+                  </SidebarMenuItem>
+                ))}
+              </SidebarMenu>
+            </SidebarGroupContent>
+          </SidebarGroup>
+        )}
 
         <SidebarGroup>
           <SidebarGroupLabel>{t('Settings')}</SidebarGroupLabel>

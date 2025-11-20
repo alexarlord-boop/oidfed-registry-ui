@@ -351,6 +351,7 @@ export class OIDCAuth implements AuthProvider {
       id: userInfo.sub,
       username: userInfo.preferred_username || userInfo.email,
       email: userInfo.email,
+      role: userInfo.role || 'pending',
       roles: userInfo.roles || [],
     };
   }

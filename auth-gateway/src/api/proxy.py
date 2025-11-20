@@ -27,6 +27,9 @@ async def proxy_to_admin_api(
     # Build target URL - path already includes /api prefix from route
     target_url = f"{settings.ADMIN_API_URL}/api/{path}"
     
+    print(f"[PROXY] Incoming: {request.method} {request.url}")
+    print(f"[PROXY] Target: {target_url}")
+    
     # Forward headers (Authorization already set by AuthMiddleware)
     headers = dict(request.headers)
     headers.pop("host", None)  # Remove host header
@@ -49,6 +52,8 @@ async def proxy_to_admin_api(
                 timeout=30.0,
             )
             
+            print(f"[PROXY] Response: {response.status_code}")
+            
             # Return response
             return Response(
                 content=response.content,
@@ -57,6 +62,8 @@ async def proxy_to_admin_api(
             )
         
         except httpx.RequestError as e:
+            print(f"[PROXY] RequestError for /api route: {type(e).__name__}: {str(e)}")
+            print(f"[PROXY] Target was: {target_url}")
             raise HTTPException(
                 status_code=502,
                 detail=f"Error connecting to Admin API: {str(e)}"

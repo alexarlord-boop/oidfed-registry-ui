@@ -19,8 +19,10 @@ class UserService:
     @staticmethod
     async def create_user(db: AsyncSession, user_data: UserCreate) -> User:
         """Create a new user"""
-        # Hash password
-        password_hash = password_service.hash_password(user_data.password)
+        # Hash password only if provided (OIDC users don't have passwords)
+        password_hash = None
+        if user_data.password:
+            password_hash = password_service.hash_password(user_data.password)
         
         # Create user
         user = User(
@@ -32,6 +34,8 @@ class UserService:
             roles=user_data.roles,
             is_active=user_data.is_active,
             is_approved=user_data.is_approved,
+            role=user_data.role,  # Add role field
+            oidc_provider=user_data.oidc_provider if hasattr(user_data, 'oidc_provider') else None,
         )
         
         db.add(user)

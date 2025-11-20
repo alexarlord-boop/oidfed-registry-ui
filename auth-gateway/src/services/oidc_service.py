@@ -23,19 +23,22 @@ class OIDCService:
     def get_authorization_url(
         self,
         state: str,
-        code_challenge: str,
+        code_challenge: Optional[str] = None,
         nonce: Optional[str] = None
     ) -> str:
-        """Generate Keycloak authorization URL"""
+        """Generate Keycloak authorization URL (without PKCE for now)"""
         params = {
             "response_type": "code",
             "client_id": self.client_id,
             "redirect_uri": self.redirect_uri,
             "scope": "openid profile email",
             "state": state,
-            "code_challenge": code_challenge,
-            "code_challenge_method": "S256",
         }
+        
+        # Skip PKCE for now - would need to store code_verifier for callback
+        # if code_challenge:
+        #     params["code_challenge"] = code_challenge
+        #     params["code_challenge_method"] = "S256"
         
         if nonce:
             params["nonce"] = nonce
@@ -71,6 +74,10 @@ class OIDCService:
                 self.userinfo_endpoint,
                 headers={"Authorization": f"Bearer {access_token}"}
             )
+            if not response.is_success:
+                print(f"Userinfo request failed: {response.status_code}")
+                print(f"  URL: {self.userinfo_endpoint}")
+                print(f"  Response: {response.text}")
             response.raise_for_status()
             return response.json()
     
