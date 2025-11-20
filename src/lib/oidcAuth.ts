@@ -164,7 +164,7 @@ export class OIDCAuth implements AuthProvider {
     };
     await this.tokenManager.setAuthState(authState);
 
-    // Build authorization URL
+    // Build authorization URL - use provider's authority
     const params = new URLSearchParams({
       response_type: 'code',
       client_id: providerConfig.client_id,
@@ -176,7 +176,7 @@ export class OIDCAuth implements AuthProvider {
       nonce,
     });
 
-    const authorizeUrl = `${AUTH_GATEWAY_URL}/auth/authorize?${params.toString()}`;
+    const authorizeUrl = `${providerConfig.authority}/authorize?${params.toString()}`;
     
     // Redirect to Auth Gateway
     window.location.href = authorizeUrl;

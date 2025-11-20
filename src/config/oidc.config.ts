@@ -4,6 +4,7 @@
  */
 
 import { keycloakConfig } from '../lib/providers/keycloak.config';
+import { githubConfig } from '../lib/providers/github.config';
 import { env } from '../lib/env';
 import type { OIDCProviderConfig, ProviderId } from '../types/auth';
 
@@ -16,6 +17,7 @@ export type { ProviderId };
 export const oidcProviders: Record<ProviderId, OIDCProviderConfig | null> = {
   local: null, // Local password auth doesn't use OIDC
   keycloak: keycloakConfig,
+  github: githubConfig,
 };
 
 /**
@@ -23,6 +25,10 @@ export const oidcProviders: Record<ProviderId, OIDCProviderConfig | null> = {
  */
 export const enabledOIDCProviders = Object.values(oidcProviders)
   .filter((config): config is OIDCProviderConfig => config !== null && config.enabled);
+
+// Debug logging
+console.log('[oidc.config] All providers:', oidcProviders);
+console.log('[oidc.config] Enabled providers:', enabledOIDCProviders.map(p => ({ id: p.id, name: p.name, enabled: p.enabled })));
 
 /**
  * Get provider configuration by ID

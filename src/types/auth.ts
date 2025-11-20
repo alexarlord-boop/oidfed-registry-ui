@@ -37,7 +37,7 @@ export function canManageEntities(user: { role?: UserRole | string } | null): bo
 }
 
 // OIDC Provider Configuration
-export type ProviderId = 'local' | 'keycloak';
+export type ProviderId = 'local' | 'keycloak' | 'github';
 
 export interface OIDCProviderConfig {
   id: ProviderId;

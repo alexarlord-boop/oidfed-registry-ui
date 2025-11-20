@@ -1,6 +1,6 @@
 /**
- * Keycloak OIDC Provider Configuration
- * Configuration for Keycloak-based SSO authentication
+ * GitHub OIDC Provider Configuration
+ * Configuration for GitHub-based SSO authentication
  */
 
 import type { OIDCProviderConfig } from '../../types/auth';
@@ -8,16 +8,16 @@ import { env } from '../env';
 
 const getOrigin = () => typeof window !== 'undefined' ? window.location.origin : 'http://localhost:3000';
 
-export const keycloakConfig: OIDCProviderConfig = {
-  id: 'keycloak',
-  name: 'SSO Login',
+export const githubConfig: OIDCProviderConfig = {
+  id: 'github',
+  name: 'GitHub',
   
   // Auth Gateway handles OIDC flow - use provider-specific endpoint
-  authority: `${env.AUTH_GATEWAY_URL}/auth/oidc/keycloak`,
+  authority: `${env.AUTH_GATEWAY_URL}/auth/oidc/github`,
   
   client_id: env.OIDC_CLIENT_ID,
   
-  scope: env.OIDC_SCOPE,
+  scope: 'openid profile email',
   
   response_type: 'code',
   
@@ -25,8 +25,9 @@ export const keycloakConfig: OIDCProviderConfig = {
   
   post_logout_redirect_uri: env.OIDC_POST_LOGOUT_REDIRECT_URI || `${getOrigin()}/login`,
   
-  logo: '/logos/sso.svg',
-  color: '#00A9E0',
+  // GitHub branding
+  logo: undefined, // Will use icon instead
+  color: '#24292e',
   
   enabled: true,
 };

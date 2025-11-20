@@ -4,7 +4,7 @@
  */
 
 import { Button } from '@/components/ui/button';
-import { KeyRound } from 'lucide-react';
+import { KeyRound, Github } from 'lucide-react';
 import type { OIDCProviderConfig } from '@/types/auth';
 
 interface SSOLoginButtonProps {
@@ -14,6 +14,17 @@ interface SSOLoginButtonProps {
 }
 
 export function SSOLoginButton({ config, onClick, isLoading }: SSOLoginButtonProps) {
+  // Icon selection based on provider
+  const getIcon = () => {
+    switch (config.id) {
+      case 'github':
+        return <Github className="w-5 h-5 mr-2" />;
+      case 'keycloak':
+      default:
+        return <KeyRound className="w-5 h-5 mr-2" />;
+    }
+  };
+
   return (
     <Button
       type="button"
@@ -23,10 +34,7 @@ export function SSOLoginButton({ config, onClick, isLoading }: SSOLoginButtonPro
       disabled={isLoading}
       style={config.color ? { borderColor: config.color } : undefined}
     >
-      
-       
-        <KeyRound className="w-5 h-5 mr-2" />
-      
+      {getIcon()}
       <span>Continue with {config.name}</span>
     </Button>
   );

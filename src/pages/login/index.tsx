@@ -49,12 +49,13 @@ export function Login() {
     }
   };
 
-  const handleOIDCLogin = async () => {
+  const handleSSOLogin = async (providerId: 'keycloak' | 'github') => {
+    setLocalError(null);
     try {
       // Ensure we have OIDC auth provider
       let auth = getAuth();
       if (!(auth instanceof OIDCAuth)) {
-        auth = new OIDCAuth('keycloak');
+        auth = new OIDCAuth(providerId);
         setAuth(auth);
         await auth.initialize();
       }
@@ -85,7 +86,7 @@ export function Login() {
                   <SSOLoginButton
                     key={provider.id}
                     config={provider}
-                    onClick={handleOIDCLogin}
+                    onClick={() => handleSSOLogin(provider.id as 'keycloak' | 'github')}
                     isLoading={isLoading}
                   />
                 ))}

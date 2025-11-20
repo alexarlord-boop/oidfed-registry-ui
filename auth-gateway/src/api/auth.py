@@ -270,7 +270,7 @@ async def authorize_endpoint(
     nonce: Optional[str] = None,
 ):
     """
-    OIDC Authorization Endpoint
+    OIDC Authorization Endpoint (legacy)
     Redirects to Keycloak for authentication (without PKCE for now)
     """
     # For MVP, redirect to Keycloak without PKCE
@@ -282,6 +282,52 @@ async def authorize_endpoint(
             status_code=status.HTTP_501_NOT_IMPLEMENTED,
             detail="OIDC provider not configured"
         )
+
+
+@router.get("/oidc/keycloak/authorize")
+async def oidc_keycloak_authorize(
+    response_type: str,
+    client_id: str,
+    redirect_uri: str,
+    scope: str,
+    state: str,
+    code_challenge: Optional[str] = None,
+    code_challenge_method: str = "S256",
+    nonce: Optional[str] = None,
+):
+    """
+    Keycloak OIDC Authorization Endpoint
+    Redirects to Keycloak for authentication
+    """
+    if oidc_service.enabled:
+        auth_url = oidc_service.get_authorization_url(state, nonce=nonce)
+        return RedirectResponse(url=auth_url)
+    else:
+        raise HTTPException(
+            status_code=status.HTTP_501_NOT_IMPLEMENTED,
+            detail="Keycloak OIDC provider not configured"
+        )
+
+
+@router.get("/oidc/github/authorize")
+async def oidc_github_authorize(
+    response_type: str,
+    client_id: str,
+    redirect_uri: str,
+    scope: str,
+    state: str,
+    code_challenge: Optional[str] = None,
+    code_challenge_method: str = "S256",
+    nonce: Optional[str] = None,
+):
+    """
+    GitHub OIDC Authorization Endpoint
+    TODO: Implement GitHub OAuth flow when GitHub provider is enabled
+    """
+    raise HTTPException(
+        status_code=status.HTTP_501_NOT_IMPLEMENTED,
+        detail="GitHub OIDC provider not yet implemented. Please use Keycloak SSO for now."
+    )
 
 
 @router.get("/callback")
@@ -476,6 +522,26 @@ async def oidc_keycloak_callback(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=f"OIDC callback failed: {str(e)}"
         )
+
+
+@router.get("/oidc/github/callback")
+async def oidc_github_callback(
+    code: str,
+    state: str,
+    db: AsyncSession = Depends(get_db),
+):
+    """
+    GitHub OIDC Callback Handler
+    Exchanges authorization code for tokens and creates/updates user
+    Note: Currently uses same logic as Keycloak - for production,
+    would need GitHub-specific OIDC service configuration
+    """
+    # TODO: Implement GitHub-specific OIDC service when GitHub is enabled
+    # For now, this returns a helpful error message
+    raise HTTPException(
+        status_code=status.HTTP_501_NOT_IMPLEMENTED,
+        detail="GitHub OIDC provider not yet implemented in backend. Please use Keycloak for now."
+    )
 
 
 @router.get("/userinfo", response_model=UserInfoResponse)
