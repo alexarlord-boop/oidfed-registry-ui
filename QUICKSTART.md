@@ -1,9 +1,9 @@
-# 🚀 Quick Start - Auth Gateway Integration
+# 🚀 Quick Start - Auth Service Integration
 
 ## What Was Implemented
 
 ✅ **Phase 1 MVP Complete:**
-- Local password authentication via Auth Gateway
+- Local password authentication via Auth Service
 - Keycloak SSO with OIDC/OAuth 2.0 + PKCE
 - Secure token management with automatic refresh
 - Session timeout warnings
@@ -35,9 +35,9 @@ VITE_LOCAL_AUTH_ENABLED=true
 VITE_KEYCLOAK_ENABLED=false
 ```
 
-**For full Auth Gateway integration** (when backend is ready):
+**For full Auth Service integration** (when backend is ready):
 ```env
-VITE_AUTH_GATEWAY_URL=http://localhost:9000
+VITE_AUTH_SERVICE_URL=http://localhost:9000
 VITE_API_BASE_URL=http://localhost:9000/api
 VITE_LOCAL_AUTH_ENABLED=true
 VITE_KEYCLOAK_ENABLED=true
@@ -59,11 +59,11 @@ Visit: http://localhost:3000/login
 ### Use DevAuth (Current Behavior)
 The app will automatically use `DevAuth` if:
 - No environment variables are set, OR
-- Auth Gateway is not reachable
+- Auth Service is not reachable
 
 DevAuth accepts any credentials (no validation).
 
-### Use OIDC Auth (Auth Gateway)
+### Use OIDC Auth (Auth Service)
 To switch to OIDC authentication, modify `src/lib/auth.ts`:
 
 ```typescript
@@ -93,17 +93,17 @@ The login page now shows:
 
 **When `VITE_LOCAL_AUTH_ENABLED=true`:**
 - Username/password form
-- Calls Auth Gateway `POST /auth/token` with `grant_type=password`
+- Calls Auth Service `POST /auth/token` with `grant_type=password`
 
 **When `VITE_KEYCLOAK_ENABLED=true`:**
 - "Continue with SSO Login" button
-- Redirects to Auth Gateway `/auth/authorize`
+- Redirects to Auth Service `/auth/authorize`
 - OIDC flow with PKCE
 
 **If both enabled:**
 - Shows both options with "OR" divider
 
-**If Auth Gateway unavailable:**
+**If Auth Service unavailable:**
 - Login attempts will fail with error message
 - Fallback to DevAuth by disabling OIDC in `.env.local`
 
@@ -119,25 +119,25 @@ VITE_KEYCLOAK_ENABLED=false
 - No real authentication
 - Good for UI development
 
-### Mode 2: Local Auth via Auth Gateway
+### Mode 2: Local Auth via Auth Service
 ```env
-VITE_AUTH_GATEWAY_URL=http://localhost:9000
+VITE_AUTH_SERVICE_URL=http://localhost:9000
 VITE_LOCAL_AUTH_ENABLED=true
 VITE_KEYCLOAK_ENABLED=false
 ```
 - Real password validation
-- JWT tokens issued by Auth Gateway
-- Requires Auth Gateway running
+- JWT tokens issued by Auth Service
+- Requires Auth Service running
 
-### Mode 3: Full OIDC (Auth Gateway + Keycloak)
+### Mode 3: Full OIDC (Auth Service + Keycloak)
 ```env
-VITE_AUTH_GATEWAY_URL=http://localhost:9000
+VITE_AUTH_SERVICE_URL=http://localhost:9000
 VITE_LOCAL_AUTH_ENABLED=true
 VITE_KEYCLOAK_ENABLED=true
 ```
 - Both local and SSO login available
 - Keycloak integration for federated login
-- Requires both Auth Gateway and Keycloak running
+- Requires both Auth Service and Keycloak running
 
 ---
 
@@ -152,7 +152,7 @@ Frontend (this repo)
     └── OAuth callback handler
          │
          ▼
-Auth Gateway (to be implemented)
+Auth Service (user management)
     ├── Local auth (password verification)
     ├── Keycloak OIDC proxy
     ├── JWT issuance (RS256)
@@ -160,8 +160,8 @@ Auth Gateway (to be implemented)
     └── User management API
          │
          ▼
-Admin API (unchanged)
-    └── Validates JWT from Auth Gateway
+Admin API (federation entities)
+    └── Validates JWT from Auth Service
 ```
 
 ---
@@ -250,26 +250,26 @@ useTokenRefresh({
 bun --hot src/index.ts
 ```
 
-### Issue: Login redirects to Auth Gateway but fails
-**Cause**: Auth Gateway not running or CORS not configured
+### Issue: Login redirects to Auth Service but fails
+**Cause**: Auth Service not running or CORS not configured
 
 **Solution**: 
-1. Verify Auth Gateway is running on port 9000
-2. Check Auth Gateway CORS allows `http://localhost:3000`
+1. Verify Auth Service is running on port 9000
+2. Check Auth Service CORS allows `http://localhost:3000`
 3. Check browser console for CORS errors
 
 ### Issue: Token refresh fails repeatedly
-**Cause**: Refresh token expired or Auth Gateway key mismatch
+**Cause**: Refresh token expired or Auth Service key mismatch
 
 **Solution**:
 1. Clear sessionStorage: `sessionStorage.clear()`
 2. Re-login
-3. Check Auth Gateway JWT signing key
+3. Check Auth Service JWT signing key
 
 ### Issue: Session timeout warning shows immediately
 **Cause**: Token expiry time is very short
 
-**Solution**: Increase token lifetime in Auth Gateway config
+**Solution**: Increase token lifetime in Auth Service config
 
 ---
 
@@ -284,7 +284,7 @@ bun --hot src/index.ts
 - OAuth callback handler
 - API integration with token injection
 
-⏳ **Pending (requires Auth Gateway):**
+⏳ **Pending (requires Auth Service):**
 - Real authentication endpoints
 - User management UI
 - Account registration page
@@ -293,10 +293,10 @@ bun --hot src/index.ts
 
 ---
 
-## 🔜 Next: Implement Auth Gateway Backend
+## 🔜 Next: Implement Auth Service Backend
 
 See `AUTH_GATEWAY_INTEGRATION.md` for:
-- Required Auth Gateway endpoints
+- Required Auth Service endpoints
 - JWT claims structure
 - OIDC discovery configuration
 - Keycloak integration guide

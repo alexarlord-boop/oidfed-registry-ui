@@ -15,6 +15,7 @@ import { Account } from "@/pages/account";
 import { Empty } from "@/pages/default/empty";
 import Layout from "./layout";
 import Login from "@/pages/login";
+import RegistrationPage from "@/pages/register/RegistrationPage";
 
 // Admin pages
 import { AdminUsers } from "@/pages/admin/users";
@@ -32,6 +33,7 @@ export function App() {
       <ThemeProvider defaultTheme="light" storageKey="vite-ui-theme">
           <Routes>
             <Route path="/login" element={<Login />} />
+            <Route path="/register" element={<RegistrationPage />} />
             <Route path="/auth/callback" element={<AuthCallback />} />
             <Route path="/" element={<Layout />}>
               {/* Explore */}

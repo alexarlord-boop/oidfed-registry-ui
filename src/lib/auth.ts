@@ -76,8 +76,8 @@ export class DevAuth implements AuthProvider {
     // Load environment config
     try {
       const { env } = await import('./env');
-      this.authGatewayUrl = env.AUTH_GATEWAY_URL;
-      console.log('[DevAuth] Auth gateway URL:', this.authGatewayUrl);
+      this.authGatewayUrl = env.AUTH_SERVICE_URL;
+      console.log('[DevAuth] Auth service URL:', this.authGatewayUrl);
     } catch (e) {
       console.warn('Failed to load env config, using default:', e);
       this.authGatewayUrl = 'http://localhost:9000';

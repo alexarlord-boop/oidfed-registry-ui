@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -12,44 +12,9 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { UserPlus, Search, Filter } from "lucide-react";
-
-// Mock data - replace with actual API calls
-const mockUsers = [
-  {
-    id: "1",
-    username: "admin",
-    email: "admin@example.com",
-    full_name: "System Administrator",
-    organization: "GEANT",
-    role: "admin",
-    is_approved: true,
-    is_active: true,
-    created_at: "2025-11-01T10:00:00Z",
-  },
-  {
-    id: "2",
-    username: "john.doe",
-    email: "john.doe@university.edu",
-    full_name: "John Doe",
-    organization: "Example University",
-    role: "technical_contact",
-    is_approved: true,
-    is_active: true,
-    created_at: "2025-11-10T14:30:00Z",
-  },
-  {
-    id: "3",
-    username: "jane.smith",
-    email: "jane.smith@research.org",
-    full_name: "Jane Smith",
-    organization: "Research Institute",
-    role: "pending",
-    is_approved: false,
-    is_active: true,
-    created_at: "2025-11-19T09:15:00Z",
-  },
-];
+import { UserPlus, Search, Filter, Loader2, AlertCircle } from "lucide-react";
+import { authService, type User } from "@/api/authService";
+import { Alert, AlertDescription } from "@/components/ui/alert";
 
 function getRoleBadgeVariant(role: string) {
   switch (role) {
@@ -80,10 +45,29 @@ function getRoleLabel(role: string) {
 export function AdminUsers() {
   const navigate = useNavigate();
   const [searchQuery, setSearchQuery] = useState("");
-  const [users] = useState(mockUsers);
+  const [users, setUsers] = useState<User[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    loadUsers();
+  }, []);
+
+  const loadUsers = async () => {
+    try {
+      setIsLoading(true);
+      setError(null);
+      const data = await authService.admin.listUsers();
+      setUsers(data);
+    } catch (err: any) {
+      setError(err.message || 'Failed to load users');
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   const filteredUsers = users.filter(
-    (user) =>
+    (user: User) =>
       user.username.toLowerCase().includes(searchQuery.toLowerCase()) ||
       user.email.toLowerCase().includes(searchQuery.toLowerCase()) ||
       user.organization?.toLowerCase().includes(searchQuery.toLowerCase())
@@ -112,6 +96,13 @@ export function AdminUsers() {
           </CardDescription>
         </CardHeader>
         <CardContent>
+          {error && (
+            <Alert variant="destructive" className="mb-4">
+              <AlertCircle className="h-4 w-4" />
+              <AlertDescription>{error}</AlertDescription>
+            </Alert>
+          )}
+
           <div className="mb-4 flex gap-2">
             <div className="relative flex-1">
               <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
@@ -127,8 +118,13 @@ export function AdminUsers() {
             </Button>
           </div>
 
-          <div className="rounded-md border">
-            <Table>
+          {isLoading ? (
+            <div className="flex items-center justify-center py-12">
+              <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
+            </div>
+          ) : (
+            <div className="rounded-md border">
+              <Table>
               <TableHeader>
                 <TableRow>
                   <TableHead>Username</TableHead>
@@ -182,8 +178,9 @@ export function AdminUsers() {
               </TableBody>
             </Table>
           </div>
+          )}
 
-          {filteredUsers.length === 0 && (
+          {!isLoading && filteredUsers.length === 0 && (
             <div className="py-8 text-center text-muted-foreground">
               No users found matching your search.
             </div>
