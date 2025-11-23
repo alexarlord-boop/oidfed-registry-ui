@@ -13,7 +13,7 @@ export const keycloakConfig: OIDCProviderConfig = {
   name: 'SSO Login',
   
   // Auth Gateway handles OIDC flow - use provider-specific endpoint
-  authority: `${env.AUTH_GATEWAY_URL}/auth/oidc/keycloak`,
+  authority: `${env.AUTH_SERVICE_URL}/auth/oidc/keycloak`,
   
   client_id: env.OIDC_CLIENT_ID,
   

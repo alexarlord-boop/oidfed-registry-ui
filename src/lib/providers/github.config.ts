@@ -13,7 +13,7 @@ export const githubConfig: OIDCProviderConfig = {
   name: 'GitHub',
   
   // Auth Gateway handles OIDC flow - use provider-specific endpoint
-  authority: `${env.AUTH_GATEWAY_URL}/auth/oidc/github`,
+  authority: `${env.AUTH_SERVICE_URL}/auth/oidc/github`,
   
   client_id: env.OIDC_CLIENT_ID,
   

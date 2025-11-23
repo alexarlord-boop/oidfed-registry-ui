@@ -27,7 +27,7 @@ import { getProviderConfig } from '../config/oidc.config';
 import { env } from './env';
 import * as jose from 'jose';
 
-const AUTH_GATEWAY_URL = env.AUTH_GATEWAY_URL;
+const AUTH_GATEWAY_URL = env.AUTH_SERVICE_URL;
 
 export class OIDCAuth implements AuthProvider {
   private tokenManager: TokenManager;

@@ -53,7 +53,7 @@ export function AuthCallback() {
           await tokenManager.setTokens(tokens);
           
           // Fetch user info with the access token and update auth state
-          const userInfoResponse = await fetch(`${env.AUTH_GATEWAY_URL}/auth/userinfo`, {
+          const userInfoResponse = await fetch(`${env.AUTH_SERVICE_URL}/auth/userinfo`, {
             headers: {
               'Authorization': `Bearer ${accessToken}`,
             },
