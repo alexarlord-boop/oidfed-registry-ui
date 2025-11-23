@@ -16,6 +16,7 @@ from src.schemas.auth import TokenResponse, ErrorResponse, UserInfoResponse
 from src.services.jwt_service import jwt_service
 from src.services.user_service import user_service
 from src.services.oidc_service import oidc_service
+from src.services.github_oidc_service import github_oidc_service
 from src.models.session import Session
 from src.models.user import User, UserRole
 from src.config.settings import settings
@@ -321,13 +322,27 @@ async def oidc_github_authorize(
     nonce: Optional[str] = None,
 ):
     """
-    GitHub OIDC Authorization Endpoint
-    TODO: Implement GitHub OAuth flow when GitHub provider is enabled
+    GitHub OAuth Authorization Endpoint
+    Redirects to GitHub for authentication
     """
-    raise HTTPException(
-        status_code=status.HTTP_501_NOT_IMPLEMENTED,
-        detail="GitHub OIDC provider not yet implemented. Please use Keycloak SSO for now."
-    )
+    if not github_oidc_service.enabled:
+        raise HTTPException(
+            status_code=status.HTTP_501_NOT_IMPLEMENTED,
+            detail="GitHub OAuth provider not configured. Please enable it in settings."
+        )
+    
+    # Store PKCE challenge and state for verification during callback
+    if code_challenge:
+        authorization_states[state] = {
+            "code_challenge": code_challenge,
+            "code_challenge_method": code_challenge_method,
+            "nonce": nonce,
+            "provider": "github",
+        }
+    
+    # Redirect to GitHub OAuth
+    auth_url = github_oidc_service.get_authorization_url(state)
+    return RedirectResponse(url=auth_url)
 
 
 @router.get("/callback")
@@ -531,17 +546,150 @@ async def oidc_github_callback(
     db: AsyncSession = Depends(get_db),
 ):
     """
-    GitHub OIDC Callback Handler
+    GitHub OAuth Callback Handler
     Exchanges authorization code for tokens and creates/updates user
-    Note: Currently uses same logic as Keycloak - for production,
-    would need GitHub-specific OIDC service configuration
     """
-    # TODO: Implement GitHub-specific OIDC service when GitHub is enabled
-    # For now, this returns a helpful error message
-    raise HTTPException(
-        status_code=status.HTTP_501_NOT_IMPLEMENTED,
-        detail="GitHub OIDC provider not yet implemented in backend. Please use Keycloak for now."
-    )
+    if not github_oidc_service.enabled:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="GitHub OAuth provider not configured"
+        )
+    
+    try:
+        # Exchange code for access token
+        print(f"GitHub OAuth: Exchanging code for token")
+        token_response = await github_oidc_service.exchange_code(code)
+        access_token = token_response.get("access_token")
+        
+        if not access_token:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="Failed to obtain access token from GitHub"
+            )
+        
+        print(f"GitHub OAuth: Token obtained, fetching user info")
+        
+        # Get user info from GitHub
+        github_user = await github_oidc_service.get_user_info(access_token)
+        print(f"GitHub user info: {github_user.get('login')}")
+        
+        # Get primary email (GitHub might not include email in user info if not public)
+        email = github_user.get("email")
+        if not email:
+            print(f"GitHub OAuth: Email not public, fetching from emails endpoint")
+            email = await github_oidc_service.get_primary_email(access_token)
+        
+        if not email:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="Unable to retrieve email from GitHub. Please make sure your email is verified."
+            )
+        
+        print(f"GitHub OAuth: Using email {email}")
+        
+        # Find or create user
+        user = await user_service.get_user_by_email(db, email)
+        
+        if not user:
+            # Create new user from GitHub
+            username = github_user.get("login")  # GitHub username
+            
+            # Ensure username is unique
+            existing = await user_service.get_user_by_username(db, username)
+            if existing:
+                username = f"{username}_{secrets.token_hex(4)}"
+            
+            from src.schemas.user import UserCreate
+            user_create = UserCreate(
+                username=username,
+                email=email,
+                password=None,  # No password for OAuth users
+                full_name=github_user.get("name") or github_user.get("login"),
+                organization=github_user.get("company"),
+                role=UserRole.PENDING,  # New users start as pending
+                is_approved=False,
+                is_active=True,
+                oidc_provider="github",
+            )
+            
+            user = await user_service.create_user(db, user_create)
+            print(f"GitHub OAuth: Created new user {user.username}")
+            
+            # Link GitHub identity
+            user.oidc_sub = str(github_user.get("id"))  # GitHub user ID
+            user.oidc_provider = "github"
+            await db.commit()
+        else:
+            # Update GitHub link if not set
+            if not user.oidc_sub or user.oidc_provider != "github":
+                user.oidc_sub = str(github_user.get("id"))
+                user.oidc_provider = "github"
+                await db.commit()
+            print(f"GitHub OAuth: Existing user {user.username}")
+        
+        # Update last login
+        await user_service.update_last_login(db, user)
+        
+        # Get stored state for nonce
+        auth_state = authorization_states.get(state, {})
+        nonce = auth_state.get("nonce")
+        
+        # Create our own access token
+        access_token_jwt = jwt_service.create_access_token(
+            user_id=user.id,
+            email=user.email,
+            username=user.username,
+            role=user.role.value if user.role else "pending",
+            roles=user.roles or [],
+            org_id=user.organization,
+        )
+        
+        id_token = jwt_service.create_id_token(
+            user_id=user.id,
+            email=user.email,
+            username=user.username,
+            full_name=user.full_name,
+            nonce=nonce,
+        )
+        
+        # Generate refresh token
+        refresh_token_value = secrets.token_urlsafe(32)
+        refresh_session = Session(
+            user_id=user.id,
+            refresh_token=refresh_token_value,
+            expires_at=datetime.utcnow() + timedelta(days=7),
+        )
+        db.add(refresh_session)
+        await db.commit()
+        
+        # Clean up authorization state
+        if state in authorization_states:
+            del authorization_states[state]
+        
+        # Redirect to frontend with tokens in URL fragment
+        frontend_url = settings.FRONTEND_REDIRECT_URI.split("/auth/callback")[0]
+        redirect_url = (
+            f"{frontend_url}/auth/callback"
+            f"#access_token={access_token_jwt}"
+            f"&id_token={id_token}"
+            f"&refresh_token={refresh_token_value}"
+            f"&expires_in=900"
+            f"&token_type=Bearer"
+            f"&state={state}"
+        )
+        
+        print(f"GitHub OAuth: Success! Redirecting to frontend")
+        return RedirectResponse(url=redirect_url)
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        import traceback
+        traceback.print_exc()
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"GitHub OAuth callback failed: {str(e)}"
+        )
 
 
 @router.get("/userinfo", response_model=UserInfoResponse)

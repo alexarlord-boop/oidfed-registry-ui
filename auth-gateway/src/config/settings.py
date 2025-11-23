@@ -48,6 +48,16 @@ class Settings(BaseSettings):
     KEYCLOAK_TOKEN_ENDPOINT: str = ""
     KEYCLOAK_USERINFO_ENDPOINT: str = ""
     
+    # GitHub OAuth
+    GITHUB_ENABLED: bool = False
+    GITHUB_CLIENT_ID: str = ""
+    GITHUB_CLIENT_SECRET: str = ""
+    GITHUB_REDIRECT_URI: str = "http://localhost:9000/auth/oidc/github/callback"
+    GITHUB_AUTHORIZATION_ENDPOINT: str = "https://github.com/login/oauth/authorize"
+    GITHUB_TOKEN_ENDPOINT: str = "https://github.com/login/oauth/access_token"
+    GITHUB_USERINFO_ENDPOINT: str = "https://api.github.com/user"
+    GITHUB_USER_EMAIL_ENDPOINT: str = "https://api.github.com/user/emails"
+    
     # CORS (can be comma-separated string or list)
     ALLOWED_ORIGINS: Union[str, List[str]] = "http://localhost:3000,http://localhost:5173"
     
