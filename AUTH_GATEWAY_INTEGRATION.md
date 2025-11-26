@@ -377,6 +377,6 @@ If Auth Gateway is not implemented yet, the UI will:
 - Show login form but API calls will fail (no backend)
 - OIDC flow will fail at redirect (no /auth/authorize endpoint)
 
-**Temporary workaround**: Keep using `DevAuth` by not switching to `OIDCAuth` in production.
+**Temporary workaround**: Keep using `PasswordAuth` by not switching to `OIDCAuth` in production.
 
 The implementation is **ready for Auth Gateway** when it's available!

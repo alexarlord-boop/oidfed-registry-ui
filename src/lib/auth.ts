@@ -52,10 +52,11 @@ export interface AuthProvider {
 }
 
 /**
- * Development Authentication Implementation
- * Calls the Auth Gateway API for real authentication
+ * Password-Based Authentication Implementation
+ * Authenticates users via username/password against the Auth Gateway API
+ * Includes JWT validation, token refresh, and session management
  */
-export class DevAuth implements AuthProvider {
+export class PasswordAuth implements AuthProvider {
   private state: AuthState = {
     user: null,
     isLoading: false,
@@ -71,13 +72,13 @@ export class DevAuth implements AuthProvider {
   }
 
   async initialize(): Promise<void> {
-    console.log('[DevAuth] Initialize called');
+    console.log('[PasswordAuth] Initialize called');
     
     // Load environment config
     try {
       const { env } = await import('./env');
       this.authGatewayUrl = env.AUTH_SERVICE_URL;
-      console.log('[DevAuth] Auth service URL:', this.authGatewayUrl);
+      console.log('[PasswordAuth] Auth service URL:', this.authGatewayUrl);
     } catch (e) {
       console.warn('Failed to load env config, using default:', e);
       this.authGatewayUrl = 'http://localhost:9000';
@@ -88,7 +89,7 @@ export class DevAuth implements AuthProvider {
       const storedUser = sessionStorage.getItem('auth_user');
       const storedToken = sessionStorage.getItem('auth_access_token');
       
-      console.log('[DevAuth] Checking stored auth:', {
+      console.log('[PasswordAuth] Checking stored auth:', {
         hasUser: !!storedUser,
         hasToken: !!storedToken
       });
@@ -98,9 +99,9 @@ export class DevAuth implements AuthProvider {
         const payload = this.parseJWT(storedToken);
         if (payload && payload.exp && payload.exp * 1000 > Date.now()) {
           this.state.user = JSON.parse(storedUser);
-          console.log('[DevAuth] Restored user from sessionStorage:', this.state.user?.username);
+          console.log('[PasswordAuth] Restored user from sessionStorage:', this.state.user?.username);
         } else {
-          console.log('[DevAuth] Token expired, attempting refresh');
+          console.log('[PasswordAuth] Token expired, attempting refresh');
           // Token expired, try to refresh
           const refreshToken = sessionStorage.getItem('auth_refresh_token');
           if (refreshToken) {
@@ -108,7 +109,7 @@ export class DevAuth implements AuthProvider {
           }
         }
       } else {
-        console.log('[DevAuth] No stored auth found');
+        console.log('[PasswordAuth] No stored auth found');
       }
     } catch (error) {
       console.warn('Failed to restore auth:', error);
@@ -211,7 +212,7 @@ export class DevAuth implements AuthProvider {
           sessionStorage.setItem('auth_id_token', id_token);
         }
 
-        console.log('[DevAuth] Login successful, tokens stored:', {
+        console.log('[PasswordAuth] Login successful, tokens stored:', {
           user: user.username,
           tokenLength: access_token.length,
           hasRefreshToken: !!refresh_token
@@ -300,7 +301,7 @@ export class DevAuth implements AuthProvider {
     try {
       const token = sessionStorage.getItem('auth_access_token');
       if (!token) {
-        console.warn('[DevAuth] No access token found in sessionStorage');
+        console.warn('[PasswordAuth] No access token found in sessionStorage');
         return null;
       }
 
@@ -310,7 +311,7 @@ export class DevAuth implements AuthProvider {
         const expiresAt = payload.exp * 1000;
         const now = Date.now();
         
-        console.log('[DevAuth] Token check:', {
+        console.log('[PasswordAuth] Token check:', {
           expiresAt: new Date(expiresAt).toISOString(),
           now: new Date(now).toISOString(),
           timeUntilExpiry: Math.floor((expiresAt - now) / 1000) + 's'
@@ -318,26 +319,26 @@ export class DevAuth implements AuthProvider {
         
         // If token expires in less than 60 seconds, try to refresh
         if (expiresAt - now < 60000) {
-          console.log('[DevAuth] Token expiring soon, attempting refresh');
+          console.log('[PasswordAuth] Token expiring soon, attempting refresh');
           const refreshToken = sessionStorage.getItem('auth_refresh_token');
           if (refreshToken) {
             const refreshed = await this.refreshToken(refreshToken);
             if (refreshed) {
               const newToken = sessionStorage.getItem('auth_access_token');
-              console.log('[DevAuth] Token refreshed successfully');
+              console.log('[PasswordAuth] Token refreshed successfully');
               return newToken ? `Bearer ${newToken}` : null;
             }
           }
           // Token expired and couldn't refresh
-          console.warn('[DevAuth] Token expired and could not refresh');
+          console.warn('[PasswordAuth] Token expired and could not refresh');
           return null;
         }
       }
 
-      console.log('[DevAuth] Returning valid Bearer token');
+      console.log('[PasswordAuth] Returning valid Bearer token');
       return `Bearer ${token}`;
     } catch (error) {
-      console.error('[DevAuth] Error getting auth header:', error);
+      console.error('[PasswordAuth] Error getting auth header:', error);
       return null;
     }
   }
@@ -351,9 +352,9 @@ let authInstance: AuthProvider;
 
 export function getAuth(): AuthProvider {
   if (!authInstance) {
-    // For now, always use dev auth
+    // For now, always use password-based auth
     // In the future, this could be configurable based on environment
-    authInstance = new DevAuth();
+    authInstance = new PasswordAuth();
   }
   return authInstance;
 }

@@ -29,7 +29,7 @@ Create `.env.local`:
 cp .env.example .env.local
 ```
 
-**For development without Auth Gateway** (uses existing DevAuth):
+**For development without Auth Gateway** (uses existing PasswordAuth):
 ```env
 VITE_LOCAL_AUTH_ENABLED=true
 VITE_KEYCLOAK_ENABLED=false
@@ -56,12 +56,12 @@ Visit: http://localhost:3000/login
 
 ## 🔄 Switching Between Auth Modes
 
-### Use DevAuth (Current Behavior)
-The app will automatically use `DevAuth` if:
+### Use PasswordAuth (Current Behavior)
+The app will automatically use `PasswordAuth` if:
 - No environment variables are set, OR
 - Auth Service is not reachable
 
-DevAuth accepts any credentials (no validation).
+PasswordAuth validates credentials against the Auth Gateway service.
 
 ### Use OIDC Auth (Auth Service)
 To switch to OIDC authentication, modify `src/lib/auth.ts`:
@@ -76,7 +76,7 @@ export function getAuth(): AuthProvider {
       const { createOIDCAuth } = require('./oidcAuth');
       authInstance = createOIDCAuth('keycloak');
     } else {
-      authInstance = new DevAuth();
+      authInstance = new PasswordAuth();
     }
   }
   return authInstance;
@@ -105,19 +105,19 @@ The login page now shows:
 
 **If Auth Service unavailable:**
 - Login attempts will fail with error message
-- Fallback to DevAuth by disabling OIDC in `.env.local`
+- Fallback to PasswordAuth by disabling OIDC in `.env.local`
 
 ---
 
 ## 🧪 Testing Modes
 
-### Mode 1: DevAuth (No Backend Required)
+### Mode 1: PasswordAuth with Auth Gateway
 ```env
 VITE_KEYCLOAK_ENABLED=false
 ```
-- Any username/password works
-- No real authentication
-- Good for UI development
+- Username/password validation via Auth Gateway
+- Real JWT token authentication
+- Good for development testing
 
 ### Mode 2: Local Auth via Auth Service
 ```env
