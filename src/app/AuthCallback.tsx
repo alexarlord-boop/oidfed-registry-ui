@@ -41,6 +41,22 @@ export function AuthCallback() {
             scope: 'openid profile email',
           };
           
+          // Store tokens in sessionStorage for authService.ts compatibility
+          sessionStorage.setItem('auth_access_token', accessToken);
+          if (idToken) {
+            sessionStorage.setItem('auth_id_token', idToken);
+          }
+          if (refreshToken) {
+            sessionStorage.setItem('auth_refresh_token', refreshToken);
+          }
+          
+          console.log('[AuthCallback] Stored tokens in sessionStorage:', {
+            hasAccessToken: !!accessToken,
+            hasRefreshToken: !!refreshToken,
+            accessTokenLength: accessToken.length,
+            refreshTokenLength: refreshToken?.length || 0
+          });
+          
           // Get or create auth instance
           let auth = getAuth();
           if (!(auth instanceof OIDCAuth)) {
@@ -48,7 +64,7 @@ export function AuthCallback() {
             setAuth(auth);
           }
           
-          // Store tokens using token manager
+          // Store tokens using token manager (for OIDC auth compatibility)
           const tokenManager = (auth as OIDCAuth).getTokenManager();
           await tokenManager.setTokens(tokens);
           
@@ -64,18 +80,27 @@ export function AuthCallback() {
           }
           
           const userInfo = await userInfoResponse.json();
-          console.log('User info from auth-gateway:', userInfo);
+          console.log('[AuthCallback] User info from auth-gateway:', userInfo);
           
-          // Manually set the user in auth state (since initialize won't update it correctly)
-          (auth as any).state.user = {
+          // Create user object
+          const user = {
             id: userInfo.sub,
             username: userInfo.preferred_username || userInfo.email,
             email: userInfo.email,
             role: userInfo.role,
-            roles: userInfo.roles || [],
+            roles: userInfo.roles || [userInfo.role],
+            oidc_provider: userInfo.oidc_provider
           };
           
-          console.log('Auth state after SSO:', (auth as any).state);
+          // Store user in sessionStorage for authService.ts compatibility
+          sessionStorage.setItem('auth_user', JSON.stringify(user));
+          
+          console.log('[AuthCallback] Stored user in sessionStorage:', user);
+          
+          // Manually set the user in auth state (since initialize won't update it correctly)
+          (auth as any).state.user = user;
+          
+          console.log('[AuthCallback] Auth state after SSO:', (auth as any).state);
           
           // Redirect to home or original destination
           navigate('/', { replace: true });

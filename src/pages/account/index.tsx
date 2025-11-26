@@ -1,6 +1,7 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { useAuth } from "@/hooks/useAuth";
+import { TokenDebug } from "@/components/TokenDebug";
 
 export const Account = () => {
     const { user } = useAuth();
@@ -8,6 +9,9 @@ export const Account = () => {
     return (
         <div className="w-full">
            <div className="grid gap-4 grid-cols-2">
+           <div className="col-span-2">
+               <TokenDebug />
+           </div>
            <Card>
                 <CardHeader>
                     <CardTitle>Profile information</CardTitle>

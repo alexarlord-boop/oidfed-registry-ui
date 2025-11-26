@@ -96,17 +96,25 @@ export class PasswordAuth implements AuthProvider {
       });
       
       if (storedUser && storedToken) {
+        // Parse the stored user first
+        const parsedUser = JSON.parse(storedUser);
+        
         // Verify token is still valid
         const payload = this.parseJWT(storedToken);
         if (payload && payload.exp && payload.exp * 1000 > Date.now()) {
-          this.state.user = JSON.parse(storedUser);
-          console.log('[PasswordAuth] Restored user from sessionStorage:', this.state.user?.username);
+          this.state.user = parsedUser;
+          console.log('[PasswordAuth] Restored user from sessionStorage:', this.state.user?.username, 'role:', this.state.user?.role);
         } else {
           console.log('[PasswordAuth] Token expired, attempting refresh');
           // Token expired, try to refresh
           const refreshToken = sessionStorage.getItem('auth_refresh_token');
           if (refreshToken) {
-            await this.refreshToken(refreshToken);
+            const refreshed = await this.refreshToken(refreshToken);
+            if (refreshed) {
+              console.log('[PasswordAuth] Token refreshed successfully during init');
+            } else {
+              console.log('[PasswordAuth] Token refresh failed during init');
+            }
           }
         }
       } else {

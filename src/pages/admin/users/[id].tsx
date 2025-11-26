@@ -85,12 +85,20 @@ export function AdminUserDetail() {
       setError(null);
       setSuccessMessage(null);
       
+      const roleChanged = formData.role !== user.role;
+      
       const updatedUser = await authService.admin.updateUser(id, formData);
       setUser(updatedUser);
       setIsEditing(false);
-      setSuccessMessage('User updated successfully');
       
-      setTimeout(() => setSuccessMessage(null), 3000);
+      // Show appropriate message based on what changed
+      if (roleChanged) {
+        setSuccessMessage('User updated successfully. Note: User must log out and log back in for role changes to take effect.');
+      } else {
+        setSuccessMessage('User updated successfully');
+      }
+      
+      setTimeout(() => setSuccessMessage(null), 5000);
     } catch (err: any) {
       setError(err.message || 'Failed to update user');
       console.error('Failed to update user:', err);
@@ -108,10 +116,10 @@ export function AdminUserDetail() {
       const updatedUser = await authService.admin.approveUser(id);
       setUser(updatedUser);
       setFormData(prev => ({ ...prev, is_approved: true }));
-      setSuccessMessage('User approved successfully');
+      setSuccessMessage('User approved successfully. The user can now log in.');
       setShowApproveDialog(false);
       
-      setTimeout(() => setSuccessMessage(null), 3000);
+      setTimeout(() => setSuccessMessage(null), 5000);
     } catch (err: any) {
       setError(err.message || 'Failed to approve user');
       console.error('Failed to approve user:', err);
@@ -210,7 +218,7 @@ export function AdminUserDetail() {
       {successMessage && (
         <Alert className="fixed top-4 right-4 w-auto max-w-md z-50 shadow-lg bg-green-50 border-green-200">
           <CheckCircle className="h-4 w-4 text-green-600" />
-          <AlertDescription className="text-green-800">{successMessage}</AlertDescription>
+          <AlertDescription className="text-green-800 whitespace-pre-wrap">{successMessage}</AlertDescription>
         </Alert>
       )}
       <div className="flex items-center justify-between">
@@ -418,16 +426,18 @@ export function AdminUserDetail() {
               <CardTitle>Account Activity</CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
-              <div>
-                <Label className="text-muted-foreground">Created</Label>
-                <p className="text-sm font-medium">
-                  {new Date(user.created_at).toLocaleDateString("en-US", {
-                    year: "numeric",
-                    month: "long",
-                    day: "numeric",
-                  })}
-                </p>
-              </div>
+              {user.created_at && (
+                <div>
+                  <Label className="text-muted-foreground">Created</Label>
+                  <p className="text-sm font-medium">
+                    {new Date(user.created_at).toLocaleDateString("en-US", {
+                      year: "numeric",
+                      month: "long",
+                      day: "numeric",
+                    })}
+                  </p>
+                </div>
+              )}
               {user.last_login && (
                 <div>
                   <Label className="text-muted-foreground">Last Login</Label>
@@ -531,9 +541,17 @@ export function AdminUserDetail() {
         <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle>Approve User</AlertDialogTitle>
-            <AlertDialogDescription>
-              This will approve the user account for <strong>{user.username}</strong> and grant them
-              access to the system.
+            <AlertDialogDescription className="space-y-2">
+              <p>
+                This will approve the user account for <strong>{user.username}</strong> and grant them
+                access to the system with the role: <strong>{user.role}</strong>.
+              </p>
+              <Alert className="mt-2">
+                <AlertCircle className="h-4 w-4" />
+                <AlertDescription className="text-xs">
+                  If this user is already logged in, they will need to log out and log back in to access the system with their new permissions.
+                </AlertDescription>
+              </Alert>
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>

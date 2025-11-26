@@ -59,16 +59,17 @@ function getAuthToken(): string | null {
 }
 
 /**
- * Make authenticated request to auth service
+ * Make authenticated request to auth service with automatic token refresh
  */
 async function authFetch<T>(
   path: string,
-  options: RequestInit = {}
+  options: RequestInit = {},
+  retryCount: number = 0
 ): Promise<T> {
   const token = getAuthToken();
-  const headers: HeadersInit = {
+  const headers: Record<string, string> = {
     'Content-Type': 'application/json',
-    ...options.headers,
+    ...(options.headers as Record<string, string>),
   };
 
   if (token) {
@@ -79,6 +80,32 @@ async function authFetch<T>(
     ...options,
     headers,
   });
+
+  // If we get a 401 and haven't retried yet, try to refresh the token
+  if (response.status === 401 && retryCount === 0) {
+    const refreshToken = sessionStorage.getItem('auth_refresh_token');
+    console.log('[authFetch] Got 401, checking refresh token:', {
+      hasRefreshToken: !!refreshToken,
+      refreshTokenLength: refreshToken?.length || 0
+    });
+    
+    if (refreshToken) {
+      console.log('[authFetch] Attempting token refresh...');
+      const refreshed = await attemptTokenRefresh(refreshToken);
+      if (refreshed) {
+        console.log('[authFetch] Token refresh successful, retrying request...');
+        // Retry the request with the new token
+        return authFetch<T>(path, options, retryCount + 1);
+      } else {
+        console.error('[authFetch] Token refresh failed');
+      }
+    } else {
+      console.error('[authFetch] No refresh token found in sessionStorage');
+    }
+    // If refresh failed or no refresh token, throw auth error
+    console.error('[authFetch] Token refresh failed or no refresh token available');
+    throw new Error('Not authenticated');
+  }
 
   if (!response.ok) {
     const error = await response.json().catch(() => ({ detail: response.statusText }));
@@ -91,6 +118,82 @@ async function authFetch<T>(
   }
 
   return response.json();
+}
+
+/**
+ * Attempt to refresh the access token
+ */
+async function attemptTokenRefresh(refreshToken: string): Promise<boolean> {
+  try {
+    const response = await fetch(`${AUTH_SERVICE_URL}/auth/token`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded',
+      },
+      body: new URLSearchParams({
+        grant_type: 'refresh_token',
+        refresh_token: refreshToken,
+      }),
+    });
+
+    if (!response.ok) {
+      console.error('[attemptTokenRefresh] Refresh failed:', response.status);
+      return false;
+    }
+
+    const tokenData = await response.json();
+    const { access_token, refresh_token: new_refresh_token } = tokenData;
+
+    if (!access_token) {
+      return false;
+    }
+
+    // Update stored tokens
+    sessionStorage.setItem('auth_access_token', access_token);
+    if (new_refresh_token) {
+      sessionStorage.setItem('auth_refresh_token', new_refresh_token);
+    }
+
+    // Parse and update user info from new token
+    const payload = parseJWT(access_token);
+    if (payload) {
+      const user = {
+        id: payload.sub,
+        username: payload.preferred_username,
+        email: payload.email,
+        role: payload.role,
+        roles: payload.roles || []
+      };
+      sessionStorage.setItem('auth_user', JSON.stringify(user));
+      console.log('[attemptTokenRefresh] User info updated from refreshed token:', user.role);
+    }
+
+    return true;
+  } catch (error) {
+    console.error('[attemptTokenRefresh] Error during token refresh:', error);
+    return false;
+  }
+}
+
+/**
+ * Parse JWT token payload
+ */
+function parseJWT(token: string): any {
+  try {
+    const parts = token.split('.');
+    if (parts.length !== 3) return null;
+    
+    const base64Url = parts[1];
+    if (!base64Url) return null;
+    
+    const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+    const jsonPayload = decodeURIComponent(atob(base64).split('').map(c => {
+      return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+    }).join(''));
+    return JSON.parse(jsonPayload);
+  } catch (e) {
+    return null;
+  }
 }
 
 /**

@@ -18,7 +18,8 @@ from src.services.jwt_service import jwt_service
 from src.services.user_service import user_service
 from src.services.oidc_service import oidc_service
 from src.services.github_oidc_service import github_oidc_service
-from src.models.user import User, UserRole, Session
+from src.models.user import User, UserRole
+from src.models.session import Session
 from src.config.settings import settings
 
 router = APIRouter()

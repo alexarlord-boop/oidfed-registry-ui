@@ -88,24 +88,3 @@ class User(Base):
             "created_at": self.created_at.isoformat() if self.created_at else None,
             "last_login": self.last_login.isoformat() if self.last_login else None,
         }
-
-
-class Session(Base):
-    """Session model for refresh tokens"""
-    __tablename__ = "sessions"
-    
-    id = Column(String(36), primary_key=True, default=generate_uuid)
-    user_id = Column(String(36), nullable=False, index=True)  # Foreign key as string
-    
-    refresh_token = Column(String(512), unique=True, nullable=False, index=True)
-    expires_at = Column(DateTime, nullable=False)
-    
-    # Session metadata
-    user_agent = Column(String(512), nullable=True)
-    ip_address = Column(String(45), nullable=True)
-    
-    created_at = Column(DateTime, nullable=False, default=datetime.utcnow)
-    last_used_at = Column(DateTime, nullable=True)
-    
-    def __repr__(self):
-        return f"<Session(id={self.id}, user_id={self.user_id})>"
