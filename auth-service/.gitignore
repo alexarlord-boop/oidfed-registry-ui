@@ -68,3 +68,9 @@ alembic/versions/*.pyc
 
 # Docker
 *.pid
+
+# SQLite database files
+*.db
+*.db-shm
+*.db-wal
+*.db-journal
