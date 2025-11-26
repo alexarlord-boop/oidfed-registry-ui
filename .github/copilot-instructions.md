@@ -4,6 +4,7 @@
 This file contains concise, actionable information to help AI coding agents be productive in this repository.
 
 **Big Picture**
+- **Draft requirements of the system**: See `.github/oidfed-registry.md` for high-level functional requirements and workflows for the OIDFed Registry system.
 - **Runtime & build**: This is a Bun-based React + TypeScript project. The runtime is Bun (see `package.json` scripts and `bunfig.toml`). Primary entrypoints are `src/index.ts` and `src/app/frontend.tsx`.
 - **API surface**: API client code is generated from `federation_admin_openapi.yaml`/OpenAPI configs. Generated files live under `src/api/` (for example `src/api/apiSchemas.ts`, `src/api/apiResponses.ts`, `src/api/apiComponents.ts`). Do not hand-edit generated files.
 - **UI structure**: UI primitives live in `src/components/ui/` (Radix-based components and shadcn style). Pages are under `src/pages/*` and app scaffolding is in `src/app/` (see `layout.tsx`, `App.tsx`).
