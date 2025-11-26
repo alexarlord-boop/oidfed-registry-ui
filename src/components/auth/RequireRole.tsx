@@ -64,6 +64,12 @@ export function RequireRole({
     return <Navigate to="/login" state={{ from: location }} replace />;
   }
 
+  // Check if user account is active
+  if (user && 'is_active' in user && user.is_active === false) {
+    // This should not happen as RequireAuth would catch it, but double-check
+    return <Navigate to="/login" state={{ from: location, message: 'Your account has been deactivated.' }} replace />;
+  }
+
   // Check role requirements
   let hasRequiredRole = false;
 
@@ -108,13 +114,7 @@ export function RequireRole({
               You don't have the required permissions to access this page.
             </CardDescription>
           </CardHeader>
-          {user?.role === UserRole.PENDING && (
-            <CardContent>
-              <p className="text-sm text-muted-foreground">
-                Your account is pending approval. Please contact an administrator.
-              </p>
-            </CardContent>
-          )}
+
         </Card>
       </div>
     );

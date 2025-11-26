@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -13,48 +13,206 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { ArrowLeft, Save, Trash2, CheckCircle, XCircle } from "lucide-react";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
+import { ArrowLeft, Save, Trash2, CheckCircle, XCircle, Loader2, AlertCircle } from "lucide-react";
+import { authService, type User, type UserUpdate, UserRole } from "@/api/authService";
+import { Alert, AlertDescription } from "@/components/ui/alert";
 
-// Mock user data - replace with actual API call
-const mockUser = {
-  id: "2",
-  username: "john.doe",
-  email: "john.doe@university.edu",
-  full_name: "John Doe",
-  organization: "Example University",
-  role: "technical_contact",
-  is_approved: true,
-  is_active: true,
-  created_at: "2025-11-10T14:30:00Z",
-  last_login: "2025-11-19T08:45:00Z",
-};
 
 export function AdminUserDetail() {
-  const { id } = useParams();
+  const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
-  const [user, setUser] = useState(mockUser);
+  const [user, setUser] = useState<User | null>(null);
   const [isEditing, setIsEditing] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
+  const [isSaving, setIsSaving] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [successMessage, setSuccessMessage] = useState<string | null>(null);
+  
+  // Form state
+  const [formData, setFormData] = useState<UserUpdate>({});
+  
+  // Dialog states
+  const [showDeleteDialog, setShowDeleteDialog] = useState(false);
+  const [showApproveDialog, setShowApproveDialog] = useState(false);
+  const [showRejectDialog, setShowRejectDialog] = useState(false);
 
-  const handleSave = () => {
-    // TODO: Implement API call to update user
-    console.log("Saving user:", user);
+  useEffect(() => {
+    if (id) {
+      loadUser();
+    }
+  }, [id]);
+
+  const loadUser = async () => {
+    if (!id) return;
+    
+    try {
+      setIsLoading(true);
+      setError(null);
+      const userData = await authService.admin.getUser(id);
+      setUser(userData);
+      setFormData({
+        email: userData.email,
+        full_name: userData.full_name,
+        organization: userData.organization,
+        role: userData.role,
+        is_active: userData.is_active,
+        is_approved: userData.is_approved,
+      });
+    } catch (err: any) {
+      setError(err.message || 'Failed to load user');
+      console.error('Failed to load user:', err);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleSave = async () => {
+    if (!id || !user) return;
+    
+    try {
+      setIsSaving(true);
+      setError(null);
+      setSuccessMessage(null);
+      
+      const updatedUser = await authService.admin.updateUser(id, formData);
+      setUser(updatedUser);
+      setIsEditing(false);
+      setSuccessMessage('User updated successfully');
+      
+      setTimeout(() => setSuccessMessage(null), 3000);
+    } catch (err: any) {
+      setError(err.message || 'Failed to update user');
+      console.error('Failed to update user:', err);
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
+  const handleApprove = async () => {
+    if (!id) return;
+    
+    try {
+      setIsSaving(true);
+      setError(null);
+      const updatedUser = await authService.admin.approveUser(id);
+      setUser(updatedUser);
+      setFormData(prev => ({ ...prev, is_approved: true }));
+      setSuccessMessage('User approved successfully');
+      setShowApproveDialog(false);
+      
+      setTimeout(() => setSuccessMessage(null), 3000);
+    } catch (err: any) {
+      setError(err.message || 'Failed to approve user');
+      console.error('Failed to approve user:', err);
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
+  const handleReject = async () => {
+    if (!id) return;
+    
+    try {
+      setIsSaving(true);
+      setError(null);
+      await authService.admin.rejectUser(id);
+      setSuccessMessage('User rejected');
+      setShowRejectDialog(false);
+      
+      setTimeout(() => {
+        navigate('/admin/users');
+      }, 1500);
+    } catch (err: any) {
+      setError(err.message || 'Failed to reject user');
+      console.error('Failed to reject user:', err);
+      setIsSaving(false);
+    }
+  };
+
+  const handleDelete = async () => {
+    if (!id) return;
+    
+    try {
+      setIsSaving(true);
+      setError(null);
+      await authService.admin.deleteUser(id);
+      setSuccessMessage('User deleted');
+      setShowDeleteDialog(false);
+      
+      setTimeout(() => {
+        navigate('/admin/users');
+      }, 1500);
+    } catch (err: any) {
+      setError(err.message || 'Failed to delete user');
+      console.error('Failed to delete user:', err);
+      setIsSaving(false);
+    }
+  };
+
+  const handleCancel = () => {
+    if (user) {
+      setFormData({
+        email: user.email,
+        full_name: user.full_name,
+        organization: user.organization,
+        role: user.role,
+        is_active: user.is_active,
+        is_approved: user.is_approved,
+      });
+    }
     setIsEditing(false);
+    setError(null);
   };
 
-  const handleApprove = () => {
-    // TODO: Implement API call to approve user
-    console.log("Approving user:", id);
-    setUser({ ...user, is_approved: true, role: "technical_contact" });
-  };
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center min-h-[400px]">
+        <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
+      </div>
+    );
+  }
 
-  const handleReject = () => {
-    // TODO: Implement API call to reject/deactivate user
-    console.log("Rejecting user:", id);
-    setUser({ ...user, is_active: false });
-  };
+  if (!user) {
+    return (
+      <div className="space-y-6">
+        <Alert variant="destructive">
+          <AlertCircle className="h-4 w-4" />
+          <AlertDescription>User not found</AlertDescription>
+        </Alert>
+        <Button onClick={() => navigate('/admin/users')}>
+          <ArrowLeft className="mr-2 h-4 w-4" />
+          Back to Users
+        </Button>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6">
+      {error && (
+        <Alert variant="destructive" className="fixed top-4 right-4 w-auto max-w-md z-50 shadow-lg">
+          <AlertCircle className="h-4 w-4" />
+          <AlertDescription>{error}</AlertDescription>
+        </Alert>
+      )}
+      
+      {successMessage && (
+        <Alert className="fixed top-4 right-4 w-auto max-w-md z-50 shadow-lg bg-green-50 border-green-200">
+          <CheckCircle className="h-4 w-4 text-green-600" />
+          <AlertDescription className="text-green-800">{successMessage}</AlertDescription>
+        </Alert>
+      )}
+
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-4">
           <Button
@@ -74,23 +232,38 @@ export function AdminUserDetail() {
         <div className="flex gap-2">
           {!user.is_approved && (
             <>
-              <Button variant="outline" onClick={handleReject}>
+              <Button 
+                variant="outline" 
+                onClick={() => setShowRejectDialog(true)}
+                disabled={isSaving}
+              >
                 <XCircle className="mr-2 h-4 w-4" />
                 Reject
               </Button>
-              <Button onClick={handleApprove}>
-                <CheckCircle className="mr-2 h-4 w-4" />
+              <Button 
+                onClick={() => setShowApproveDialog(true)}
+                disabled={isSaving}
+              >
+                {isSaving ? (
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                ) : (
+                  <CheckCircle className="mr-2 h-4 w-4" />
+                )}
                 Approve
               </Button>
             </>
           )}
           {isEditing ? (
             <>
-              <Button variant="outline" onClick={() => setIsEditing(false)}>
+              <Button variant="outline" onClick={handleCancel} disabled={isSaving}>
                 Cancel
               </Button>
-              <Button onClick={handleSave}>
-                <Save className="mr-2 h-4 w-4" />
+              <Button onClick={handleSave} disabled={isSaving}>
+                {isSaving ? (
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                ) : (
+                  <Save className="mr-2 h-4 w-4" />
+                )}
                 Save Changes
               </Button>
             </>
@@ -123,9 +296,10 @@ export function AdminUserDetail() {
                 <Label htmlFor="email">Email</Label>
                 <Input
                   id="email"
-                  value={user.email}
+                  type="email"
+                  value={formData.email || ""}
                   disabled={!isEditing}
-                  onChange={(e) => setUser({ ...user, email: e.target.value })}
+                  onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                 />
               </div>
             </div>
@@ -135,18 +309,18 @@ export function AdminUserDetail() {
                 <Label htmlFor="full_name">Full Name</Label>
                 <Input
                   id="full_name"
-                  value={user.full_name || ""}
+                  value={formData.full_name || ""}
                   disabled={!isEditing}
-                  onChange={(e) => setUser({ ...user, full_name: e.target.value })}
+                  onChange={(e) => setFormData({ ...formData, full_name: e.target.value })}
                 />
               </div>
               <div className="space-y-2">
                 <Label htmlFor="organization">Organization</Label>
                 <Input
                   id="organization"
-                  value={user.organization || ""}
+                  value={formData.organization || ""}
                   disabled={!isEditing}
-                  onChange={(e) => setUser({ ...user, organization: e.target.value })}
+                  onChange={(e) => setFormData({ ...formData, organization: e.target.value })}
                 />
               </div>
             </div>
@@ -157,24 +331,24 @@ export function AdminUserDetail() {
               <div className="space-y-2">
                 <Label htmlFor="role">Role</Label>
                 <Select
-                  value={user.role}
-                  onValueChange={(value) => setUser({ ...user, role: value })}
+                  value={formData.role}
+                  onValueChange={(value) => setFormData({ ...formData, role: value as UserRole })}
                   disabled={!isEditing}
                 >
                   <SelectTrigger id="role">
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="admin">Admin</SelectItem>
-                    <SelectItem value="technical_contact">Technical Contact</SelectItem>
-                    <SelectItem value="pending">Pending</SelectItem>
+                    <SelectItem value={UserRole.ADMIN}>Admin</SelectItem>
+                    <SelectItem value={UserRole.TECHNICAL_CONTACT}>Technical Contact</SelectItem>
+                    <SelectItem value={UserRole.PENDING}>Pending</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
               <div className="space-y-2">
                 <Label>Status</Label>
                 <div className="flex gap-2 pt-2">
-                  {user.is_approved ? (
+                  {formData.is_approved ? (
                     <Badge variant="outline" className="bg-green-50 text-green-700 border-green-200">
                       Approved
                     </Badge>
@@ -183,7 +357,7 @@ export function AdminUserDetail() {
                       Pending Approval
                     </Badge>
                   )}
-                  {user.is_active ? (
+                  {formData.is_active ? (
                     <Badge variant="outline">Active</Badge>
                   ) : (
                     <Badge variant="outline" className="bg-red-50 text-red-700 border-red-200">
@@ -193,6 +367,38 @@ export function AdminUserDetail() {
                 </div>
               </div>
             </div>
+            
+            {isEditing && (
+              <>
+                <Separator />
+                <div className="grid gap-4 sm:grid-cols-2">
+                  <div className="flex items-center space-x-2">
+                    <input
+                      type="checkbox"
+                      id="is_active"
+                      checked={formData.is_active}
+                      onChange={(e) => setFormData({ ...formData, is_active: e.target.checked })}
+                      className="h-4 w-4 rounded border-gray-300"
+                    />
+                    <Label htmlFor="is_active" className="cursor-pointer">
+                      Account Active
+                    </Label>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <input
+                      type="checkbox"
+                      id="is_approved"
+                      checked={formData.is_approved}
+                      onChange={(e) => setFormData({ ...formData, is_approved: e.target.checked })}
+                      className="h-4 w-4 rounded border-gray-300"
+                    />
+                    <Label htmlFor="is_approved" className="cursor-pointer">
+                      Manually Approve
+                    </Label>
+                  </div>
+                </div>
+              </>
+            )}
           </CardContent>
         </Card>
 
@@ -232,7 +438,12 @@ export function AdminUserDetail() {
               <CardTitle className="text-destructive">Danger Zone</CardTitle>
             </CardHeader>
             <CardContent>
-              <Button variant="destructive" className="w-full">
+              <Button 
+                variant="destructive" 
+                className="w-full"
+                onClick={() => setShowDeleteDialog(true)}
+                disabled={isSaving}
+              >
                 <Trash2 className="mr-2 h-4 w-4" />
                 Delete User
               </Button>
@@ -240,6 +451,92 @@ export function AdminUserDetail() {
           </Card>
         </div>
       </div>
+
+      {/* Delete Confirmation Dialog */}
+      <AlertDialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Are you sure?</AlertDialogTitle>
+            <AlertDialogDescription>
+              This will permanently delete the user account for <strong>{user.username}</strong>.
+              This action cannot be undone.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel disabled={isSaving}>Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={handleDelete}
+              disabled={isSaving}
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+            >
+              {isSaving ? (
+                <>
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  Deleting...
+                </>
+              ) : (
+                'Delete User'
+              )}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
+      {/* Approve Confirmation Dialog */}
+      <AlertDialog open={showApproveDialog} onOpenChange={setShowApproveDialog}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Approve User</AlertDialogTitle>
+            <AlertDialogDescription>
+              This will approve the user account for <strong>{user.username}</strong> and grant them
+              access to the system.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel disabled={isSaving}>Cancel</AlertDialogCancel>
+            <AlertDialogAction onClick={handleApprove} disabled={isSaving}>
+              {isSaving ? (
+                <>
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  Approving...
+                </>
+              ) : (
+                'Approve User'
+              )}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
+      {/* Reject Confirmation Dialog */}
+      <AlertDialog open={showRejectDialog} onOpenChange={setShowRejectDialog}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Reject User</AlertDialogTitle>
+            <AlertDialogDescription>
+              This will reject and delete the user account for <strong>{user.username}</strong>.
+              This action cannot be undone.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel disabled={isSaving}>Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={handleReject}
+              disabled={isSaving}
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+            >
+              {isSaving ? (
+                <>
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  Rejecting...
+                </>
+              ) : (
+                'Reject User'
+              )}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }

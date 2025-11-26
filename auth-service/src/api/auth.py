@@ -533,6 +533,19 @@ async def oidc_keycloak_callback(
                 user.oidc_provider = "keycloak"
                 await db.commit()
         
+        # Check if user is active and approved
+        if not user.is_active:
+            # Redirect to frontend with error
+            frontend_url = settings.FRONTEND_REDIRECT_URI.split("/auth/callback")[0]
+            redirect_url = f"{frontend_url}/login?error=account_disabled&error_description=Your account has been deactivated. Please contact an administrator."
+            return RedirectResponse(url=redirect_url)
+        
+        if not user.is_approved:
+            # Redirect to frontend with error
+            frontend_url = settings.FRONTEND_REDIRECT_URI.split("/auth/callback")[0]
+            redirect_url = f"{frontend_url}/login?error=account_pending&error_description=Your account is pending approval. Please contact an administrator."
+            return RedirectResponse(url=redirect_url)
+        
         # Update last login
         await user_service.update_last_login(db, user)
         
@@ -673,6 +686,19 @@ async def oidc_github_callback(
                 user.oidc_provider = "github"
                 await db.commit()
             print(f"GitHub OAuth: Existing user {user.username}")
+        
+        # Check if user is active and approved
+        if not user.is_active:
+            # Redirect to frontend with error
+            frontend_url = settings.FRONTEND_REDIRECT_URI.split("/auth/callback")[0]
+            redirect_url = f"{frontend_url}/login?error=account_disabled&error_description=Your account has been deactivated. Please contact an administrator."
+            return RedirectResponse(url=redirect_url)
+        
+        if not user.is_approved:
+            # Redirect to frontend with error
+            frontend_url = settings.FRONTEND_REDIRECT_URI.split("/auth/callback")[0]
+            redirect_url = f"{frontend_url}/login?error=account_pending&error_description=Your account is pending approval. Please contact an administrator."
+            return RedirectResponse(url=redirect_url)
         
         # Update last login
         await user_service.update_last_login(db, user)

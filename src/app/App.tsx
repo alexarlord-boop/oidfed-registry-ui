@@ -20,6 +20,7 @@ import RegistrationPage from "@/pages/register/RegistrationPage";
 // Admin pages
 import { AdminUsers } from "@/pages/admin/users";
 import { AdminUserDetail } from "@/pages/admin/users/[id]";
+import { AdminUserNew } from "@/pages/admin/users/new";
 import { AdminApprovals } from "@/pages/admin/approvals";
 import { AdminTrustAnchors } from "@/pages/admin/trust-anchors";
 
@@ -45,6 +46,11 @@ export function App() {
               <Route path="admin/users" element={
                 <RequireRole role={UserRole.ADMIN}>
                   <AdminUsers />
+                </RequireRole>
+              } />
+              <Route path="admin/users/new" element={
+                <RequireRole role={UserRole.ADMIN}>
+                  <AdminUserNew />
                 </RequireRole>
               } />
               <Route path="admin/users/:id" element={

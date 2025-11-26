@@ -1,6 +1,8 @@
-import { useState } from "react";
-import { useNavigate, useLocation, Navigate } from "react-router-dom";
+import { useState, useEffect } from "react";
+import { useNavigate, useLocation, Navigate, useSearchParams } from "react-router-dom";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { AlertCircle } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { LoginForm } from "@/components/auth/LoginForm";
 import { SSOLoginButton } from "@/components/auth/SSOLoginButton";
@@ -12,10 +14,23 @@ import { getAuth, setAuth } from "@/lib/auth";
 export function Login() {
   const navigate = useNavigate();
   const location = useLocation() as any;
+  const [searchParams] = useSearchParams();
   const from = location.state?.from?.pathname ?? "/dashboard";
+  const stateMessage = location.state?.message; // Message from RequireAuth redirect
+  const errorParam = searchParams.get('error');
+  const errorDescription = searchParams.get('error_description');
   
   const { login, isLoading, error, isAuthenticated } = useAuth();
   const [localError, setLocalError] = useState<string | null>(null);
+  const [infoMessage, setInfoMessage] = useState<string | null>(stateMessage || errorDescription || null);
+
+  // Clear info message after 10 seconds
+  useEffect(() => {
+    if (infoMessage) {
+      const timer = setTimeout(() => setInfoMessage(null), 10000);
+      return () => clearTimeout(timer);
+    }
+  }, [infoMessage]);
 
   // Redirect if already authenticated
   if (isAuthenticated) {
@@ -79,6 +94,14 @@ export function Login() {
             <CardDescription>Sign in to access the admin panel</CardDescription>
           </CardHeader>
           <CardContent>
+            {/* Info message from redirect (e.g., pending approval, inactive account) */}
+            {infoMessage && (
+              <Alert className="mb-4 bg-yellow-50 border-yellow-200">
+                <AlertCircle className="h-4 w-4 text-yellow-600" />
+                <AlertDescription className="text-yellow-800">{infoMessage}</AlertDescription>
+              </Alert>
+            )}
+
             {/* SSO Login Options */}
             {hasOIDC && (
               <div className="space-y-3">
