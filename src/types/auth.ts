@@ -84,6 +84,7 @@ export interface OIDCUserInfo {
   roles?: string[];
   groups?: string[];
   org_id?: string;
+  oidc_provider?: string; // SSO provider (github, keycloak, etc.)
   
   // Additional claims
   [key: string]: unknown;

@@ -64,3 +64,4 @@ class UserInfoResponse(BaseModel):
     picture: Optional[str] = None
     role: str  # Single role field
     org_id: Optional[str] = None
+    oidc_provider: Optional[str] = None  # SSO provider (github, keycloak, etc.)

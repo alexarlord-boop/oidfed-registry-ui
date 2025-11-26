@@ -157,10 +157,12 @@ export function AppSidebar() {
                 <DropdownMenuTrigger asChild>
                   <SidebarMenuButton>
                     <Avatar>
-                      <AvatarImage 
-                        src={`https://avatar.iran.liara.run/public/${Math.abs((user?.username || 'user').split('').reduce((a, b) => a + b.charCodeAt(0), 0)) % 100}`} 
-                        alt={user?.username || 'User'}
-                      />
+                      {user?.oidc_provider === 'github' ? (
+                        <AvatarImage 
+                          src={`https://github.com/${user?.username}.png`} 
+                          alt={user?.username || 'User'}
+                        />
+                      ) : null}
                       <AvatarFallback>
                         {(user?.username || 'U').substring(0, 2).toUpperCase()}
                       </AvatarFallback>

@@ -29,6 +29,9 @@ services:
         uvicorn src.main:app --host 0.0.0.0 --port 9000 --reload
       "
     restart: unless-stopped
+    depends_on:
+      - keycloak
+  
   
   # PostgreSQL Database (optional - uncomment to use instead of SQLite)
   # postgres:
@@ -51,19 +54,14 @@ services:
 
   # Keycloak (optional - for OIDC provider testing)
   keycloak:
-    image: quay.io/keycloak/keycloak:23.0
-    container_name: auth-keycloak
+    image: quay.io/keycloak/keycloak:latest
+    container_name: keycloak-test
     environment:
       KEYCLOAK_ADMIN: admin
       KEYCLOAK_ADMIN_PASSWORD: admin
-      KC_HTTP_PORT: 8080
-      KC_HOSTNAME_URL: http://localhost:8080
-      KC_HOSTNAME_ADMIN_URL: http://localhost:8080
     ports:
       - "8080:8080"
     command: start-dev
-    profiles:
-      - with-keycloak
     restart: unless-stopped
 
 # Volumes (uncomment if using PostgreSQL)

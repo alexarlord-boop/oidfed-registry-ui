@@ -810,6 +810,7 @@ async def userinfo_endpoint(
         name=user.full_name,
         role=user.role if user.role else "pending",
         org_id=user.organization,
+        oidc_provider=user.oidc_provider,
     )
 
 

@@ -353,6 +353,7 @@ export class OIDCAuth implements AuthProvider {
       email: userInfo.email,
       role: userInfo.role || 'pending',
       roles: userInfo.roles || [],
+      oidc_provider: userInfo.oidc_provider,
     };
   }
 

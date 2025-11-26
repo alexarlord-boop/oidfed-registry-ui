@@ -12,6 +12,7 @@ export interface AuthUser {
   email?: string;
   role: UserRole | string;
   roles: string[];  // Legacy field for backward compatibility
+  oidc_provider?: string;  // SSO provider (github, keycloak, etc.)
 }
 
 export interface AuthState {
