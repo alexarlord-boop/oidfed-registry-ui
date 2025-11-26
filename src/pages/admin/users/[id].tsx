@@ -512,7 +512,7 @@ export function AdminUserDetail() {
             <AlertDialogAction
               onClick={handleDelete}
               disabled={isSaving}
-              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+              className="bg-destructive hover:bg-destructive/90"
             >
               {isSaving ? (
                 <>
@@ -568,7 +568,7 @@ export function AdminUserDetail() {
             <AlertDialogAction
               onClick={handleReject}
               disabled={isSaving}
-              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+              className="bg-destructive hover:bg-destructive/90"
             >
               {isSaving ? (
                 <>
