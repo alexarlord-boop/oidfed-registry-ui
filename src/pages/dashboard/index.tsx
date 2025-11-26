@@ -27,7 +27,6 @@ export const Dashboard = () => {
   const status = useListSubordinates({})
   const [data, setData] = useState<any | null>(null)
   const [loading, setLoading] = useState(false)
-  // dev auth handled by `DevLogin` component (stores values in localStorage)
 
   const testStatus = async () => {
     setLoading(true)

@@ -1,5 +1,4 @@
 import React from "react";
-import DevLogin from "@/components/dev/DevLogin";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 
 export const System: React.FC = () => {
@@ -12,7 +11,9 @@ export const System: React.FC = () => {
         </CardHeader>
         <CardContent>
           <div className="space-y-4">
-            <DevLogin />
+            <p className="text-sm text-muted-foreground">
+              Authentication is now handled through the login page using the Auth Gateway service.
+            </p>
           </div>
         </CardContent>
       </Card>

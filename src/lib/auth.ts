@@ -211,10 +211,6 @@ export class DevAuth implements AuthProvider {
           sessionStorage.setItem('auth_id_token', id_token);
         }
 
-        // Legacy compatibility - store in localStorage too for old components
-        localStorage.setItem('API_BEARER', access_token);
-        localStorage.setItem('API_ACCOUNT_USERNAME', user.username);
-
         console.log('[DevAuth] Login successful, tokens stored:', {
           user: user.username,
           tokenLength: access_token.length,
@@ -276,9 +272,6 @@ export class DevAuth implements AuthProvider {
         sessionStorage.setItem('auth_refresh_token', new_refresh_token);
       }
 
-      localStorage.setItem('API_BEARER', access_token);
-      localStorage.setItem('API_ACCOUNT_USERNAME', user.username);
-
       return true;
     } catch (error) {
       return false;
@@ -298,10 +291,6 @@ export class DevAuth implements AuthProvider {
       sessionStorage.removeItem('auth_access_token');
       sessionStorage.removeItem('auth_refresh_token');
       sessionStorage.removeItem('auth_id_token');
-      
-      // Legacy compatibility
-      localStorage.removeItem('API_BEARER');
-      localStorage.removeItem('API_ACCOUNT_USERNAME');
     } catch (error) {
       console.warn('Failed to clear auth:', error);
     }
