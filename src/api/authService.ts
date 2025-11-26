@@ -13,7 +13,6 @@ const AUTH_SERVICE_URL = env.AUTH_SERVICE_URL;
 export enum UserRole {
   ADMIN = 'admin',
   TECHNICAL_CONTACT = 'technical_contact',
-  PENDING = 'pending',
 }
 
 export interface User {

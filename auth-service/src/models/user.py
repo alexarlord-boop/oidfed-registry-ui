@@ -21,7 +21,6 @@ class UserRole(str, enum.Enum):
     """User role enumeration"""
     ADMIN = "admin"
     TECHNICAL_CONTACT = "technical_contact"
-    PENDING = "pending"
 
 
 class User(Base):
@@ -41,7 +40,7 @@ class User(Base):
     organization = Column(String(255), nullable=True)
     
     # Authorization - using string instead of enum for database portability
-    role = Column(String(50), nullable=False, default="pending")  # 'admin', 'technical_contact', 'pending'
+    role = Column(String(50), nullable=False, default="technical_contact")  # 'admin', 'technical_contact'
     is_approved = Column(Boolean, nullable=False, default=False)
     is_active = Column(Boolean, nullable=False, default=True)
     is_superuser = Column(Boolean, nullable=False, default=False)
@@ -71,7 +70,7 @@ class User(Base):
     @property
     def is_pending(self) -> bool:
         """Check if user is pending approval"""
-        return self.role == "pending" and not self.is_approved
+        return not self.is_approved
     
     def to_dict(self):
         """Convert to dictionary"""

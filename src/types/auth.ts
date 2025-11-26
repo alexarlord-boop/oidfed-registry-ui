@@ -7,7 +7,6 @@
 export enum UserRole {
   ADMIN = 'admin',
   TECHNICAL_CONTACT = 'technical_contact',
-  PENDING = 'pending',
 }
 
 // Role checking utilities
@@ -24,8 +23,8 @@ export function isTechnicalContact(user: { role?: UserRole | string } | null): b
   return hasRole(user, UserRole.TECHNICAL_CONTACT);
 }
 
-export function isPending(user: { role?: UserRole | string } | null): boolean {
-  return hasRole(user, UserRole.PENDING);
+export function isPending(user: { role?: UserRole | string; is_approved?: boolean } | null): boolean {
+  return user ? user.is_approved === false : false;
 }
 
 export function canManageUsers(user: { role?: UserRole | string } | null): boolean {

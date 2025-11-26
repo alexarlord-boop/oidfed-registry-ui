@@ -152,10 +152,8 @@ async def approve_user(
             detail="User is already approved"
         )
     
-    # Approve user and assign technical contact role
+    # Approve user (role already set)
     user.is_approved = True
-    if user.role == UserRole.PENDING:
-        user.role = UserRole.TECHNICAL_CONTACT
     
     await db.commit()
     await db.refresh(user)

@@ -221,7 +221,6 @@ export function AdminUserNew() {
                   <SelectContent>
                     <SelectItem value={UserRole.ADMIN}>Admin</SelectItem>
                     <SelectItem value={UserRole.TECHNICAL_CONTACT}>Technical Contact</SelectItem>
-                    <SelectItem value={UserRole.PENDING}>Pending</SelectItem>
                   </SelectContent>
                 </Select>
                 <p className="text-xs text-muted-foreground">

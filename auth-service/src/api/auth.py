@@ -91,8 +91,8 @@ async def token_endpoint(
             user_id=user.id,
             email=user.email,
             username=user.username,
-            role=user.role if user.role else "pending",
-            roles=[user.role] if user.role else [],
+            role=user.role,
+            roles=[user.role],
             org_id=user.organization,
         )
         
@@ -166,8 +166,8 @@ async def token_endpoint(
             user_id=user.id,
             email=user.email,
             username=user.username,
-            role=user.role if user.role else "pending",
-            roles=[user.role] if user.role else [],
+            role=user.role,
+            roles=[user.role],
             org_id=user.organization,
         )
         
@@ -235,8 +235,8 @@ async def token_endpoint(
             user_id=user.id,
             email=user.email,
             username=user.username,
-            role=user.role if user.role else "pending",
-            roles=[user.role] if user.role else [],
+            role=user.role,
+            roles=[user.role],
             org_id=user.organization,
         )
         
@@ -291,8 +291,8 @@ async def register_user(
             detail="Email already exists"
         )
     
-    # Force PENDING role and not approved for self-registration
-    user_data.role = UserRole.PENDING
+    # Force TECHNICAL_CONTACT role and not approved for self-registration
+    user_data.role = UserRole.TECHNICAL_CONTACT
     user_data.is_approved = False
     user_data.is_active = True
     
@@ -514,7 +514,7 @@ async def oidc_keycloak_callback(
                 password=None,  # No password for OIDC users
                 full_name=userinfo.get("name"),
                 organization=userinfo.get("org_id"),
-                role=UserRole.PENDING,  # New users start as pending
+                role=UserRole.TECHNICAL_CONTACT,  # New SSO users start unapproved
                 is_approved=False,
                 is_active=True,
                 oidc_provider="keycloak",
@@ -554,8 +554,8 @@ async def oidc_keycloak_callback(
             user_id=user.id,
             email=user.email,
             username=user.username,
-            role=user.role if user.role else "pending",
-            roles=[user.role] if user.role else [],
+            role=user.role,
+            roles=[user.role],
             org_id=user.organization,
         )
         
@@ -666,7 +666,7 @@ async def oidc_github_callback(
                 password=None,  # No password for OAuth users
                 full_name=github_user.get("name") or github_user.get("login"),
                 organization=github_user.get("company"),
-                role=UserRole.PENDING,  # New users start as pending
+                role=UserRole.TECHNICAL_CONTACT,  # New SSO users start unapproved
                 is_approved=False,
                 is_active=True,
                 oidc_provider="github",
@@ -712,8 +712,8 @@ async def oidc_github_callback(
             user_id=user.id,
             email=user.email,
             username=user.username,
-            role=user.role if user.role else "pending",
-            roles=[user.role] if user.role else [],
+            role=user.role,
+            roles=[user.role],
             org_id=user.organization,
         )
         
@@ -808,7 +808,7 @@ async def userinfo_endpoint(
         email_verified=True,
         preferred_username=user.username,
         name=user.full_name,
-        role=user.role if user.role else "pending",
+        role=user.role,
         org_id=user.organization,
         oidc_provider=user.oidc_provider,
     )

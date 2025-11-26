@@ -20,7 +20,7 @@ class UserBase(BaseModel):
 class UserCreate(UserBase):
     """Schema for creating a user"""
     password: Optional[str] = Field(None, min_length=8, max_length=255)
-    role: UserRole = Field(default=UserRole.PENDING)
+    role: UserRole = Field(default=UserRole.TECHNICAL_CONTACT)
     is_active: bool = True
     is_approved: bool = False  # Requires admin approval
     oidc_provider: Optional[str] = None  # For OIDC users

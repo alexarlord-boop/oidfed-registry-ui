@@ -352,7 +352,6 @@ export function AdminUserDetail() {
                   <SelectContent>
                     <SelectItem value={UserRole.ADMIN}>Admin</SelectItem>
                     <SelectItem value={UserRole.TECHNICAL_CONTACT}>Technical Contact</SelectItem>
-                    <SelectItem value={UserRole.PENDING}>Pending</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
