@@ -2,6 +2,8 @@
  * Auth Service API Client
  * Handles authentication, user management, and admin operations
  */
+import { parseJWT } from '../lib/utils';
+import { getTokenManager } from '../lib/tokenManager';
 
 import { env } from '../lib/env';
 
@@ -52,10 +54,11 @@ export interface UserUpdate {
 }
 
 /**
- * Get auth token from storage
+ * Get auth token from TokenManager (memory storage)
  */
-function getAuthToken(): string | null {
-  return sessionStorage.getItem('auth_access_token');
+async function getAuthToken(): Promise<string | null> {
+  const tokenManager = getTokenManager();
+  return await tokenManager.getValidToken();
 }
 
 /**
@@ -66,7 +69,7 @@ async function authFetch<T>(
   options: RequestInit = {},
   retryCount: number = 0
 ): Promise<T> {
-  const token = getAuthToken();
+  const token = await getAuthToken();
   const headers: Record<string, string> = {
     'Content-Type': 'application/json',
     ...(options.headers as Record<string, string>),
@@ -83,27 +86,26 @@ async function authFetch<T>(
 
   // If we get a 401 and haven't retried yet, try to refresh the token
   if (response.status === 401 && retryCount === 0) {
-    const refreshToken = sessionStorage.getItem('auth_refresh_token');
-    console.log('[authFetch] Got 401, checking refresh token:', {
-      hasRefreshToken: !!refreshToken,
-      refreshTokenLength: refreshToken?.length || 0
-    });
+    console.log('[authFetch] Got 401, attempting token refresh via TokenManager...');
     
-    if (refreshToken) {
-      console.log('[authFetch] Attempting token refresh...');
-      const refreshed = await attemptTokenRefresh(refreshToken);
-      if (refreshed) {
-        console.log('[authFetch] Token refresh successful, retrying request...');
-        // Retry the request with the new token
-        return authFetch<T>(path, options, retryCount + 1);
-      } else {
-        console.error('[authFetch] Token refresh failed');
+    try {
+      const tokenManager = getTokenManager();
+      const currentTokens = await tokenManager.getTokens();
+      
+      if (currentTokens?.refresh_token) {
+        const newTokenSet = await tokenManager.refreshTokens(currentTokens.refresh_token);
+        if (newTokenSet) {
+          console.log('[authFetch] Token refresh successful, retrying request...');
+          // Retry the request with the new token
+          return authFetch<T>(path, options, retryCount + 1);
+        }
       }
-    } else {
-      console.error('[authFetch] No refresh token found in sessionStorage');
+    } catch (error) {
+      console.error('[authFetch] Token refresh failed:', error);
     }
-    // If refresh failed or no refresh token, throw auth error
-    console.error('[authFetch] Token refresh failed or no refresh token available');
+    
+    // If refresh failed, throw auth error
+    console.error('[authFetch] Authentication failed after token refresh attempt');
     throw new Error('Not authenticated');
   }
 
@@ -121,80 +123,25 @@ async function authFetch<T>(
 }
 
 /**
- * Attempt to refresh the access token
- */
-async function attemptTokenRefresh(refreshToken: string): Promise<boolean> {
-  try {
-    const response = await fetch(`${AUTH_SERVICE_URL}/auth/token`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/x-www-form-urlencoded',
-      },
-      body: new URLSearchParams({
-        grant_type: 'refresh_token',
-        refresh_token: refreshToken,
-      }),
-    });
-
-    if (!response.ok) {
-      console.error('[attemptTokenRefresh] Refresh failed:', response.status);
-      return false;
-    }
-
-    const tokenData = await response.json();
-    const { access_token, refresh_token: new_refresh_token } = tokenData;
-
-    if (!access_token) {
-      return false;
-    }
-
-    // Update stored tokens
-    sessionStorage.setItem('auth_access_token', access_token);
-    if (new_refresh_token) {
-      sessionStorage.setItem('auth_refresh_token', new_refresh_token);
-    }
-
-    // Parse and update user info from new token
-    const payload = parseJWT(access_token);
-    if (payload) {
-      const user = {
-        id: payload.sub,
-        username: payload.preferred_username,
-        email: payload.email,
-        role: payload.role,
-        roles: payload.roles || []
-      };
-      sessionStorage.setItem('auth_user', JSON.stringify(user));
-      console.log('[attemptTokenRefresh] User info updated from refreshed token:', user.role);
-    }
-
-    return true;
-  } catch (error) {
-    console.error('[attemptTokenRefresh] Error during token refresh:', error);
-    return false;
-  }
-}
-
-/**
  * Parse JWT token payload
  */
-function parseJWT(token: string): any {
-  try {
-    const parts = token.split('.');
-    if (parts.length !== 3) return null;
+// function parseJWT(token: string): any {
+//   try {
+//     const parts = token.split('.');
+//     if (parts.length !== 3) return null;
     
-    const base64Url = parts[1];
-    if (!base64Url) return null;
+//     const base64Url = parts[1];
+//     if (!base64Url) return null;
     
-    const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
-    const jsonPayload = decodeURIComponent(atob(base64).split('').map(c => {
-      return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
-    }).join(''));
-    return JSON.parse(jsonPayload);
-  } catch (e) {
-    return null;
-  }
-}
+//     const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+//     const jsonPayload = decodeURIComponent(atob(base64).split('').map(c => {
+//       return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+//     }).join(''));
+//     return JSON.parse(jsonPayload);
+//   } catch (e) {
+//     return null;
+//   }
+// }
 
 /**
  * Public API - No authentication required

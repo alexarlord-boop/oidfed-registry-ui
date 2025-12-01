@@ -3,13 +3,16 @@
  * Displays current token information and allows manual refresh
  */
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { AlertCircle, RefreshCw, CheckCircle, LogOut } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
 import { useNavigate } from 'react-router-dom';
+import { parseJWT } from '@/lib/utils';
+import { getAuth } from '@/lib/auth';
+import type { UnifiedAuth } from '@/lib/auth';
 
 export function TokenDebug() {
   const { user, logout } = useAuth();
@@ -18,31 +21,23 @@ export function TokenDebug() {
   const [refreshResult, setRefreshResult] = useState<string | null>(null);
   const [isRefreshing, setIsRefreshing] = useState(false);
 
-  const parseJWT = (token: string): any => {
-    try {
-      const parts = token.split('.');
-      if (parts.length !== 3) return null;
-      
-      const base64Url = parts[1];
-      if (!base64Url) return null;
-      
-      const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
-      const jsonPayload = decodeURIComponent(
-        atob(base64)
-          .split('')
-          .map((c) => '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2))
-          .join('')
-      );
-      return JSON.parse(jsonPayload);
-    } catch (e) {
-      return null;
+  // Auto-check token when user changes (e.g., after refresh or role update)
+  useEffect(() => {
+    if (user) {
+      checkToken();
     }
-  };
+  }, [user?.id, user?.role]); // Re-check when user ID or role changes
 
-  const checkToken = () => {
-    const accessToken = sessionStorage.getItem('auth_access_token');
-    const refreshToken = sessionStorage.getItem('auth_refresh_token');
-    const storedUser = sessionStorage.getItem('auth_user');
+  const checkToken = async () => {
+    const auth = getAuth() as UnifiedAuth;
+    const tokenManager = auth.getTokenManager();
+    
+    // Get tokens from TokenManager (source of truth)
+    const tokens = await tokenManager.getTokens();
+    const refreshToken = tokens?.refresh_token;
+    
+    // Get current valid token (from memory)
+    const accessToken = await tokenManager.getValidToken();
 
     if (accessToken) {
       const payload = parseJWT(accessToken);
@@ -52,7 +47,7 @@ export function TokenDebug() {
       setTokenInfo({
         hasAccessToken: !!accessToken,
         hasRefreshToken: !!refreshToken,
-        storedUser: storedUser ? JSON.parse(storedUser) : null,
+        storedUser: user, // Use Zustand user (source of truth)
         tokenPayload: payload,
         expiresIn: Math.floor(expiresIn),
         expired: expiresIn < 0,
@@ -61,7 +56,7 @@ export function TokenDebug() {
       setTokenInfo({
         hasAccessToken: false,
         hasRefreshToken: !!refreshToken,
-        storedUser: null,
+        storedUser: user,
         tokenPayload: null,
       });
     }
@@ -71,7 +66,12 @@ export function TokenDebug() {
     setIsRefreshing(true);
     setRefreshResult(null);
 
-    const refreshToken = sessionStorage.getItem('auth_refresh_token');
+    const auth = getAuth() as UnifiedAuth;
+    const tokenManager = auth.getTokenManager();
+    
+    const tokens = await tokenManager.getTokens();
+    const refreshToken = tokens?.refresh_token;
+    
     if (!refreshToken) {
       setRefreshResult('No refresh token found. Please log out and log back in.');
       setIsRefreshing(false);
@@ -79,55 +79,23 @@ export function TokenDebug() {
     }
 
     try {
-      const response = await fetch('http://localhost:9000/auth/token', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/x-www-form-urlencoded',
-        },
-        body: new URLSearchParams({
-          grant_type: 'refresh_token',
-          refresh_token: refreshToken,
-        }),
-      });
-
-      if (!response.ok) {
-        const error = await response.json().catch(() => ({ detail: 'Unknown error' }));
-        setRefreshResult(`Refresh failed: ${error.detail}`);
-        setIsRefreshing(false);
-        return;
-      }
-
-      const tokenData = await response.json();
-      const { access_token, refresh_token: new_refresh_token } = tokenData;
-
-      // Update stored tokens
-      sessionStorage.setItem('auth_access_token', access_token);
-      if (new_refresh_token) {
-        sessionStorage.setItem('auth_refresh_token', new_refresh_token);
-      }
-
-      // Parse and update user info
-      const payload = parseJWT(access_token);
-      if (payload) {
-        const newUser = {
-          id: payload.sub,
-          username: payload.preferred_username,
-          email: payload.email,
-          role: payload.role,
-          roles: payload.roles || [],
-        };
-        sessionStorage.setItem('auth_user', JSON.stringify(newUser));
+      // Force a token refresh through TokenManager
+      // This will trigger UnifiedAuth.refreshTokens() which updates user info
+      const newTokens = await tokenManager.refreshTokens(refreshToken);
+      
+      if (newTokens && newTokens.access_token) {
+        const payload = parseJWT(newTokens.access_token);
         setRefreshResult(`✓ Token refreshed successfully! New role: ${payload.role}`);
         
-        // Reload the page to update the UI with new permissions
-        setTimeout(() => {
-          window.location.reload();
-        }, 1500);
+        // Wait a moment for Zustand to update, then check token info
+        setTimeout(async () => {
+          await checkToken();
+        }, 100);
+      } else {
+        setRefreshResult('Refresh failed: No new tokens received');
       }
-
-      checkToken();
-    } catch (error: any) {
-      setRefreshResult(`Error: ${error.message}`);
+    } catch (error) {
+      setRefreshResult(`Refresh failed: ${error instanceof Error ? error.message : 'Unknown error'}`);
     } finally {
       setIsRefreshing(false);
     }

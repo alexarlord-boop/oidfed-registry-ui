@@ -1,102 +1,76 @@
-import { useState, useEffect, useCallback } from 'react';
-import { getAuth, type AuthState, type LoginCredentials, type LoginResult, type AuthUser } from '@/lib/auth';
+import { useEffect, useCallback } from 'react';
+import { getAuth, ensureAuthInitialized, type LoginCredentials, type LoginResult, type AuthUser } from '@/lib/auth';
+import { useAppState } from './store';
 
 /**
- * Simple React hook for authentication
- * Clean integration with React components
+ * Authentication hook using Zustand for state management
+ * Automatically reactive - updates when auth state changes (e.g., after token refresh)
  */
 export function useAuth() {
-  const [authState, setAuthState] = useState<AuthState>({
-    user: null,
-    isLoading: true,
-    error: null
-  });
+  // Get auth state from Zustand store
+  const user = useAppState((state) => state.user);
+  const isLoading = useAppState((state) => state.isAuthLoading);
+  const error = useAppState((state) => state.authError);
 
   const auth = getAuth();
 
-  // Load initial state
+  // Initialize auth on mount
   useEffect(() => {
     let mounted = true;
 
-    const loadAuthState = async () => {
+    const initAuth = async () => {
       try {
-        await auth.initialize();
-        const state = await auth.getState();
-        if (mounted) {
-          setAuthState(state);
-        }
+        await ensureAuthInitialized();
+        
+        // State is already synced to Zustand by UnifiedAuth
+        // No need to manually set it here
       } catch (error) {
         if (mounted) {
+          const { setAuthState } = useAppState.getState();
           setAuthState({
             user: null,
-            isLoading: false,
-            error: error instanceof Error ? error.message : 'Auth initialization failed'
+            isAuthLoading: false,
+            authError: error instanceof Error ? error.message : 'Auth initialization failed'
           });
         }
       }
     };
 
-    loadAuthState();
+    initAuth();
 
     return () => {
       mounted = false;
     };
-  }, [auth]);
+  }, []);
 
   // Login function
   const login = useCallback(async (credentials: LoginCredentials): Promise<LoginResult> => {
-    setAuthState(prev => ({ ...prev, isLoading: true, error: null }));
+    const { setAuthState } = useAppState.getState();
+    setAuthState({ isAuthLoading: true, authError: null });
 
-    try {
-      const result = await auth.login(credentials);
-      
-      if (result.success) {
-        const newState = await auth.getState();
-        setAuthState(newState);
-      } else {
-        setAuthState(prev => ({
-          ...prev,
-          isLoading: false,
-          error: result.error || 'Login failed'
-        }));
-      }
-
-      return result;
-    } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : 'Login failed';
-      setAuthState(prev => ({
-        ...prev,
-        isLoading: false,
-        error: errorMessage
-      }));
-      return { success: false, error: errorMessage };
-    }
+    const result = await auth.login(credentials);
+    
+    // State is synced automatically by UnifiedAuth.updateState()
+    
+    return result;
   }, [auth]);
 
   // Logout function
   const logout = useCallback(async (): Promise<void> => {
-    setAuthState(prev => ({ ...prev, isLoading: true }));
+    const { setAuthState } = useAppState.getState();
+    setAuthState({ isAuthLoading: true });
 
-    try {
-      await auth.logout();
-      setAuthState({
-        user: null,
-        isLoading: false,
-        error: null
-      });
-    } catch (error) {
-      setAuthState(prev => ({
-        ...prev,
-        isLoading: false,
-        error: error instanceof Error ? error.message : 'Logout failed'
-      }));
-    }
+    await auth.logout();
+    
+    // State is synced automatically by UnifiedAuth.updateState()
   }, [auth]);
 
-  const isAuthenticated = !!authState.user;
+  const isAuthenticated = !!user;
 
   return {
-    ...authState,
+    user,
+    isLoading,
+    error,
     isAuthenticated,
     login,
     logout
@@ -107,14 +81,20 @@ export function useAuth() {
  * Hook to get current user
  */
 export function useCurrentUser(): AuthUser | null {
-  const { user } = useAuth();
-  return user;
+  return useAppState((state) => state.user);
 }
 
 /**
  * Hook to check if user is authenticated
  */
 export function useIsAuthenticated(): boolean {
-  const { isAuthenticated } = useAuth();
-  return isAuthenticated;
+  const user = useAppState((state) => state.user);
+  return !!user;
+}
+
+/**
+ * Hook to get auth loading state
+ */
+export function useAuthLoading(): boolean {
+  return useAppState((state) => state.isAuthLoading);
 }

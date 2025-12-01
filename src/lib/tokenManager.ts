@@ -22,10 +22,10 @@ import type {
  */
 class MemoryTokenStorage implements TokenStorage {
   private tokens: TokenSet | null = null;
-  private readonly REFRESH_TOKEN_KEY = 'oidc_refresh_token';
-  private readonly AUTH_STATE_KEY = 'oidc_auth_state';
-  private readonly SESSION_INFO_KEY = 'oidc_session_info';
-
+  private readonly REFRESH_TOKEN_KEY = 'auth_refresh_token';
+  private readonly AUTH_STATE_KEY = 'auth_state';
+  private readonly SESSION_INFO_KEY = 'auth_session_info';
+  
   async getTokens(): Promise<TokenSet | null> {
     if (!this.tokens) {
       // Try to restore refresh token from sessionStorage
@@ -187,7 +187,7 @@ export class TokenManager {
   /**
    * Store new tokens
    */
-  async setTokens(tokens: TokenSet): Promise<void> {
+  async setTokens(tokens: TokenSet, provider?: string): Promise<void> {
     await this.storage.setTokens(tokens);
     
     // Store session info
@@ -196,7 +196,7 @@ export class TokenManager {
         created_at: Date.now(),
         expires_at: tokens.expires_at,
         last_activity: Date.now(),
-        provider: 'keycloak', // TODO: Make this dynamic
+        provider: (provider as any) || 'local',
       };
       this.storage.setSessionInfo(sessionInfo);
     }

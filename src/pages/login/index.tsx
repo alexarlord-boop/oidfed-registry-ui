@@ -8,8 +8,9 @@ import { LoginForm } from "@/components/auth/LoginForm";
 import { SSOLoginButton } from "@/components/auth/SSOLoginButton";
 import { LoginDivider } from "@/components/auth/LoginDivider";
 import { enabledOIDCProviders, isLocalAuthEnabled } from "@/config/oidc.config";
-import { OIDCAuth } from "@/lib/oidcAuth";
-import { getAuth, setAuth } from "@/lib/auth";
+import { getAuth } from "@/lib/auth";
+import type { UnifiedAuth } from "@/lib/auth";
+import type { ProviderId } from "@/types/auth";
 
 export function Login() {
   const navigate = useNavigate();
@@ -64,19 +65,17 @@ export function Login() {
     }
   };
 
-  const handleSSOLogin = async (providerId: 'keycloak' | 'github') => {
+  const handleSSOLogin = async (providerId: ProviderId) => {
     setLocalError(null);
     try {
-      // Ensure we have OIDC auth provider
-      let auth = getAuth();
-      if (!(auth instanceof OIDCAuth)) {
-        auth = new OIDCAuth(providerId);
-        setAuth(auth);
-        await auth.initialize();
+      const auth = getAuth() as UnifiedAuth;
+      
+      // UnifiedAuth supports OIDC flow via loginWithOIDC method
+      if (auth.loginWithOIDC) {
+        await auth.loginWithOIDC(providerId, from);
+      } else {
+        throw new Error('SSO login not supported');
       }
-
-      // Start OIDC flow (will redirect to Auth Gateway)
-      await (auth as OIDCAuth).loginWithOIDC(from);
     } catch (err) {
       setLocalError(err instanceof Error ? err.message : "SSO login failed");
     }
@@ -109,7 +108,7 @@ export function Login() {
                   <SSOLoginButton
                     key={provider.id}
                     config={provider}
-                    onClick={() => handleSSOLogin(provider.id as 'keycloak' | 'github')}
+                    onClick={() => handleSSOLogin(provider.id)}
                     isLoading={isLoading}
                   />
                 ))}
