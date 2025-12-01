@@ -2,7 +2,7 @@ import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useTranslation } from 'react-i18next';
 import { useAppState, type Lang } from "@/hooks/store"
 import { Braces, Home, Languages, LayoutDashboard } from "lucide-react";
-import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
+import { UserAvatar } from "@/components/UserAvatar";
 import { useAuth } from "@/hooks/useAuth";
 import { UserRole, isAdmin, isTechnicalContact, canManageEntities } from "@/types/auth";
 
@@ -156,17 +156,11 @@ export function AppSidebar() {
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <SidebarMenuButton>
-                    <Avatar>
-                      {user?.oidc_provider === 'github' ? (
-                        <AvatarImage 
-                          src={`https://github.com/${user?.username}.png`} 
-                          alt={user?.username || 'User'}
-                        />
-                      ) : null}
-                      <AvatarFallback>
-                        {(user?.username || 'U').substring(0, 2).toUpperCase()}
-                      </AvatarFallback>
-                    </Avatar>
+                    <UserAvatar
+                      name={user?.username || 'User'}
+                      src={user?.oidc_provider === 'github' ? `https://github.com/${user?.username}.png` : null}
+                      size="sm"
+                    />
                     <span className="truncate">{user?.username || 'User'}</span>
                     <ChevronUp className="ml-auto" />
                   </SidebarMenuButton>

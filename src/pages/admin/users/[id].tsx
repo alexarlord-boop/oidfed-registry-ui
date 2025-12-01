@@ -6,7 +6,7 @@ import { Badge } from "@/components/ui/badge";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Separator } from "@/components/ui/separator";
-import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
+import { UserAvatar } from "@/components/UserAvatar";
 import {
   Select,
   SelectContent,
@@ -230,17 +230,11 @@ export function AdminUserDetail() {
           >
             <ArrowLeft className="h-4 w-4" />
           </Button>
-          <Avatar className="h-16 w-16">
-            {user.oidc_provider === 'github' ? (
-              <AvatarImage 
-                src={`https://github.com/${user.username}.png`} 
-                alt={user.username}
-              />
-            ) : null}
-            <AvatarFallback className="text-lg font-semibold">
-              {user.username.substring(0, 2).toUpperCase()}
-            </AvatarFallback>
-          </Avatar>
+          <UserAvatar
+            name={user.username}
+            src={user.oidc_provider === 'github' ? `https://github.com/${user.username}.png` : null}
+            size="xl"
+          />
           <div>
             <h1 className="text-3xl font-bold tracking-tight">{user.username}</h1>
             <p className="text-muted-foreground">

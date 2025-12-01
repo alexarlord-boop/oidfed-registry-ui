@@ -1,5 +1,5 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
+import { UserAvatar } from "@/components/UserAvatar";
 import { useAuth } from "@/hooks/useAuth";
 import { TokenDebug } from "@/components/TokenDebug";
 
@@ -19,17 +19,11 @@ export const Account = () => {
                 </CardHeader>
                 <CardContent className="flex items-start gap-4">
                     
-                    <Avatar className="size-20">
-                        {user?.oidc_provider === 'github' ? (
-                            <AvatarImage 
-                                src={`https://github.com/${user?.username}.png`} 
-                                alt={user?.username || 'User'}
-                            />
-                        ) : null}
-                        <AvatarFallback className="text-2xl">
-                            {(user?.username || 'U').substring(0, 2).toUpperCase()}
-                        </AvatarFallback>
-                    </Avatar>
+                    <UserAvatar
+                      name={user?.username || 'User'}
+                      src={user?.oidc_provider === 'github' ? `https://github.com/${user?.username}.png` : null}
+                      size="xl"
+                    />
 
                     <ul>
                         <li>Contact info for federation communications</li>
