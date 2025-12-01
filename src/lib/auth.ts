@@ -199,7 +199,7 @@ export class PasswordAuth implements AuthProvider {
         id: payload.sub,
         username: payload.preferred_username || username,
         email: payload.email,
-        role: payload.role || UserRole.PENDING,
+        role: payload.role,
         roles: payload.roles || []
       };
 
@@ -269,7 +269,7 @@ export class PasswordAuth implements AuthProvider {
         id: payload.sub,
         username: payload.preferred_username,
         email: payload.email,
-        role: payload.role || UserRole.PENDING,
+        role: payload.role,
         roles: payload.roles || []
       };
 
