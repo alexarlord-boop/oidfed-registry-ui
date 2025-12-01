@@ -1,16 +1,8 @@
 import { serve } from "bun";
 import index from "./app/index.html";
-import { hello } from "./old-api/hello";
-import { dashboard } from "./old-api/dashboard";
-import { test } from "./old-api/test";
 
 const server = serve({
   routes: {
-    // API routes (must come before catch-all)
-    ...hello,
-    ...dashboard,
-    ...test,
-    
     // Serve index.html for all unmatched routes (SPA fallback)
     "/*": index,
   },
