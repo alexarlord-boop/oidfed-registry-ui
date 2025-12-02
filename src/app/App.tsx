@@ -25,6 +25,7 @@ import { AdminApprovals } from "@/pages/admin/approvals";
 import { AdminTrustAnchors } from "@/pages/admin/trust-anchors";
 
 import "./index.css";
+import { PlatformSections } from "@/types/constants";
 
 const queryClient = new QueryClient()
 
@@ -37,33 +38,33 @@ export function App() {
             <Route path="/register" element={<RegistrationPage />} />
             <Route path="/auth/callback" element={<AuthCallback />} />
             <Route path="/" element={<Layout />}>
-              {/* Explore */}
+              {/* Home */}
               <Route index element={<Home />} />
-              <Route path="dashboard" element={<RequireAuth><Dashboard /></RequireAuth>}  />
-              <Route path="audit" element={<RequireAuth><Empty title="Audit" description="Trace logs, check requests" /></RequireAuth>} />
+              <Route path={PlatformSections.HOME.dashboard.path} element={<RequireAuth><Dashboard /></RequireAuth>}  />
+              <Route path={PlatformSections.HOME.audit.path} element={<RequireAuth><Empty title="Audit" description="Trace logs, check requests" /></RequireAuth>} />
 
               {/* Admin-only routes */}
-              <Route path="admin/users" element={
+              <Route path={PlatformSections.ADMIN.users.path} element={
                 <RequireRole role={UserRole.ADMIN}>
                   <AdminUsers />
                 </RequireRole>
               } />
-              <Route path="admin/users/new" element={
+              <Route path={PlatformSections.ADMIN.users_new.path} element={
                 <RequireRole role={UserRole.ADMIN}>
                   <AdminUserNew />
                 </RequireRole>
               } />
-              <Route path="admin/users/:id" element={
+              <Route path={PlatformSections.ADMIN.users_detail.path} element={
                 <RequireRole role={UserRole.ADMIN}>
                   <AdminUserDetail />
                 </RequireRole>
               } />
-              <Route path="admin/approvals" element={
+              <Route path={PlatformSections.ADMIN.approvals.path} element={
                 <RequireRole role={UserRole.ADMIN}>
                   <AdminApprovals />
                 </RequireRole>
               } />
-              <Route path="admin/trust-anchors" element={
+              <Route path={PlatformSections.ADMIN.trustAnchors.path} element={
                 <RequireRole role={UserRole.ADMIN}>
                   <AdminTrustAnchors />
                 </RequireRole>
@@ -75,30 +76,12 @@ export function App() {
                   <Empty title="Entities" description="Manage entities" />
                 </RequireRole>
               } />
-              <Route path="trust-chains" element={
-                <RequireRole roles={[UserRole.ADMIN, UserRole.TECHNICAL_CONTACT]}>
-                  <Empty title="Trust Chains" description="Manage trust chains" />
-                </RequireRole>
-              } />
-              <Route path="trust-marks" element={
-                <RequireRole roles={[UserRole.ADMIN, UserRole.TECHNICAL_CONTACT]}>
-                  <Empty title="Trust Marks" description="Manage trust marks" />
-                </RequireRole>
-              } />
-              <Route path="policies" element={
-                <RequireRole roles={[UserRole.ADMIN, UserRole.TECHNICAL_CONTACT]}>
-                  <Empty title="Policies" description="Manage policies" />
-                </RequireRole>
-              } />
-              <Route path="keys" element={
-                <RequireRole roles={[UserRole.ADMIN, UserRole.TECHNICAL_CONTACT]}>
-                  <Empty title="Keys" description="Manage keys" />
-                </RequireRole>
-              } />
+              
+             
             
               {/* Settings */}
-              <Route path="language" element={<RequireAuth><Language/></RequireAuth>} />
-              <Route path="system" element={<RequireAuth><System /></RequireAuth>} />
+              <Route path={PlatformSections.SETTINGS.language.path} element={<RequireAuth><Language/></RequireAuth>} />
+              <Route path={PlatformSections.SETTINGS.system.path} element={<RequireAuth><System /></RequireAuth>} />
 
               {/* User */}
               <Route path="account" element={<RequireAuth><Account /></RequireAuth>} />

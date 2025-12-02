@@ -14,7 +14,7 @@ const resources = {
       "Language": "Language",
       "Settings": "Settings",
       "Management": "Management",
-      "Explore": "Explore"
+      
     }
   },
   fr: {
@@ -26,7 +26,6 @@ const resources = {
       "Language": "Langue",
       "Settings": "Paramètres",
       "Management": "Gestion",
-      "Explore": "Explorer"
     }
   }
 };
