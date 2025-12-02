@@ -1,31 +1,21 @@
 import type { ApiContext } from "./apiContext";
+import { API_BASE_URL } from "./environment";
 
-const baseUrl = "http://127.0.0.1:4010"; // default to local Prism mock
+const baseUrl = API_BASE_URL; // Use configured API base URL
 
-// Map generated API paths to actual server endpoints
-const mapApiPath = (url: string): string => {
-  const pathMappings: Record<string, string> = {
-    '/trust-mark-types': '/api/v1/admin/trust-marks/types',
-    '/metadata': '/api/v1/admin/entity-configuration', 
-    '/keys': '/api/v1/admin/entity-configuration/keys',
-    '/received-trust-marks': '/api/v1/admin/entity-configuration/trust-marks',
-    '/status': '/subordinates', // Use subordinates as health check since status doesn't exist
-  };
-  
-  // Check for exact matches first
-  if (pathMappings[url]) {
-    return pathMappings[url];
+console.log('[API] Module loaded, API_BASE_URL from environment:', API_BASE_URL);
+
+// Clear old localStorage override on module load
+if (typeof window !== "undefined") {
+  const storedUrl = window.localStorage.getItem("API_BASE_URL");
+  console.log('[API] localStorage API_BASE_URL:', storedUrl);
+  if (storedUrl && storedUrl !== API_BASE_URL) {
+    console.log(`[API] Clearing old localStorage API_BASE_URL: ${storedUrl}, using: ${API_BASE_URL}`);
+    window.localStorage.removeItem("API_BASE_URL");
   }
-  
-  // Check for pattern matches (e.g., with path parameters)
-  for (const [pattern, replacement] of Object.entries(pathMappings)) {
-    if (url.startsWith(pattern)) {
-      return url.replace(pattern, replacement);
-    }
-  }
-  
-  return url;
-};
+}
+
+// No path mapping needed - generated API has correct paths from OpenAPI spec
 
 export type ErrorWrapper<TError> =
   | TError
@@ -64,15 +54,23 @@ export async function apiFetch<
 >): Promise<TData> {
   let error: ErrorWrapper<TError>;
   try {
-    // Simple auth system integration
+    // Simple auth system integration with automatic token refresh
     let authHeaders: HeadersInit = {
       "Content-Type": "application/json",
     };
 
+    console.log('[apiFetch] START: Attempting to get auth headers');
+    
     try {
       const { getAuth } = await import('../lib/auth');
       const auth = getAuth();
+      
+      console.log('[apiFetch] Getting auth header...');
+      
+      // Get auth header (includes Bearer token)
       const authHeader = await auth.getAuthHeader();
+      
+      console.log('[apiFetch] Auth header result:', authHeader ? 'Present' : 'Missing');
       
       if (authHeader) {
         (authHeaders as Record<string, string>)["Authorization"] = authHeader;
@@ -83,8 +81,10 @@ export async function apiFetch<
       if (authState.user?.username) {
         (authHeaders as Record<string, string>)["X-Account-Username"] = authState.user.username;
       }
+      
+      console.log('[apiFetch] Auth headers set successfully');
     } catch (e) {
-      console.warn('Failed to get auth headers:', e);
+      console.warn('[apiFetch] Failed to get auth headers:', e);
     }
 
     const requestHeaders: HeadersInit = {
@@ -115,27 +115,21 @@ export async function apiFetch<
       }
     } catch (e) {}
 
-    // Map certain paths to their correct API endpoints
-    const mappedUrl = mapApiPath(url);
-    
     // debug: surface whether we are sending an Authorization header (mask token)
     try {
       const hasAuth = !!(requestHeaders as Record<string, string>)["Authorization"];
       // do not print token value
-      // eslint-disable-next-line no-console
-      console.debug("[apiFetch]", method.toUpperCase(), `${effectiveBase}${resolveUrl(mappedUrl, queryParams, pathParams)}`, {
+      console.log("[apiFetch]", method.toUpperCase(), `${effectiveBase}${resolveUrl(url, queryParams, pathParams)}`, {
         authorizationPresent: hasAuth,
         account: (requestHeaders as Record<string, string>)["X-Account-Username"],
         base: effectiveBase,
-        originalPath: url,
-        mappedPath: mappedUrl,
       });
     } catch (e) {
       // ignore logging errors
     }
 
     const response = await window.fetch(
-      `${effectiveBase}${resolveUrl(mappedUrl, queryParams, pathParams)}`,
+      `${effectiveBase}${resolveUrl(url, queryParams, pathParams)}`,
       {
         signal,
         method: method.toUpperCase(),

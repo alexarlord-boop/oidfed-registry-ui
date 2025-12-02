@@ -9,7 +9,7 @@ This file contains concise, actionable information to help AI coding agents be p
 - **API surface**: API client code is generated from `federation_admin_openapi.yaml`/OpenAPI configs. Generated files live under `src/api/` (for example `src/api/apiSchemas.ts`, `src/api/apiResponses.ts`, `src/api/apiComponents.ts`). Do not hand-edit generated files.
 - **UI structure**: UI primitives live in `src/components/ui/` (Radix-based components and shadcn style). Pages are under `src/pages/*` and app scaffolding is in `src/app/` (see `layout.tsx`, `App.tsx`).
 - **State & data fetching**: Local/global state uses `src/hooks/store.ts` (Zustand). Server data fetching uses `@tanstack/react-query` (see usage in `src/apiContext.ts` and components under `src/pages/*`).
-- **Authentication**: Simple interface-based auth system in `src/lib/auth.ts`. Current implementation is `DevAuth` for development. Route protection via `src/components/auth/RequireAuth.tsx`. React integration through `src/hooks/useAuth.ts`.
+- **Authentication**: Simple interface-based auth system in `src/lib/auth.ts`. Current implementation is `PasswordAuth` for password-based authentication via Auth Gateway. Route protection via `src/components/auth/RequireAuth.tsx`. React integration through `src/hooks/useAuth.ts`.
 
 **Critical workflows / commands**
 - Install deps: `bun install` (project generated with Bun).

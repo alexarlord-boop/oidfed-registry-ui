@@ -6,8 +6,8 @@
 import * as reactQuery from "@tanstack/react-query";
 import { type ApiContext, useApiContext, queryKeyFn } from "./apiContext";
 import { deepMerge } from "./apiUtils";
-import type * as Fetcher from "./apiFetcher";
-import { apiFetch } from "./apiFetcher";
+import type * as Fetcher from "../../src/api/apiFetcher";
+import { apiFetch } from "../../src/api/apiFetcher";
 import type * as Schemas from "./apiSchemas";
 import type * as Responses from "./apiResponses";
 

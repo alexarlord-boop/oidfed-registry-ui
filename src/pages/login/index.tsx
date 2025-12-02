@@ -1,117 +1,138 @@
-import React, { useState } from "react";
-import { useNavigate, useLocation, Navigate } from "react-router-dom";
+import { useState, useEffect } from "react";
+import { useNavigate, useLocation, Navigate, useSearchParams } from "react-router-dom";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
-import { Label } from "@/components/ui/label";
-import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { AlertCircle } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
+import { LoginForm } from "@/components/auth/LoginForm";
+import { SSOLoginButton } from "@/components/auth/SSOLoginButton";
+import { LoginDivider } from "@/components/auth/LoginDivider";
+import { enabledOIDCProviders, isLocalAuthEnabled } from "@/config/oidc.config";
+import { getAuth } from "@/lib/auth";
+import type { UnifiedAuth } from "@/lib/auth";
+import type { ProviderId } from "@/types/auth";
 
 export function Login() {
   const navigate = useNavigate();
   const location = useLocation() as any;
-  const from = location.state?.from?.pathname ?? "/";
+  const [searchParams] = useSearchParams();
+  const from = location.state?.from?.pathname ?? "/dashboard";
+  const stateMessage = location.state?.message; // Message from RequireAuth redirect
+  const errorParam = searchParams.get('error');
+  const errorDescription = searchParams.get('error_description');
   
   const { login, isLoading, error, isAuthenticated } = useAuth();
-  
-  const [username, setUsername] = useState("admin");
-  const [password, setPassword] = useState("admin");
   const [localError, setLocalError] = useState<string | null>(null);
+  const [infoMessage, setInfoMessage] = useState<string | null>(stateMessage || errorDescription || null);
+
+  // Clear info message after 10 seconds
+  useEffect(() => {
+    if (infoMessage) {
+      const timer = setTimeout(() => setInfoMessage(null), 10000);
+      return () => clearTimeout(timer);
+    }
+  }, [infoMessage]);
 
   // Redirect if already authenticated
   if (isAuthenticated) {
     return <Navigate to={from} replace />;
   }
 
-  const submit = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const handleLocalLogin = async (username: string, password: string) => {
     setLocalError(null);
-    
-    if (!username || !password) {
-      setLocalError("Username and password required");
-      return;
-    }
 
     try {
       const result = await login({ username, password });
       
       if (result.success) {
+        // Small delay to ensure tokens are persisted before navigation
+        await new Promise(resolve => setTimeout(resolve, 100));
         navigate(from, { replace: true });
       } else {
-        setLocalError(result.error || "Login failed");
+        // Parse error message to detect specific issues
+        const errorMsg = result.error || "Login failed";
+        
+        if (errorMsg.includes("pending approval") || errorMsg.includes("Account pending approval")) {
+          setLocalError("Your account is pending approval by an administrator. You will receive an email notification once your account is approved.");
+        } else if (errorMsg.includes("disabled") || errorMsg.includes("Account is disabled")) {
+          setLocalError("Your account has been disabled. Please contact an administrator for assistance.");
+        } else {
+          setLocalError(errorMsg);
+        }
       }
     } catch (err) {
       setLocalError(err instanceof Error ? err.message : "Login failed");
     }
   };
 
+  const handleSSOLogin = async (providerId: ProviderId) => {
+    setLocalError(null);
+    try {
+      const auth = getAuth() as UnifiedAuth;
+      
+      // UnifiedAuth supports OIDC flow via loginWithOIDC method
+      if (auth.loginWithOIDC) {
+        await auth.loginWithOIDC(providerId, from);
+      } else {
+        throw new Error('SSO login not supported');
+      }
+    } catch (err) {
+      setLocalError(err instanceof Error ? err.message : "SSO login failed");
+    }
+  };
+
   const displayError = localError || error;
-  
-  // Simple login form for development
-  const title = 'OIDFED Registry';
-  const description = 'Enter your credentials to access the admin panel';
+  const hasOIDC = enabledOIDCProviders.length > 0;
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-background">
       <div className="max-w-md w-full px-4">
         <Card>
           <CardHeader className="text-center">
-            <CardTitle>{title}</CardTitle>
-            <CardDescription>{description}</CardDescription>
+            <CardTitle>OIDFED Registry</CardTitle>
+            <CardDescription>Sign in to access the admin panel</CardDescription>
           </CardHeader>
           <CardContent>
-            <form onSubmit={submit} className="space-y-4">
-                  <div>
-                    <Label htmlFor="username">Username</Label>
-                    <Input 
-                      id="username"
-                      value={username} 
-                      onChange={(e) => setUsername(e.target.value)}
-                      disabled={isLoading}
-                      autoFocus
-                    />
-                  </div>
+            {/* Info message from redirect (e.g., pending approval, inactive account) */}
+            {infoMessage && (
+              <Alert className="mb-4 bg-yellow-50 border-yellow-200">
+                <AlertCircle className="h-4 w-4 text-yellow-600" />
+                <AlertDescription className="text-yellow-800">{infoMessage}</AlertDescription>
+              </Alert>
+            )}
 
-                  <div>
-                    <Label htmlFor="password">Password</Label>
-                    <Input 
-                      id="password"
-                      type="password" 
-                      value={password} 
-                      onChange={(e) => setPassword(e.target.value)}
-                      disabled={isLoading}
-                    />
-                  </div>
-
-              {displayError && (
-                <div className="text-destructive text-sm bg-destructive/10 p-3 rounded">
-                  {displayError}
-                </div>
-              )}
-
-              <Button 
-                type="submit" 
-                className="w-full" 
-                disabled={isLoading}
-              >
-                {isLoading ? 'Signing in...' : 'Sign in'}
-              </Button>
-              
-              <div className="flex gap-2">
-                <Button 
-                  type="button"
-                  variant="ghost" 
-                  onClick={() => { setUsername('admin'); setPassword('admin'); }}
-                  disabled={isLoading}
-                  className="w-full"
-                >
-                  Use defaults
-                </Button>
+            {/* SSO Login Options */}
+            {hasOIDC && (
+              <div className="space-y-3">
+                {enabledOIDCProviders.map((provider) => (
+                  <SSOLoginButton
+                    key={provider.id}
+                    config={provider}
+                    onClick={() => handleSSOLogin(provider.id)}
+                    isLoading={isLoading}
+                  />
+                ))}
               </div>
-            </form>
-            
-            <div className="mt-4 p-3 bg-muted rounded text-sm text-muted-foreground">
-              <strong>Development Mode:</strong> Any credentials accepted. 
-              Default: admin / admin
+            )}
+
+            {/* Divider if both local and SSO are enabled */}
+            {isLocalAuthEnabled && hasOIDC && <LoginDivider />}
+
+            {/* Local Login Form */}
+            {isLocalAuthEnabled && (
+              <LoginForm
+                onSubmit={handleLocalLogin}
+                isLoading={isLoading}
+                error={displayError}
+              />
+            )}
+
+            {/* Registration Link */}
+            <div className="mt-6 text-center text-sm text-muted-foreground">
+              Don't have an account?{' '}
+              <a href="/register" className="text-primary hover:underline">
+                Request access
+              </a>
             </div>
           </CardContent>
         </Card>

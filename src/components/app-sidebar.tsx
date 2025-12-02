@@ -2,8 +2,9 @@ import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useTranslation } from 'react-i18next';
 import { useAppState, type Lang } from "@/hooks/store"
 import { Braces, Home, Languages, LayoutDashboard } from "lucide-react";
-import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
+import { UserAvatar } from "@/components/UserAvatar";
 import { useAuth } from "@/hooks/useAuth";
+import { UserRole, isAdmin, isTechnicalContact, canManageEntities } from "@/types/auth";
 
 import {
   Sidebar,
@@ -20,7 +21,7 @@ import {
 } from "@/components/ui/sidebar";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { User2 } from "lucide-react";
-import { ChevronUp, User, Code, ShieldCheck, FileText, Key, } from "lucide-react";
+import { ChevronUp, User, Code, ShieldCheck, FileText, Key, Users, CheckSquare, Globe2 } from "lucide-react";
 
 export function AppSidebar() {
   const location = useLocation();
@@ -28,6 +29,19 @@ export function AppSidebar() {
   const { language } = useAppState();
   const { t, i18n } = useTranslation();
   const { user, logout } = useAuth();
+
+  // Filter menu items based on user role
+  const visibleMenuItems = menuItems.filter(item => {
+    // Admin-only items
+    if (item.adminOnly && !isAdmin(user)) {
+      return false;
+    }
+    // Management section requires at least technical contact role
+    if (item.section === "Management" && !canManageEntities(user)) {
+      return false;
+    }
+    return true;
+  });
 
 
   return (
@@ -48,7 +62,7 @@ export function AppSidebar() {
           <SidebarGroupLabel>{t('Explore')}</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
-              {menuItems.filter(item => item.section === "Explore").map((item) => (
+              {visibleMenuItems.filter(item => item.section === "Explore").map((item) => (
                 <SidebarMenuItem key={item.url}>
                   <SidebarMenuButton
                     asChild
@@ -65,32 +79,59 @@ export function AppSidebar() {
           </SidebarGroupContent>
         </SidebarGroup>
 
-        <SidebarGroup>
-          <SidebarGroupLabel>{t('Management')}</SidebarGroupLabel>
-          <SidebarGroupContent>
-          <SidebarMenu>
-              {menuItems.filter(item => item.section === "Management").map((item) => (
-                <SidebarMenuItem key={item.url}>
-                  <SidebarMenuButton
-                    asChild
-                    isActive={location.pathname === item.url}
-                  >
-                    <Link to={item.url}>
-                      <item.icon />
-                      <span>{t(item.title)}</span>
-                    </Link>
-                  </SidebarMenuButton>
-                </SidebarMenuItem>
-              ))}
-            </SidebarMenu>
-          </SidebarGroupContent>
-        </SidebarGroup>
+        {/* Admin-only section */}
+        {isAdmin(user) && (
+          <SidebarGroup>
+            <SidebarGroupLabel>{t('Administration')}</SidebarGroupLabel>
+            <SidebarGroupContent>
+              <SidebarMenu>
+                {visibleMenuItems.filter(item => item.section === "Administration").map((item) => (
+                  <SidebarMenuItem key={item.url}>
+                    <SidebarMenuButton
+                      asChild
+                      isActive={location.pathname === item.url}
+                    >
+                      <Link to={item.url}>
+                        <item.icon />
+                        <span>{t(item.title)}</span>
+                      </Link>
+                    </SidebarMenuButton>
+                  </SidebarMenuItem>
+                ))}
+              </SidebarMenu>
+            </SidebarGroupContent>
+          </SidebarGroup>
+        )}
+
+        {/* Management section - for technical contacts and admins */}
+        {canManageEntities(user) && (
+          <SidebarGroup>
+            <SidebarGroupLabel>{t('Management')}</SidebarGroupLabel>
+            <SidebarGroupContent>
+            <SidebarMenu>
+                {visibleMenuItems.filter(item => item.section === "Management").map((item) => (
+                  <SidebarMenuItem key={item.url}>
+                    <SidebarMenuButton
+                      asChild
+                      isActive={location.pathname === item.url}
+                    >
+                      <Link to={item.url}>
+                        <item.icon />
+                        <span>{t(item.title)}</span>
+                      </Link>
+                    </SidebarMenuButton>
+                  </SidebarMenuItem>
+                ))}
+              </SidebarMenu>
+            </SidebarGroupContent>
+          </SidebarGroup>
+        )}
 
         <SidebarGroup>
           <SidebarGroupLabel>{t('Settings')}</SidebarGroupLabel>
           <SidebarGroupContent>
           <SidebarMenu>
-              {menuItems.filter(item => item.section === "Settings").map((item) => (
+              {visibleMenuItems.filter(item => item.section === "Settings").map((item) => (
                 <SidebarMenuItem key={item.url}>
                   <SidebarMenuButton
                     asChild
@@ -115,15 +156,11 @@ export function AppSidebar() {
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <SidebarMenuButton>
-                    <Avatar>
-                      <AvatarImage 
-                        src={user?.metadata?.avatarUrl || `https://avatar.iran.liara.run/public/${Math.abs((user?.username || 'user').split('').reduce((a, b) => a + b.charCodeAt(0), 0)) % 100}`} 
-                        alt={user?.username || 'User'}
-                      />
-                      <AvatarFallback>
-                        {(user?.username || 'U').substring(0, 2).toUpperCase()}
-                      </AvatarFallback>
-                    </Avatar>
+                    <UserAvatar
+                      name={user?.username || 'User'}
+                      src={user?.oidc_provider === 'github' ? `https://github.com/${user?.username}.png` : null}
+                      size="sm"
+                    />
                     <span className="truncate">{user?.username || 'User'}</span>
                     <ChevronUp className="ml-auto" />
                   </SidebarMenuButton>
@@ -169,72 +206,109 @@ export const menuItems = [
     url: "/dashboard",
     icon: LayoutDashboard,
     section: "Explore",
-    desciption: "Stats & KPIs"
+    desciption: "Stats & KPIs",
+    adminOnly: false,
   },
 
-  // TODO
   {
     title: "Audit",
     url: "/audit",
     icon: Braces,
-    section: "Explore"
+    section: "Explore",
+    adminOnly: false,
   },
 
+  // Admin-only section
+  {
+    title: "Users",
+    url: "/admin/users",
+    icon: Users,
+    section: "Administration",
+    desciption: "Manage user accounts",
+    adminOnly: true,
+  },
+
+  {
+    title: "Approvals",
+    url: "/admin/approvals",
+    icon: CheckSquare,
+    section: "Administration",
+    desciption: "Approve pending requests",
+    adminOnly: true,
+  },
+
+  {
+    title: "Trust Anchors",
+    url: "/admin/trust-anchors",
+    icon: Globe2,
+    section: "Administration",
+    desciption: "Manage federations and trust anchors",
+    adminOnly: true,
+  },
+
+  // Management (available to technical contacts and admins)
   {
     title: "Entities",
     url: "/entities",
     icon: User,
-    section: "Management"
+    section: "Management",
+    adminOnly: false,
   },
 
   {
     title: "Trust Chains",
     url: "/trust-chains",
     icon: ShieldCheck,
-    section: "Management"
+    section: "Management",
+    adminOnly: false,
   },
 
   {
     title: "Trust Marks",
     url: "/trust-marks",
     icon: ShieldCheck,
-    section: "Management"
+    section: "Management",
+    adminOnly: false,
   },
 
   {
     title: "Policies",
     url: "/policies",
     icon: FileText,
-    section: "Management"
+    section: "Management",
+    adminOnly: false,
   },
 
   {
     title: "Keys",
     url: "/keys",
     icon: Key,
-    section: "Management"
+    section: "Management",
+    adminOnly: false,
   },
 
+  // Settings
   {
     title: "Language",
     url: "/language",
     icon: Languages,
-    section: "Settings"
+    section: "Settings",
+    adminOnly: false,
   },
 
   {
     title: "System",
     url: "/system",
     icon: Code,
-    section: "Settings"
+    section: "Settings",
+    adminOnly: false,
   },
 
   {
     title: "Account",
     url: "/account",
-    icon: Languages,
-    section: "User"
+    icon: User,
+    section: "User",
+    adminOnly: false,
   },
-
-
 ];

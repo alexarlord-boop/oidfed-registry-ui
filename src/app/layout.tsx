@@ -1,11 +1,10 @@
-import { Outlet } from "react-router-dom";
+import { Outlet, Routes, Route } from "react-router-dom";
 import { SidebarProvider, SidebarTrigger, SidebarInset } from "@/components/ui/sidebar"
 import { Separator } from "@/components/ui/separator";
 import { AppSidebar } from "@/components/app-sidebar"
 import { useLocation } from "react-router-dom";
 import { menuItems } from "@/components/app-sidebar";
 import { PageHeader } from "../components/page-header";
-
 import { ModeToggle } from "@/components/mode-toggle";
 
 export default function Layout() {

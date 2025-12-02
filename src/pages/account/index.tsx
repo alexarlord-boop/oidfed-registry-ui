@@ -1,10 +1,17 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
+import { UserAvatar } from "@/components/UserAvatar";
+import { useAuth } from "@/hooks/useAuth";
+import { TokenDebug } from "@/components/TokenDebug";
 
 export const Account = () => {
+    const { user } = useAuth();
+    
     return (
         <div className="w-full">
            <div className="grid gap-4 grid-cols-2">
+           <div className="col-span-2">
+               <TokenDebug />
+           </div>
            <Card>
                 <CardHeader>
                     <CardTitle>Profile information</CardTitle>
@@ -12,10 +19,11 @@ export const Account = () => {
                 </CardHeader>
                 <CardContent className="flex items-start gap-4">
                     
-                    <Avatar className="size-20">
-                        <AvatarImage src="https://avatar.iran.liara.run/public/33" alt="@shadcn"/>
-                        <AvatarFallback>CN</AvatarFallback>
-                    </Avatar>
+                    <UserAvatar
+                      name={user?.username || 'User'}
+                      src={user?.oidc_provider === 'github' ? `https://github.com/${user?.username}.png` : null}
+                      size="xl"
+                    />
 
                     <ul>
                         <li>Contact info for federation communications</li>
