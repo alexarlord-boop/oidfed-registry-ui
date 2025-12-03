@@ -13,6 +13,7 @@ import { Home } from "@/pages/home";
 import { Language } from "@/pages/language";
 import { Account } from "@/pages/account";
 import { Empty } from "@/pages/default/empty";
+import { NotFound } from "@/pages/default/not-found";
 import Layout from "./layout";
 import Login from "@/pages/login";
 import RegistrationPage from "@/pages/register/RegistrationPage";
@@ -85,6 +86,9 @@ export function App() {
 
               {/* User */}
               <Route path="account" element={<RequireAuth><Account /></RequireAuth>} />
+              
+              {/* 404 - Catch all unmatched routes */}
+              <Route path="*" element={<NotFound />} />
             </Route>
           </Routes>
       </ThemeProvider>
