@@ -5,6 +5,7 @@ import { Braces, Home, Languages, LayoutDashboard } from "lucide-react";
 import { UserAvatar } from "@/components/UserAvatar";
 import { useAuth } from "@/hooks/useAuth";
 import { UserRole, isAdmin, isTechnicalContact, canManageEntities } from "@/types/auth";
+import { PlatformSections } from "@/types/constants";
 
 import {
   Sidebar,
@@ -49,7 +50,7 @@ export function AppSidebar() {
       <SidebarHeader>
         <div className="flex items-center gap-2 px-2 py-2">
           <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary text-primary-foreground">
-            <span className="text-sm font-bold">OF</span>
+            <Link to={PlatformSections.HOME.home.path}><span className="text-sm font-bold">OF</span></Link>
           </div>
           <div className="flex flex-col">
             <span className="text-sm font-semibold">OIDFED Registry</span>
@@ -59,10 +60,10 @@ export function AppSidebar() {
       </SidebarHeader>
       <SidebarContent>
         <SidebarGroup>
-          <SidebarGroupLabel>{t('Explore')}</SidebarGroupLabel>
+          <SidebarGroupLabel>{t(PlatformSections.HOME.name)}</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
-              {visibleMenuItems.filter(item => item.section === "Explore").map((item) => (
+              {visibleMenuItems.filter(item => item.section === PlatformSections.HOME.name).map((item) => (
                 <SidebarMenuItem key={item.url}>
                   <SidebarMenuButton
                     asChild
@@ -82,10 +83,10 @@ export function AppSidebar() {
         {/* Admin-only section */}
         {isAdmin(user) && (
           <SidebarGroup>
-            <SidebarGroupLabel>{t('Administration')}</SidebarGroupLabel>
+            <SidebarGroupLabel>{t(PlatformSections.ADMIN.name)}</SidebarGroupLabel>
             <SidebarGroupContent>
               <SidebarMenu>
-                {visibleMenuItems.filter(item => item.section === "Administration").map((item) => (
+                {visibleMenuItems.filter(item => item.section === PlatformSections.ADMIN.name).map((item) => (
                   <SidebarMenuItem key={item.url}>
                     <SidebarMenuButton
                       asChild
@@ -106,10 +107,10 @@ export function AppSidebar() {
         {/* Management section - for technical contacts and admins */}
         {canManageEntities(user) && (
           <SidebarGroup>
-            <SidebarGroupLabel>{t('Management')}</SidebarGroupLabel>
+            <SidebarGroupLabel>{t(PlatformSections.MANAGEMENT.name)}</SidebarGroupLabel>
             <SidebarGroupContent>
             <SidebarMenu>
-                {visibleMenuItems.filter(item => item.section === "Management").map((item) => (
+                {visibleMenuItems.filter(item => item.section === PlatformSections.MANAGEMENT.name).map((item) => (
                   <SidebarMenuItem key={item.url}>
                     <SidebarMenuButton
                       asChild
@@ -128,10 +129,10 @@ export function AppSidebar() {
         )}
 
         <SidebarGroup>
-          <SidebarGroupLabel>{t('Settings')}</SidebarGroupLabel>
+          <SidebarGroupLabel>{t(PlatformSections.SETTINGS.name)}</SidebarGroupLabel>
           <SidebarGroupContent>
           <SidebarMenu>
-              {visibleMenuItems.filter(item => item.section === "Settings").map((item) => (
+              {visibleMenuItems.filter(item => item.section === PlatformSections.SETTINGS.name).map((item) => (
                 <SidebarMenuItem key={item.url}>
                   <SidebarMenuButton
                     asChild
@@ -202,105 +203,73 @@ export function AppSidebar() {
 export const menuItems = [
   
   {
-    title: "Dashboard",
-    url: "/dashboard",
+    title: PlatformSections.HOME.dashboard.name,
+    url: PlatformSections.HOME.dashboard.path,
     icon: LayoutDashboard,
-    section: "Explore",
+    section: PlatformSections.HOME.name,
     desciption: "Stats & KPIs",
     adminOnly: false,
   },
 
   {
-    title: "Audit",
-    url: "/audit",
+    title: PlatformSections.HOME.audit.name,
+    url: PlatformSections.HOME.audit.path,
     icon: Braces,
-    section: "Explore",
+    section: PlatformSections.HOME.name,
     adminOnly: false,
   },
 
   // Admin-only section
   {
-    title: "Users",
-    url: "/admin/users",
+    title: PlatformSections.ADMIN.users.name,
+    url: PlatformSections.ADMIN.users.path,
     icon: Users,
-    section: "Administration",
+    section: PlatformSections.ADMIN.name,
     desciption: "Manage user accounts",
     adminOnly: true,
   },
 
   {
-    title: "Approvals",
-    url: "/admin/approvals",
-    icon: CheckSquare,
-    section: "Administration",
-    desciption: "Approve pending requests",
-    adminOnly: true,
-  },
-
-  {
-    title: "Trust Anchors",
-    url: "/admin/trust-anchors",
+    title: PlatformSections.ADMIN.trustAnchors.name,
+    url: PlatformSections.ADMIN.trustAnchors.path,
     icon: Globe2,
-    section: "Administration",
+    section: PlatformSections.ADMIN.name,
     desciption: "Manage federations and trust anchors",
     adminOnly: true,
   },
 
   // Management (available to technical contacts and admins)
   {
-    title: "Entities",
-    url: "/entities",
+    title: PlatformSections.MANAGEMENT.entities.name  ,
+    url: PlatformSections.MANAGEMENT.entities.path,
     icon: User,
-    section: "Management",
+    section: PlatformSections.MANAGEMENT.name,
     adminOnly: false,
   },
 
   {
-    title: "Trust Chains",
-    url: "/trust-chains",
+    title: PlatformSections.MANAGEMENT.trustChains.name,
+    url: PlatformSections.MANAGEMENT.trustChains.path,
     icon: ShieldCheck,
-    section: "Management",
+    section: PlatformSections.MANAGEMENT.name,
     adminOnly: false,
   },
 
-  {
-    title: "Trust Marks",
-    url: "/trust-marks",
-    icon: ShieldCheck,
-    section: "Management",
-    adminOnly: false,
-  },
-
-  {
-    title: "Policies",
-    url: "/policies",
-    icon: FileText,
-    section: "Management",
-    adminOnly: false,
-  },
-
-  {
-    title: "Keys",
-    url: "/keys",
-    icon: Key,
-    section: "Management",
-    adminOnly: false,
-  },
-
+  
   // Settings
   {
-    title: "Language",
-    url: "/language",
+    title: PlatformSections.SETTINGS.language.name,
+    url: PlatformSections.SETTINGS.language.path,
     icon: Languages,
-    section: "Settings",
+    section: PlatformSections.SETTINGS.name,
     adminOnly: false,
   },
 
   {
-    title: "System",
-    url: "/system",
+    title: PlatformSections.SETTINGS.system.name,
+    url: PlatformSections.SETTINGS.system.path,
     icon: Code,
-    section: "Settings",
+    section: PlatformSections.SETTINGS.name,
     adminOnly: false,
   },
 

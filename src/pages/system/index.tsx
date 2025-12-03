@@ -10,11 +10,7 @@ export const System: React.FC = () => {
           <CardDescription>Developer and runtime settings</CardDescription>
         </CardHeader>
         <CardContent>
-          <div className="space-y-4">
-            <p className="text-sm text-muted-foreground">
-              Authentication is now handled through the login page using the Auth Gateway service.
-            </p>
-          </div>
+          <p>System settings and configurations will be displayed here.</p>
         </CardContent>
       </Card>
     </div>

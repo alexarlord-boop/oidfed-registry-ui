@@ -73,12 +73,6 @@ export function AdminTrustAnchors() {
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-3xl font-bold tracking-tight">Trust Anchors</h1>
-          <p className="text-muted-foreground">
-            Manage federations, trust anchors, and interfederation aggregators
-          </p>
-        </div>
         <Button>
           <Plus className="mr-2 h-4 w-4" />
           Add Trust Anchor
@@ -174,7 +168,7 @@ export function AdminTrustAnchors() {
                     <TableCell>
                       <Badge
                         variant="outline"
-                        className="bg-green-50 text-green-700 border-green-200"
+                        className="bg-green-50 text-green-700 dark:bg-green-900 dark:text-green-50 border-green-200"
                       >
                         {ta.status}
                       </Badge>
