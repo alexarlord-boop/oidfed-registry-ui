@@ -60,11 +60,6 @@ export function App() {
                   <AdminUserDetail />
                 </RequireRole>
               } />
-              <Route path={PlatformSections.ADMIN.approvals.path} element={
-                <RequireRole role={UserRole.ADMIN}>
-                  <AdminApprovals />
-                </RequireRole>
-              } />
               <Route path={PlatformSections.ADMIN.trustAnchors.path} element={
                 <RequireRole role={UserRole.ADMIN}>
                   <AdminTrustAnchors />

@@ -50,7 +50,7 @@ export function AppSidebar() {
       <SidebarHeader>
         <div className="flex items-center gap-2 px-2 py-2">
           <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary text-primary-foreground">
-            <span className="text-sm font-bold">OF</span>
+            <Link to={PlatformSections.HOME.home.path}><span className="text-sm font-bold">OF</span></Link>
           </div>
           <div className="flex flex-col">
             <span className="text-sm font-semibold">OIDFED Registry</span>
@@ -226,15 +226,6 @@ export const menuItems = [
     icon: Users,
     section: PlatformSections.ADMIN.name,
     desciption: "Manage user accounts",
-    adminOnly: true,
-  },
-
-  {
-    title: PlatformSections.ADMIN.approvals.name,
-    url: PlatformSections.ADMIN.approvals.path,
-    icon: CheckSquare,
-    section: PlatformSections.ADMIN.name,
-    desciption: "Approve pending requests",
     adminOnly: true,
   },
 

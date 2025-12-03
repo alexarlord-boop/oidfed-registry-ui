@@ -20,17 +20,6 @@ export function Home() {
         </CardContent>
       </Card>
 
-      <Card>
-        <CardHeader className="gap-4">
-          <CardTitle className="text-3xl font-bold">OIDFed Registry</CardTitle>
-          <CardDescription>
-            Welcome to the OIDFED Registry UI
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          {/* content */}
-        </CardContent>
-      </Card>
     </div>
   );
 }
