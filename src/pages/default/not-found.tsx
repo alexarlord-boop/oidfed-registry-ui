@@ -6,7 +6,7 @@ export const NotFound = () => {
   const navigate = useNavigate();
 
   return (
-    <div className="flex items-center justify-center min-h-[calc(100vh-4rem)]">
+    <div className="flex items-center justify-center min-h-[calc(100vh-20rem)]">
       <div className="text-center space-y-6 max-w-md px-4">
         <div className="space-y-2">
           <h1 className="text-6xl font-bold text-muted-foreground">404</h1>
