@@ -216,9 +216,9 @@ export function AdminUserDetail() {
       )}
       
       {successMessage && (
-        <Alert className="fixed top-4 right-4 w-auto max-w-md z-50 shadow-lg bg-green-50 border-green-200">
+        <Alert className="fixed top-4 right-4 w-auto max-w-md z-50 shadow-lg bg-green-50 dark:bg-green-900 dark:text-green-50 border-green-200">
           <CheckCircle className="h-4 w-4 text-green-600" />
-          <AlertDescription className="text-green-800 whitespace-pre-wrap">{successMessage}</AlertDescription>
+          <AlertDescription className="text-green-800 dark:text-green-200 whitespace-pre-wrap">{successMessage}</AlertDescription>
         </Alert>
       )}
       <div className="flex items-center justify-between">
@@ -361,18 +361,18 @@ export function AdminUserDetail() {
                 <Label>Status</Label>
                 <div className="flex gap-2 pt-2">
                   {formData.is_approved ? (
-                    <Badge variant="outline" className="bg-green-50 text-green-700 border-green-200">
+                    <Badge variant="outline" className="bg-green-50 text-green-700 dark:bg-green-900 dark:text-green-50 border-green-200">
                       Approved
                     </Badge>
                   ) : (
-                    <Badge variant="outline" className="bg-yellow-50 text-yellow-700 border-yellow-200">
+                    <Badge variant="outline" className="bg-yellow-50 text-yellow-700 dark:bg-yellow-900 dark:text-yellow-50 border-yellow-200">
                       Pending Approval
                     </Badge>
                   )}
                   {formData.is_active ? (
                     <Badge variant="outline">Active</Badge>
                   ) : (
-                    <Badge variant="outline" className="bg-red-50 text-red-700 border-red-200">
+                    <Badge variant="outline" className="bg-red-50 text-red-700 dark:bg-red-900 dark:text-red-50 border-red-200">
                       Inactive
                     </Badge>
                   )}

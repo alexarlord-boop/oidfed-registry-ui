@@ -116,7 +116,7 @@ export function TokenDebug() {
       </CardHeader>
       <CardContent className="space-y-4">
         <div className="space-y-2">
-          <div className="flex gap-2">
+          <div className="flex gap-2 flex-wrap">
             <Button onClick={checkToken} variant="outline" size="sm">
               <RefreshCw className="mr-2 h-4 w-4" />
               Check Current Token
@@ -177,7 +177,7 @@ export function TokenDebug() {
                 <>
                   <div className="font-semibold">Token Role:</div>
                   <div>
-                    <code className="bg-slate-100 px-2 py-1 rounded">
+                    <code className="bg-green-50 text-green-700 dark:bg-green-900 dark:text-green-50 px-2 py-1 rounded">
                       {tokenInfo.tokenPayload.role}
                     </code>
                   </div>
@@ -205,7 +205,7 @@ export function TokenDebug() {
                 <>
                   <div className="font-semibold">Stored User Role:</div>
                   <div>
-                    <code className="bg-slate-100 px-2 py-1 rounded">
+                    <code className="bg-green-50 text-green-700 dark:bg-green-900 dark:text-green-50 px-2 py-1 rounded">
                       {tokenInfo.storedUser.role}
                     </code>
                   </div>
@@ -216,7 +216,7 @@ export function TokenDebug() {
                 <>
                   <div className="font-semibold">Current User Role:</div>
                   <div>
-                    <code className="bg-slate-100 px-2 py-1 rounded">
+                    <code className="bg-green-50 text-green-700 dark:bg-green-900 dark:text-green-50 px-2 py-1 rounded">
                       {user.role}
                     </code>
                   </div>

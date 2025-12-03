@@ -168,7 +168,7 @@ export function AdminTrustAnchors() {
                     <TableCell>
                       <Badge
                         variant="outline"
-                        className="bg-green-50 text-green-700 border-green-200"
+                        className="bg-green-50 text-green-700 dark:bg-green-900 dark:text-green-50 border-green-200"
                       >
                         {ta.status}
                       </Badge>

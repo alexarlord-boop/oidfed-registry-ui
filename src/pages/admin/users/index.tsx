@@ -243,16 +243,16 @@ export function AdminUsers() {
                       <TableCell>
                         <div className="flex gap-1 flex-wrap">
                           {user.is_approved ? (
-                            <Badge variant="outline" className="bg-green-50 text-green-700 border-green-200">
+                            <Badge variant="outline" className="bg-green-50 text-green-700 dark:bg-green-900 dark:text-green-50 border-green-200">
                               Approved
                             </Badge>
                           ) : (
-                            <Badge variant="outline" className="bg-yellow-50 text-yellow-700 border-yellow-200">
+                            <Badge variant="outline" className="bg-yellow-50 text-yellow-700 dark:bg-yellow-900 dark:text-yellow-50 border-yellow-200">
                               Pending Approval
                             </Badge>
                           )}
                           {!user.is_active && (
-                            <Badge variant="outline" className="bg-red-50 text-red-700 border-red-200">
+                            <Badge variant="outline" className="bg-red-50 text-red-700 dark:bg-red-900 dark:text-red-50 border-red-200">
                               Inactive
                             </Badge>
                           )}
