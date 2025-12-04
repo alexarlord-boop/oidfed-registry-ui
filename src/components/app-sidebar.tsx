@@ -22,7 +22,7 @@ import {
 } from "@/components/ui/sidebar";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { User2 } from "lucide-react";
-import { ChevronUp, User, Code, ShieldCheck, FileText, Key, Users, CheckSquare, Globe2 } from "lucide-react";
+import { ChevronUp, User, Code, ShieldCheck, FileText, Key, Users, CheckSquare, Globe2, Building2 } from "lucide-react";
 
 export function AppSidebar() {
   const location = useLocation();
@@ -226,6 +226,24 @@ export const menuItems = [
     icon: Users,
     section: PlatformSections.ADMIN.name,
     desciption: "Manage user accounts",
+    adminOnly: true,
+  },
+
+  {
+    title: PlatformSections.ADMIN.entities.name,
+    url: PlatformSections.ADMIN.entities.path,
+    icon: Building2,
+    section: PlatformSections.ADMIN.name,
+    desciption: "Manage all entities",
+    adminOnly: false, // Available to technical contacts too
+  },
+
+  {
+    title: PlatformSections.ADMIN.entity_approvals.name,
+    url: PlatformSections.ADMIN.entity_approvals.path,
+    icon: CheckSquare,
+    section: PlatformSections.ADMIN.name,
+    desciption: "Approve pending entities",
     adminOnly: true,
   },
 
