@@ -51,7 +51,7 @@ export const fetchListSubordinates = (
     {},
     ListSubordinatesQueryParams,
     {}
-  >({ url: "/subordinates", method: "get", ...variables, signal });
+  >({ url: "/api/v1/admin/subordinates", method: "get", ...variables, signal });
 
 /**
  * Get a list of subordinates, optionally filtered by entity_type and/or status.
@@ -75,7 +75,7 @@ export function listSubordinatesQuery(
 ) {
   return {
     queryKey: queryKeyFn({
-      path: "/subordinates",
+      path: "/api/v1/admin/subordinates",
       operationId: "listSubordinates",
       variables,
     }),
@@ -169,7 +169,12 @@ export const fetchCreateSubordinate = (
     {},
     {},
     {}
-  >({ url: "/subordinates", method: "post", ...variables, signal });
+  >({
+    url: "/api/v1/admin/subordinates",
+    method: "post",
+    ...variables,
+    signal,
+  });
 
 export const useCreateSubordinate = (
   options?: Omit<
@@ -1220,7 +1225,12 @@ export const fetchGetGeneralSubordinateLifetime = (
     {},
     {},
     {}
-  >({ url: "/subordinates/lifetime", method: "get", ...variables, signal });
+  >({
+    url: "/api/v1/admin/subordinates/lifetime",
+    method: "get",
+    ...variables,
+    signal,
+  });
 
 export function getGeneralSubordinateLifetimeQuery(
   variables: GetGeneralSubordinateLifetimeVariables,
@@ -1243,7 +1253,7 @@ export function getGeneralSubordinateLifetimeQuery(
 ) {
   return {
     queryKey: queryKeyFn({
-      path: "/subordinates/lifetime",
+      path: "/api/v1/admin/subordinates/lifetime",
       operationId: "getGeneralSubordinateLifetime",
       variables,
     }),
@@ -1335,7 +1345,12 @@ export const fetchUpdateGeneralSubordinateLifetime = (
     {},
     {},
     {}
-  >({ url: "/subordinates/lifetime", method: "put", ...variables, signal });
+  >({
+    url: "/api/v1/admin/subordinates/lifetime",
+    method: "put",
+    ...variables,
+    signal,
+  });
 
 export const useUpdateGeneralSubordinateLifetime = (
   options?: Omit<
@@ -2995,7 +3010,7 @@ export const fetchGetGeneralAdditionalClaims = (
     {},
     {}
   >({
-    url: "/subordinates/additional-claims",
+    url: "/api/v1/admin/subordinates/additional-claims",
     method: "get",
     ...variables,
     signal,
@@ -3022,7 +3037,7 @@ export function getGeneralAdditionalClaimsQuery(
 ) {
   return {
     queryKey: queryKeyFn({
-      path: "/subordinates/additional-claims",
+      path: "/api/v1/admin/subordinates/additional-claims",
       operationId: "getGeneralAdditionalClaims",
       variables,
     }),
@@ -3118,7 +3133,7 @@ export const fetchUpdateGeneralAdditionalClaims = (
     {},
     {}
   >({
-    url: "/subordinates/additional-claims",
+    url: "/api/v1/admin/subordinates/additional-claims",
     method: "put",
     ...variables,
     signal,
@@ -3176,7 +3191,7 @@ export const fetchAddGeneralAdditionalClaims = (
     {},
     {}
   >({
-    url: "/subordinates/additional-claims",
+    url: "/api/v1/admin/subordinates/additional-claims",
     method: "post",
     ...variables,
     signal,
@@ -3235,7 +3250,7 @@ export const fetchGetGeneralAdditionalClaim = (
     {},
     GetGeneralAdditionalClaimPathParams
   >({
-    url: "/subordinates/additional-claims/{additionalClaimsID}",
+    url: "/api/v1/admin/subordinates/additional-claims/{additionalClaimsID}",
     method: "get",
     ...variables,
     signal,
@@ -3262,7 +3277,7 @@ export function getGeneralAdditionalClaimQuery(
 ) {
   return {
     queryKey: queryKeyFn({
-      path: "/subordinates/additional-claims/{additionalClaimsID}",
+      path: "/api/v1/admin/subordinates/additional-claims/{additionalClaimsID}",
       operationId: "getGeneralAdditionalClaim",
       variables,
     }),
@@ -3362,7 +3377,7 @@ export const fetchUpdateGeneralAdditionalClaim = (
     {},
     UpdateGeneralAdditionalClaimPathParams
   >({
-    url: "/subordinates/additional-claims/{additionalClaimsID}",
+    url: "/api/v1/admin/subordinates/additional-claims/{additionalClaimsID}",
     method: "put",
     ...variables,
     signal,
@@ -3421,7 +3436,7 @@ export const fetchDeleteGeneralAdditionalClaim = (
     {},
     DeleteGeneralAdditionalClaimPathParams
   >({
-    url: "/subordinates/additional-claims/{additionalClaimsID}",
+    url: "/api/v1/admin/subordinates/additional-claims/{additionalClaimsID}",
     method: "delete",
     ...variables,
     signal,
@@ -3480,7 +3495,7 @@ export const fetchGetSubordinateAdditionalClaims = (
     {},
     GetSubordinateAdditionalClaimsPathParams
   >({
-    url: "/subordinates/{subordinateID}/additional-claims",
+    url: "/api/v1/admin/subordinates/{subordinateID}/additional-claims",
     method: "get",
     ...variables,
     signal,
@@ -3507,7 +3522,7 @@ export function getSubordinateAdditionalClaimsQuery(
 ) {
   return {
     queryKey: queryKeyFn({
-      path: "/subordinates/{subordinateID}/additional-claims",
+      path: "/api/v1/admin/subordinates/{subordinateID}/additional-claims",
       operationId: "getSubordinateAdditionalClaims",
       variables,
     }),
@@ -3617,7 +3632,7 @@ export const fetchUpdateSubordinateAdditionalClaims = (
     {},
     UpdateSubordinateAdditionalClaimsPathParams
   >({
-    url: "/subordinates/{subordinateID}/additional-claims",
+    url: "/api/v1/admin/subordinates/{subordinateID}/additional-claims",
     method: "put",
     ...variables,
     signal,
@@ -3686,7 +3701,7 @@ export const fetchAddSubordinateAdditionalClaims = (
     {},
     AddSubordinateAdditionalClaimsPathParams
   >({
-    url: "/subordinates/{subordinateID}/additional-claims",
+    url: "/api/v1/admin/subordinates/{subordinateID}/additional-claims",
     method: "post",
     ...variables,
     signal,
@@ -3749,7 +3764,7 @@ export const fetchGetSubordinateAdditionalClaim = (
     {},
     GetSubordinateAdditionalClaimPathParams
   >({
-    url: "/subordinates/{subordinateID}/additional-claims/{additionalClaimsID}",
+    url: "/api/v1/admin/subordinates/{subordinateID}/additional-claims/{additionalClaimsID}",
     method: "get",
     ...variables,
     signal,
@@ -3776,7 +3791,7 @@ export function getSubordinateAdditionalClaimQuery(
 ) {
   return {
     queryKey: queryKeyFn({
-      path: "/subordinates/{subordinateID}/additional-claims/{additionalClaimsID}",
+      path: "/api/v1/admin/subordinates/{subordinateID}/additional-claims/{additionalClaimsID}",
       operationId: "getSubordinateAdditionalClaim",
       variables,
     }),
@@ -3882,7 +3897,7 @@ export const fetchUpdateSubordinateAdditionalClaim = (
     {},
     UpdateSubordinateAdditionalClaimPathParams
   >({
-    url: "/subordinates/{subordinateID}/additional-claims/{additionalClaimsID}",
+    url: "/api/v1/admin/subordinates/{subordinateID}/additional-claims/{additionalClaimsID}",
     method: "put",
     ...variables,
     signal,
@@ -3947,7 +3962,7 @@ export const fetchDeleteSubordinateAdditionalClaim = (
     {},
     DeleteSubordinateAdditionalClaimPathParams
   >({
-    url: "/subordinates/{subordinateID}/additional-claims/{additionalClaimsID}",
+    url: "/api/v1/admin/subordinates/{subordinateID}/additional-claims/{additionalClaimsID}",
     method: "delete",
     ...variables,
     signal,
@@ -4008,7 +4023,7 @@ export const fetchGetSubordinateStatement = (
     {},
     GetSubordinateStatementPathParams
   >({
-    url: "/subordinates/{subordinateID}/statement",
+    url: "/api/v1/admin/subordinates/{subordinateID}/statement",
     method: "get",
     ...variables,
     signal,
@@ -4035,7 +4050,7 @@ export function getSubordinateStatementQuery(
 ) {
   return {
     queryKey: queryKeyFn({
-      path: "/subordinates/{subordinateID}/statement",
+      path: "/api/v1/admin/subordinates/{subordinateID}/statement",
       operationId: "getSubordinateStatement",
       variables,
     }),
@@ -7292,7 +7307,7 @@ export const fetchGetGeneralMetadataPolicyOperator = (
     {},
     GetGeneralMetadataPolicyOperatorPathParams
   >({
-    url: "/subordinates/metadata-policies/{entityType}/{claim}/{operator}",
+    url: "/api/v1/admin/subordinates/metadata-policies/{entityType}/{claim}/{operator}",
     method: "get",
     ...variables,
     signal,
@@ -7319,7 +7334,7 @@ export function getGeneralMetadataPolicyOperatorQuery(
 ) {
   return {
     queryKey: queryKeyFn({
-      path: "/subordinates/metadata-policies/{entityType}/{claim}/{operator}",
+      path: "/api/v1/admin/subordinates/metadata-policies/{entityType}/{claim}/{operator}",
       operationId: "getGeneralMetadataPolicyOperator",
       variables,
     }),
@@ -7429,7 +7444,7 @@ export const fetchChangeGeneralMetadataPolicyOperator = (
     {},
     ChangeGeneralMetadataPolicyOperatorPathParams
   >({
-    url: "/subordinates/metadata-policies/{entityType}/{claim}/{operator}",
+    url: "/api/v1/admin/subordinates/metadata-policies/{entityType}/{claim}/{operator}",
     method: "put",
     ...variables,
     signal,
@@ -7492,7 +7507,7 @@ export const fetchDeleteGeneralMetadataPolicyOperator = (
     {},
     DeleteGeneralMetadataPolicyOperatorPathParams
   >({
-    url: "/subordinates/metadata-policies/{entityType}/{claim}/{operator}",
+    url: "/api/v1/admin/subordinates/metadata-policies/{entityType}/{claim}/{operator}",
     method: "delete",
     ...variables,
     signal,
@@ -7560,7 +7575,7 @@ export const fetchGetGeneralMetadataPolicyClaim = (
     {},
     GetGeneralMetadataPolicyClaimPathParams
   >({
-    url: "/subordinates/metadata-policies/{entityType}/{claim}",
+    url: "/api/v1/admin/subordinates/metadata-policies/{entityType}/{claim}",
     method: "get",
     ...variables,
     signal,
@@ -7587,7 +7602,7 @@ export function getGeneralMetadataPolicyClaimQuery(
 ) {
   return {
     queryKey: queryKeyFn({
-      path: "/subordinates/metadata-policies/{entityType}/{claim}",
+      path: "/api/v1/admin/subordinates/metadata-policies/{entityType}/{claim}",
       operationId: "getGeneralMetadataPolicyClaim",
       variables,
     }),
@@ -7692,7 +7707,7 @@ export const fetchChangeGeneralMetadataPolicyClaim = (
     {},
     ChangeGeneralMetadataPolicyClaimPathParams
   >({
-    url: "/subordinates/metadata-policies/{entityType}/{claim}",
+    url: "/api/v1/admin/subordinates/metadata-policies/{entityType}/{claim}",
     method: "put",
     ...variables,
     signal,
@@ -7761,7 +7776,7 @@ export const fetchAddGeneralMetadataPolicyOperators = (
     {},
     AddGeneralMetadataPolicyOperatorsPathParams
   >({
-    url: "/subordinates/metadata-policies/{entityType}/{claim}",
+    url: "/api/v1/admin/subordinates/metadata-policies/{entityType}/{claim}",
     method: "post",
     ...variables,
     signal,
@@ -7823,7 +7838,7 @@ export const fetchDeleteGeneralMetadataPolicyClaim = (
     {},
     DeleteGeneralMetadataPolicyClaimPathParams
   >({
-    url: "/subordinates/metadata-policies/{entityType}/{claim}",
+    url: "/api/v1/admin/subordinates/metadata-policies/{entityType}/{claim}",
     method: "delete",
     ...variables,
     signal,
@@ -7887,7 +7902,7 @@ export const fetchGetGeneralEntityTypedMetadataPolicy = (
     {},
     GetGeneralEntityTypedMetadataPolicyPathParams
   >({
-    url: "/subordinates/metadata-policies/{entityType}",
+    url: "/api/v1/admin/subordinates/metadata-policies/{entityType}",
     method: "get",
     ...variables,
     signal,
@@ -7920,7 +7935,7 @@ export function getGeneralEntityTypedMetadataPolicyQuery(
 ) {
   return {
     queryKey: queryKeyFn({
-      path: "/subordinates/metadata-policies/{entityType}",
+      path: "/api/v1/admin/subordinates/metadata-policies/{entityType}",
       operationId: "getGeneralEntityTypedMetadataPolicy",
       variables,
     }),
@@ -8025,7 +8040,7 @@ export const fetchChangeGeneralEntityTypedMetadataPolicy = (
     {},
     ChangeGeneralEntityTypedMetadataPolicyPathParams
   >({
-    url: "/subordinates/metadata-policies/{entityType}",
+    url: "/api/v1/admin/subordinates/metadata-policies/{entityType}",
     method: "put",
     ...variables,
     signal,
@@ -8090,7 +8105,7 @@ export const fetchAddGeneralMetadataPolicyClaims = (
     {},
     AddGeneralMetadataPolicyClaimsPathParams
   >({
-    url: "/subordinates/metadata-policies/{entityType}",
+    url: "/api/v1/admin/subordinates/metadata-policies/{entityType}",
     method: "post",
     ...variables,
     signal,
@@ -8146,7 +8161,7 @@ export const fetchDeleteGeneralEntityTypedMetadataPolicy = (
     {},
     DeleteGeneralEntityTypedMetadataPolicyPathParams
   >({
-    url: "/subordinates/metadata-policies/{entityType}",
+    url: "/api/v1/admin/subordinates/metadata-policies/{entityType}",
     method: "delete",
     ...variables,
     signal,
@@ -8195,7 +8210,7 @@ export const fetchGetGeneralMetadataPolicies = (
     {},
     {}
   >({
-    url: "/subordinates/metadata-policies",
+    url: "/api/v1/admin/subordinates/metadata-policies",
     method: "get",
     ...variables,
     signal,
@@ -8222,7 +8237,7 @@ export function getGeneralMetadataPoliciesQuery(
 ) {
   return {
     queryKey: queryKeyFn({
-      path: "/subordinates/metadata-policies",
+      path: "/api/v1/admin/subordinates/metadata-policies",
       operationId: "getGeneralMetadataPolicies",
       variables,
     }),
@@ -8316,7 +8331,7 @@ export const fetchUpdateGeneralMetadataPolicies = (
     {},
     {}
   >({
-    url: "/subordinates/metadata-policies",
+    url: "/api/v1/admin/subordinates/metadata-policies",
     method: "put",
     ...variables,
     signal,
@@ -8378,7 +8393,7 @@ export const fetchGetSubordinateDetails = (
     {},
     GetSubordinateDetailsPathParams
   >({
-    url: "/subordinates/{subordinateID}",
+    url: "/api/v1/admin/subordinates/{subordinateID}",
     method: "get",
     ...variables,
     signal,
@@ -8405,7 +8420,7 @@ export function getSubordinateDetailsQuery(
 ) {
   return {
     queryKey: queryKeyFn({
-      path: "/subordinates/{subordinateID}",
+      path: "/api/v1/admin/subordinates/{subordinateID}",
       operationId: "getSubordinateDetails",
       variables,
     }),
@@ -8500,7 +8515,7 @@ export const fetchDeleteSubordinate = (
     {},
     DeleteSubordinatePathParams
   >({
-    url: "/subordinates/{subordinateID}",
+    url: "/api/v1/admin/subordinates/{subordinateID}",
     method: "delete",
     ...variables,
     signal,
@@ -8564,7 +8579,7 @@ export const fetchChangeSubordinateStatus = (
     {},
     ChangeSubordinateStatusPathParams
   >({
-    url: "/subordinates/{subordinateID}/status",
+    url: "/api/v1/admin/subordinates/{subordinateID}/status",
     method: "put",
     ...variables,
     signal,
@@ -8623,7 +8638,7 @@ export const fetchGetSubordinateHistory = (
     {},
     GetSubordinateHistoryPathParams
   >({
-    url: "/subordinates/{subordinateID}/history",
+    url: "/api/v1/admin/subordinates/{subordinateID}/history",
     method: "get",
     ...variables,
     signal,
@@ -8650,7 +8665,7 @@ export function getSubordinateHistoryQuery(
 ) {
   return {
     queryKey: queryKeyFn({
-      path: "/subordinates/{subordinateID}/history",
+      path: "/api/v1/admin/subordinates/{subordinateID}/history",
       operationId: "getSubordinateHistory",
       variables,
     }),
@@ -8745,7 +8760,7 @@ export const fetchGetSubordinateJWKS = (
     {},
     GetSubordinateJWKSPathParams
   >({
-    url: "/subordinates/{subordinateID}/jwks",
+    url: "/api/v1/admin/subordinates/{subordinateID}/jwks",
     method: "get",
     ...variables,
     signal,
@@ -8772,7 +8787,7 @@ export function getSubordinateJwksQuery(
 ) {
   return {
     queryKey: queryKeyFn({
-      path: "/subordinates/{subordinateID}/jwks",
+      path: "/api/v1/admin/subordinates/{subordinateID}/jwks",
       operationId: "getSubordinateJWKS",
       variables,
     }),
@@ -8858,7 +8873,7 @@ export const fetchSetSubordinateJWKS = (
     {},
     SetSubordinateJWKSPathParams
   >({
-    url: "/subordinates/{subordinateID}/jwks",
+    url: "/api/v1/admin/subordinates/{subordinateID}/jwks",
     method: "put",
     ...variables,
     signal,
@@ -8918,7 +8933,7 @@ export const fetchAddSubordinateJWK = (
     {},
     AddSubordinateJWKPathParams
   >({
-    url: "/subordinates/{subordinateID}/jwks",
+    url: "/api/v1/admin/subordinates/{subordinateID}/jwks",
     method: "post",
     ...variables,
     signal,
@@ -8964,7 +8979,12 @@ export const fetchGetGeneralConstraints = (
     {},
     {},
     {}
-  >({ url: "/subordinates/constraints", method: "get", ...variables, signal });
+  >({
+    url: "/api/v1/admin/subordinates/constraints",
+    method: "get",
+    ...variables,
+    signal,
+  });
 
 export function getGeneralConstraintsQuery(
   variables: GetGeneralConstraintsVariables,
@@ -8987,7 +9007,7 @@ export function getGeneralConstraintsQuery(
 ) {
   return {
     queryKey: queryKeyFn({
-      path: "/subordinates/constraints",
+      path: "/api/v1/admin/subordinates/constraints",
       operationId: "getGeneralConstraints",
       variables,
     }),
@@ -9078,7 +9098,12 @@ export const fetchUpdateGeneralConstraints = (
     {},
     {},
     {}
-  >({ url: "/subordinates/constraints", method: "put", ...variables, signal });
+  >({
+    url: "/api/v1/admin/subordinates/constraints",
+    method: "put",
+    ...variables,
+    signal,
+  });
 
 /**
  * Use with care!
@@ -9136,7 +9161,7 @@ export const fetchGetSubordinateConstraints = (
     {},
     GetSubordinateConstraintsPathParams
   >({
-    url: "/subordinates/{subordinateID}/constraints",
+    url: "/api/v1/admin/subordinates/{subordinateID}/constraints",
     method: "get",
     ...variables,
     signal,
@@ -9163,7 +9188,7 @@ export function getSubordinateConstraintsQuery(
 ) {
   return {
     queryKey: queryKeyFn({
-      path: "/subordinates/{subordinateID}/constraints",
+      path: "/api/v1/admin/subordinates/{subordinateID}/constraints",
       operationId: "getSubordinateConstraints",
       variables,
     }),
@@ -9263,7 +9288,7 @@ export const fetchUpdateSubordinateConstraints = (
     {},
     UpdateSubordinateConstraintsPathParams
   >({
-    url: "/subordinates/{subordinateID}/constraints",
+    url: "/api/v1/admin/subordinates/{subordinateID}/constraints",
     method: "put",
     ...variables,
     signal,
@@ -9325,7 +9350,7 @@ export const fetchCopyGeneralConstraintsToSubordinate = (
     {},
     CopyGeneralConstraintsToSubordinatePathParams
   >({
-    url: "/subordinates/{subordinateID}/constraints",
+    url: "/api/v1/admin/subordinates/{subordinateID}/constraints",
     method: "post",
     ...variables,
     signal,
@@ -9389,7 +9414,7 @@ export const fetchDeleteSubordinateConstraints = (
     {},
     DeleteSubordinateConstraintsPathParams
   >({
-    url: "/subordinates/{subordinateID}/constraints",
+    url: "/api/v1/admin/subordinates/{subordinateID}/constraints",
     method: "delete",
     ...variables,
     signal,
@@ -9438,7 +9463,7 @@ export const fetchGetGeneralMaxPathLength = (
     {},
     {}
   >({
-    url: "/subordinates/constraints/max-path-length",
+    url: "/api/v1/admin/subordinates/constraints/max-path-length",
     method: "get",
     ...variables,
     signal,
@@ -9467,7 +9492,7 @@ export function getGeneralMaxPathLengthQuery(
 ) {
   return {
     queryKey: queryKeyFn({
-      path: "/subordinates/constraints/max-path-length",
+      path: "/api/v1/admin/subordinates/constraints/max-path-length",
       operationId: "getGeneralMaxPathLength",
       variables,
     }),
@@ -9553,7 +9578,7 @@ export const fetchSetGeneralMaxPathLength = (
   signal?: AbortSignal,
 ) =>
   apiFetch<number, SetGeneralMaxPathLengthError, number, {}, {}, {}>({
-    url: "/subordinates/constraints/max-path-length",
+    url: "/api/v1/admin/subordinates/constraints/max-path-length",
     method: "put",
     ...variables,
     signal,
@@ -9593,7 +9618,7 @@ export const fetchDeleteGeneralMaxPathLength = (
   signal?: AbortSignal,
 ) =>
   apiFetch<undefined, DeleteGeneralMaxPathLengthError, undefined, {}, {}, {}>({
-    url: "/subordinates/constraints/max-path-length",
+    url: "/api/v1/admin/subordinates/constraints/max-path-length",
     method: "delete",
     ...variables,
     signal,
@@ -9640,7 +9665,7 @@ export const fetchGetGeneralNamingConstraints = (
     {},
     {}
   >({
-    url: "/subordinates/constraints/naming-constraints",
+    url: "/api/v1/admin/subordinates/constraints/naming-constraints",
     method: "get",
     ...variables,
     signal,
@@ -9667,7 +9692,7 @@ export function getGeneralNamingConstraintsQuery(
 ) {
   return {
     queryKey: queryKeyFn({
-      path: "/subordinates/constraints/naming-constraints",
+      path: "/api/v1/admin/subordinates/constraints/naming-constraints",
       operationId: "getGeneralNamingConstraints",
       variables,
     }),
@@ -9760,7 +9785,7 @@ export const fetchSetGeneralNamingConstraints = (
     {},
     {}
   >({
-    url: "/subordinates/constraints/naming-constraints",
+    url: "/api/v1/admin/subordinates/constraints/naming-constraints",
     method: "put",
     ...variables,
     signal,
@@ -9808,7 +9833,7 @@ export const fetchDeleteGeneralNamingConstraints = (
     {},
     {}
   >({
-    url: "/subordinates/constraints/naming-constraints",
+    url: "/api/v1/admin/subordinates/constraints/naming-constraints",
     method: "delete",
     ...variables,
     signal,
@@ -9856,7 +9881,7 @@ export const fetchGetGeneralAllowedEntityTypes = (
     {},
     {}
   >({
-    url: "/subordinates/constraints/allowed-entity-types",
+    url: "/api/v1/admin/subordinates/constraints/allowed-entity-types",
     method: "get",
     ...variables,
     signal,
@@ -9883,7 +9908,7 @@ export function getGeneralAllowedEntityTypesQuery(
 ) {
   return {
     queryKey: queryKeyFn({
-      path: "/subordinates/constraints/allowed-entity-types",
+      path: "/api/v1/admin/subordinates/constraints/allowed-entity-types",
       operationId: "getGeneralAllowedEntityTypes",
       variables,
     }),
@@ -9976,7 +10001,7 @@ export const fetchSetGeneralAllowedEntityTypes = (
     {},
     {}
   >({
-    url: "/subordinates/constraints/allowed-entity-types",
+    url: "/api/v1/admin/subordinates/constraints/allowed-entity-types",
     method: "put",
     ...variables,
     signal,
@@ -10031,7 +10056,7 @@ export const fetchAddGeneralAllowedEntityType = (
     {},
     {}
   >({
-    url: "/subordinates/constraints/allowed-entity-types",
+    url: "/api/v1/admin/subordinates/constraints/allowed-entity-types",
     method: "post",
     ...variables,
     signal,
@@ -10089,7 +10114,7 @@ export const fetchDeleteGeneralAllowedEntityType = (
     {},
     DeleteGeneralAllowedEntityTypePathParams
   >({
-    url: "/subordinates/constraints/allowed-entity-types/{entityType}",
+    url: "/api/v1/admin/subordinates/constraints/allowed-entity-types/{entityType}",
     method: "delete",
     ...variables,
     signal,
@@ -10150,7 +10175,7 @@ export const fetchGetSubordinateMaxPathLength = (
     {},
     GetSubordinateMaxPathLengthPathParams
   >({
-    url: "/subordinates/{subordinateID}/constraints/max-path-length",
+    url: "/api/v1/admin/subordinates/{subordinateID}/constraints/max-path-length",
     method: "get",
     ...variables,
     signal,
@@ -10181,7 +10206,7 @@ export function getSubordinateMaxPathLengthQuery(
 ) {
   return {
     queryKey: queryKeyFn({
-      path: "/subordinates/{subordinateID}/constraints/max-path-length",
+      path: "/api/v1/admin/subordinates/{subordinateID}/constraints/max-path-length",
       operationId: "getSubordinateMaxPathLength",
       variables,
     }),
@@ -10283,7 +10308,7 @@ export const fetchSetSubordinateMaxPathLength = (
     {},
     SetSubordinateMaxPathLengthPathParams
   >({
-    url: "/subordinates/{subordinateID}/constraints/max-path-length",
+    url: "/api/v1/admin/subordinates/{subordinateID}/constraints/max-path-length",
     method: "put",
     ...variables,
     signal,
@@ -10342,7 +10367,7 @@ export const fetchDeleteSubordinateMaxPathLength = (
     {},
     DeleteSubordinateMaxPathLengthPathParams
   >({
-    url: "/subordinates/{subordinateID}/constraints/max-path-length",
+    url: "/api/v1/admin/subordinates/{subordinateID}/constraints/max-path-length",
     method: "delete",
     ...variables,
     signal,
@@ -10401,7 +10426,7 @@ export const fetchGetSubordinateNamingConstraints = (
     {},
     GetSubordinateNamingConstraintsPathParams
   >({
-    url: "/subordinates/{subordinateID}/constraints/naming-constraints",
+    url: "/api/v1/admin/subordinates/{subordinateID}/constraints/naming-constraints",
     method: "get",
     ...variables,
     signal,
@@ -10428,7 +10453,7 @@ export function getSubordinateNamingConstraintsQuery(
 ) {
   return {
     queryKey: queryKeyFn({
-      path: "/subordinates/{subordinateID}/constraints/naming-constraints",
+      path: "/api/v1/admin/subordinates/{subordinateID}/constraints/naming-constraints",
       operationId: "getSubordinateNamingConstraints",
       variables,
     }),
@@ -10532,7 +10557,7 @@ export const fetchSetSubordinateNamingConstraints = (
     {},
     SetSubordinateNamingConstraintsPathParams
   >({
-    url: "/subordinates/{subordinateID}/constraints/naming-constraints",
+    url: "/api/v1/admin/subordinates/{subordinateID}/constraints/naming-constraints",
     method: "put",
     ...variables,
     signal,
@@ -10593,7 +10618,7 @@ export const fetchDeleteSubordinateNamingConstraints = (
     {},
     DeleteSubordinateNamingConstraintsPathParams
   >({
-    url: "/subordinates/{subordinateID}/constraints/naming-constraints",
+    url: "/api/v1/admin/subordinates/{subordinateID}/constraints/naming-constraints",
     method: "delete",
     ...variables,
     signal,
@@ -10654,7 +10679,7 @@ export const fetchGetSubordinateAllowedEntityTypes = (
     {},
     GetSubordinateAllowedEntityTypesPathParams
   >({
-    url: "/subordinates/{subordinateID}/constraints/allowed-entity-types",
+    url: "/api/v1/admin/subordinates/{subordinateID}/constraints/allowed-entity-types",
     method: "get",
     ...variables,
     signal,
@@ -10681,7 +10706,7 @@ export function getSubordinateAllowedEntityTypesQuery(
 ) {
   return {
     queryKey: queryKeyFn({
-      path: "/subordinates/{subordinateID}/constraints/allowed-entity-types",
+      path: "/api/v1/admin/subordinates/{subordinateID}/constraints/allowed-entity-types",
       operationId: "getSubordinateAllowedEntityTypes",
       variables,
     }),
@@ -10787,7 +10812,7 @@ export const fetchSetSubordinateAllowedEntityTypes = (
     {},
     SetSubordinateAllowedEntityTypesPathParams
   >({
-    url: "/subordinates/{subordinateID}/constraints/allowed-entity-types",
+    url: "/api/v1/admin/subordinates/{subordinateID}/constraints/allowed-entity-types",
     method: "put",
     ...variables,
     signal,
@@ -10853,7 +10878,7 @@ export const fetchAddSubordinateAllowedEntityType = (
     {},
     AddSubordinateAllowedEntityTypePathParams
   >({
-    url: "/subordinates/{subordinateID}/constraints/allowed-entity-types",
+    url: "/api/v1/admin/subordinates/{subordinateID}/constraints/allowed-entity-types",
     method: "post",
     ...variables,
     signal,
@@ -10920,7 +10945,7 @@ export const fetchDeleteSubordinateAllowedEntityType = (
     {},
     DeleteSubordinateAllowedEntityTypePathParams
   >({
-    url: "/subordinates/{subordinateID}/constraints/allowed-entity-types/{entityType}",
+    url: "/api/v1/admin/subordinates/{subordinateID}/constraints/allowed-entity-types/{entityType}",
     method: "delete",
     ...variables,
     signal,
@@ -10989,7 +11014,7 @@ export const fetchGetSubordinateMetadataClaim = (
     {},
     GetSubordinateMetadataClaimPathParams
   >({
-    url: "/subordinates/{subordinateID}/metadata/{entityType}/{claim}",
+    url: "/api/v1/admin/subordinates/{subordinateID}/metadata/{entityType}/{claim}",
     method: "get",
     ...variables,
     signal,
@@ -11016,7 +11041,7 @@ export function getSubordinateMetadataClaimQuery(
 ) {
   return {
     queryKey: queryKeyFn({
-      path: "/subordinates/{subordinateID}/metadata/{entityType}/{claim}",
+      path: "/api/v1/admin/subordinates/{subordinateID}/metadata/{entityType}/{claim}",
       operationId: "getSubordinateMetadataClaim",
       variables,
     }),
@@ -11124,7 +11149,7 @@ export const fetchChangeSubordinateMetadataClaim = (
     {},
     ChangeSubordinateMetadataClaimPathParams
   >({
-    url: "/subordinates/{subordinateID}/metadata/{entityType}/{claim}",
+    url: "/api/v1/admin/subordinates/{subordinateID}/metadata/{entityType}/{claim}",
     method: "put",
     ...variables,
     signal,
@@ -11185,7 +11210,7 @@ export const fetchDeleteSubordinateMetadataClaim = (
     {},
     DeleteSubordinateMetadataClaimPathParams
   >({
-    url: "/subordinates/{subordinateID}/metadata/{entityType}/{claim}",
+    url: "/api/v1/admin/subordinates/{subordinateID}/metadata/{entityType}/{claim}",
     method: "delete",
     ...variables,
     signal,
@@ -11248,7 +11273,7 @@ export const fetchGetSubordinateEntityTypedMetadata = (
     {},
     GetSubordinateEntityTypedMetadataPathParams
   >({
-    url: "/subordinates/{subordinateID}/metadata/{entityType}",
+    url: "/api/v1/admin/subordinates/{subordinateID}/metadata/{entityType}",
     method: "get",
     ...variables,
     signal,
@@ -11275,7 +11300,7 @@ export function getSubordinateEntityTypedMetadataQuery(
 ) {
   return {
     queryKey: queryKeyFn({
-      path: "/subordinates/{subordinateID}/metadata/{entityType}",
+      path: "/api/v1/admin/subordinates/{subordinateID}/metadata/{entityType}",
       operationId: "getSubordinateEntityTypedMetadata",
       variables,
     }),
@@ -11379,7 +11404,7 @@ export const fetchChangeSubordinateEntityTypedMetadata = (
     {},
     ChangeSubordinateEntityTypedMetadataPathParams
   >({
-    url: "/subordinates/{subordinateID}/metadata/{entityType}",
+    url: "/api/v1/admin/subordinates/{subordinateID}/metadata/{entityType}",
     method: "put",
     ...variables,
     signal,
@@ -11445,7 +11470,7 @@ export const fetchAddSubordinateMetadataClaims = (
     {},
     AddSubordinateMetadataClaimsPathParams
   >({
-    url: "/subordinates/{subordinateID}/metadata/{entityType}",
+    url: "/api/v1/admin/subordinates/{subordinateID}/metadata/{entityType}",
     method: "post",
     ...variables,
     signal,
@@ -11502,7 +11527,7 @@ export const fetchDeleteSubordinateEntityTypedMetadata = (
     {},
     DeleteSubordinateEntityTypedMetadataPathParams
   >({
-    url: "/subordinates/{subordinateID}/metadata/{entityType}",
+    url: "/api/v1/admin/subordinates/{subordinateID}/metadata/{entityType}",
     method: "delete",
     ...variables,
     signal,
@@ -11557,7 +11582,7 @@ export const fetchGetSubordinateMetadata = (
     {},
     GetSubordinateMetadataPathParams
   >({
-    url: "/subordinates/{subordinateID}/metadata",
+    url: "/api/v1/admin/subordinates/{subordinateID}/metadata",
     method: "get",
     ...variables,
     signal,
@@ -11584,7 +11609,7 @@ export function getSubordinateMetadataQuery(
 ) {
   return {
     queryKey: queryKeyFn({
-      path: "/subordinates/{subordinateID}/metadata",
+      path: "/api/v1/admin/subordinates/{subordinateID}/metadata",
       operationId: "getSubordinateMetadata",
       variables,
     }),
@@ -11681,7 +11706,7 @@ export const fetchUpdateSubordinateMetadata = (
     {},
     UpdateSubordinateMetadataPathParams
   >({
-    url: "/subordinates/{subordinateID}/metadata",
+    url: "/api/v1/admin/subordinates/{subordinateID}/metadata",
     method: "put",
     ...variables,
     signal,
@@ -11752,7 +11777,7 @@ export const fetchGetSubordinateMetadataPolicyOperator = (
     {},
     GetSubordinateMetadataPolicyOperatorPathParams
   >({
-    url: "/subordinates/{subordinateID}/metadata-policies/{entityType}/{claim}/{operator}",
+    url: "/api/v1/admin/subordinates/{subordinateID}/metadata-policies/{entityType}/{claim}/{operator}",
     method: "get",
     ...variables,
     signal,
@@ -11783,7 +11808,7 @@ export function getSubordinateMetadataPolicyOperatorQuery(
 ) {
   return {
     queryKey: queryKeyFn({
-      path: "/subordinates/{subordinateID}/metadata-policies/{entityType}/{claim}/{operator}",
+      path: "/api/v1/admin/subordinates/{subordinateID}/metadata-policies/{entityType}/{claim}/{operator}",
       operationId: "getSubordinateMetadataPolicyOperator",
       variables,
     }),
@@ -11898,7 +11923,7 @@ export const fetchChangeSubordinateMetadataPolicyOperator = (
     {},
     ChangeSubordinateMetadataPolicyOperatorPathParams
   >({
-    url: "/subordinates/{subordinateID}/metadata-policies/{entityType}/{claim}/{operator}",
+    url: "/api/v1/admin/subordinates/{subordinateID}/metadata-policies/{entityType}/{claim}/{operator}",
     method: "put",
     ...variables,
     signal,
@@ -11963,7 +11988,7 @@ export const fetchDeleteSubordinateMetadataPolicyOperator = (
     {},
     DeleteSubordinateMetadataPolicyOperatorPathParams
   >({
-    url: "/subordinates/{subordinateID}/metadata-policies/{entityType}/{claim}/{operator}",
+    url: "/api/v1/admin/subordinates/{subordinateID}/metadata-policies/{entityType}/{claim}/{operator}",
     method: "delete",
     ...variables,
     signal,
@@ -12032,7 +12057,7 @@ export const fetchGetSubordinateMetadataPolicyClaim = (
     {},
     GetSubordinateMetadataPolicyClaimPathParams
   >({
-    url: "/subordinates/{subordinateID}/metadata-policies/{entityType}/{claim}",
+    url: "/api/v1/admin/subordinates/{subordinateID}/metadata-policies/{entityType}/{claim}",
     method: "get",
     ...variables,
     signal,
@@ -12059,7 +12084,7 @@ export function getSubordinateMetadataPolicyClaimQuery(
 ) {
   return {
     queryKey: queryKeyFn({
-      path: "/subordinates/{subordinateID}/metadata-policies/{entityType}/{claim}",
+      path: "/api/v1/admin/subordinates/{subordinateID}/metadata-policies/{entityType}/{claim}",
       operationId: "getSubordinateMetadataPolicyClaim",
       variables,
     }),
@@ -12167,7 +12192,7 @@ export const fetchChangeSubordinateMetadataPolicyClaim = (
     {},
     ChangeSubordinateMetadataPolicyClaimPathParams
   >({
-    url: "/subordinates/{subordinateID}/metadata-policies/{entityType}/{claim}",
+    url: "/api/v1/admin/subordinates/{subordinateID}/metadata-policies/{entityType}/{claim}",
     method: "put",
     ...variables,
     signal,
@@ -12237,7 +12262,7 @@ export const fetchAddSubordinateMetadataPolicyOperators = (
     {},
     AddSubordinateMetadataPolicyOperatorsPathParams
   >({
-    url: "/subordinates/{subordinateID}/metadata-policies/{entityType}/{claim}",
+    url: "/api/v1/admin/subordinates/{subordinateID}/metadata-policies/{entityType}/{claim}",
     method: "post",
     ...variables,
     signal,
@@ -12300,7 +12325,7 @@ export const fetchDeleteSubordinateMetadataPolicyClaim = (
     {},
     DeleteSubordinateMetadataPolicyClaimPathParams
   >({
-    url: "/subordinates/{subordinateID}/metadata-policies/{entityType}/{claim}",
+    url: "/api/v1/admin/subordinates/{subordinateID}/metadata-policies/{entityType}/{claim}",
     method: "delete",
     ...variables,
     signal,
@@ -12365,7 +12390,7 @@ export const fetchGetSubordinateEntityTypedMetadataPolicy = (
     {},
     GetSubordinateEntityTypedMetadataPolicyPathParams
   >({
-    url: "/subordinates/{subordinateID}/metadata-policies/{entityType}",
+    url: "/api/v1/admin/subordinates/{subordinateID}/metadata-policies/{entityType}",
     method: "get",
     ...variables,
     signal,
@@ -12398,7 +12423,7 @@ export function getSubordinateEntityTypedMetadataPolicyQuery(
 ) {
   return {
     queryKey: queryKeyFn({
-      path: "/subordinates/{subordinateID}/metadata-policies/{entityType}",
+      path: "/api/v1/admin/subordinates/{subordinateID}/metadata-policies/{entityType}",
       operationId: "getSubordinateEntityTypedMetadataPolicy",
       variables,
     }),
@@ -12505,7 +12530,7 @@ export const fetchChangeSubordinateEntityTypedMetadataPolicy = (
     {},
     ChangeSubordinateEntityTypedMetadataPolicyPathParams
   >({
-    url: "/subordinates/{subordinateID}/metadata-policies/{entityType}",
+    url: "/api/v1/admin/subordinates/{subordinateID}/metadata-policies/{entityType}",
     method: "put",
     ...variables,
     signal,
@@ -12573,7 +12598,7 @@ export const fetchAddSubordinateMetadataPolicyClaims = (
     {},
     AddSubordinateMetadataPolicyClaimsPathParams
   >({
-    url: "/subordinates/{subordinateID}/metadata-policies/{entityType}",
+    url: "/api/v1/admin/subordinates/{subordinateID}/metadata-policies/{entityType}",
     method: "post",
     ...variables,
     signal,
@@ -12633,7 +12658,7 @@ export const fetchDeleteSubordinateEntityTypedMetadataPolicy = (
     {},
     DeleteSubordinateEntityTypedMetadataPolicyPathParams
   >({
-    url: "/subordinates/{subordinateID}/metadata-policies/{entityType}",
+    url: "/api/v1/admin/subordinates/{subordinateID}/metadata-policies/{entityType}",
     method: "delete",
     ...variables,
     signal,
@@ -12690,7 +12715,7 @@ export const fetchGetSubordinateMetadataPolicies = (
     {},
     GetSubordinateMetadataPoliciesPathParams
   >({
-    url: "/subordinates/{subordinateID}/metadata-policies",
+    url: "/api/v1/admin/subordinates/{subordinateID}/metadata-policies",
     method: "get",
     ...variables,
     signal,
@@ -12717,7 +12742,7 @@ export function getSubordinateMetadataPoliciesQuery(
 ) {
   return {
     queryKey: queryKeyFn({
-      path: "/subordinates/{subordinateID}/metadata-policies",
+      path: "/api/v1/admin/subordinates/{subordinateID}/metadata-policies",
       operationId: "getSubordinateMetadataPolicies",
       variables,
     }),
@@ -12820,7 +12845,7 @@ export const fetchUpdateSubordinateMetadataPolicies = (
     {},
     UpdateSubordinateMetadataPoliciesPathParams
   >({
-    url: "/subordinates/{subordinateID}/metadata-policies",
+    url: "/api/v1/admin/subordinates/{subordinateID}/metadata-policies",
     method: "put",
     ...variables,
     signal,
@@ -12888,7 +12913,7 @@ export const fetchCopyGeneralMetadataPoliciesToSubordinate = (
     {},
     CopyGeneralMetadataPoliciesToSubordinatePathParams
   >({
-    url: "/subordinates/{subordinateID}/metadata-policies",
+    url: "/api/v1/admin/subordinates/{subordinateID}/metadata-policies",
     method: "post",
     ...variables,
     signal,
@@ -12954,7 +12979,7 @@ export const fetchDeleteSubordinateMetadataPolicies = (
     {},
     DeleteSubordinateMetadataPoliciesPathParams
   >({
-    url: "/subordinates/{subordinateID}/metadata-policies",
+    url: "/api/v1/admin/subordinates/{subordinateID}/metadata-policies",
     method: "delete",
     ...variables,
     signal,
@@ -13013,7 +13038,7 @@ export const fetchDeleteSubordinateJWK = (
     {},
     DeleteSubordinateJWKPathParams
   >({
-    url: "/subordinates/{subordinateID}/jwks/{kid}",
+    url: "/api/v1/admin/subordinates/{subordinateID}/jwks/{kid}",
     method: "delete",
     ...variables,
     signal,
@@ -13065,7 +13090,7 @@ export const fetchGetCriticalMetadataPolicyOperators = (
     {},
     {}
   >({
-    url: "/subordinates/metadata-policy-crit",
+    url: "/api/v1/admin/subordinates/metadata-policy-crit",
     method: "get",
     ...variables,
     signal,
@@ -13099,7 +13124,7 @@ export function getCriticalMetadataPolicyOperatorsQuery(
 ) {
   return {
     queryKey: queryKeyFn({
-      path: "/subordinates/metadata-policy-crit",
+      path: "/api/v1/admin/subordinates/metadata-policy-crit",
       operationId: "getCriticalMetadataPolicyOperators",
       variables,
     }),
@@ -13200,7 +13225,7 @@ export const fetchSetCriticalMetadataPolicyOperators = (
     {},
     {}
   >({
-    url: "/subordinates/metadata-policy-crit",
+    url: "/api/v1/admin/subordinates/metadata-policy-crit",
     method: "put",
     ...variables,
     signal,
@@ -13254,7 +13279,7 @@ export const fetchCreateCriticalMetadataPolicyOperator = (
     {},
     {}
   >({
-    url: "/subordinates/metadata-policy-crit",
+    url: "/api/v1/admin/subordinates/metadata-policy-crit",
     method: "post",
     ...variables,
     signal,
@@ -13313,7 +13338,7 @@ export const fetchDeleteCriticalMetadataPolicyOperator = (
     {},
     DeleteCriticalMetadataPolicyOperatorPathParams
   >({
-    url: "/subordinates/metadata-policy-crit/{operator}",
+    url: "/api/v1/admin/subordinates/metadata-policy-crit/{operator}",
     method: "delete",
     ...variables,
     signal,
@@ -13348,7 +13373,7 @@ export const useDeleteCriticalMetadataPolicyOperator = (
 
 export type QueryOperation =
   | {
-      path: "/subordinates";
+      path: "/api/v1/admin/subordinates";
       operationId: "listSubordinates";
       variables: ListSubordinatesVariables | reactQuery.SkipToken;
     }
@@ -13382,7 +13407,7 @@ export type QueryOperation =
         | reactQuery.SkipToken;
     }
   | {
-      path: "/subordinates/lifetime";
+      path: "/api/v1/admin/subordinates/lifetime";
       operationId: "getGeneralSubordinateLifetime";
       variables: GetGeneralSubordinateLifetimeVariables | reactQuery.SkipToken;
     }
@@ -13422,27 +13447,27 @@ export type QueryOperation =
       variables: GetEntityConfigurationMetadataVariables | reactQuery.SkipToken;
     }
   | {
-      path: "/subordinates/additional-claims";
+      path: "/api/v1/admin/subordinates/additional-claims";
       operationId: "getGeneralAdditionalClaims";
       variables: GetGeneralAdditionalClaimsVariables | reactQuery.SkipToken;
     }
   | {
-      path: "/subordinates/additional-claims/{additionalClaimsID}";
+      path: "/api/v1/admin/subordinates/additional-claims/{additionalClaimsID}";
       operationId: "getGeneralAdditionalClaim";
       variables: GetGeneralAdditionalClaimVariables | reactQuery.SkipToken;
     }
   | {
-      path: "/subordinates/{subordinateID}/additional-claims";
+      path: "/api/v1/admin/subordinates/{subordinateID}/additional-claims";
       operationId: "getSubordinateAdditionalClaims";
       variables: GetSubordinateAdditionalClaimsVariables | reactQuery.SkipToken;
     }
   | {
-      path: "/subordinates/{subordinateID}/additional-claims/{additionalClaimsID}";
+      path: "/api/v1/admin/subordinates/{subordinateID}/additional-claims/{additionalClaimsID}";
       operationId: "getSubordinateAdditionalClaim";
       variables: GetSubordinateAdditionalClaimVariables | reactQuery.SkipToken;
     }
   | {
-      path: "/subordinates/{subordinateID}/statement";
+      path: "/api/v1/admin/subordinates/{subordinateID}/statement";
       operationId: "getSubordinateStatement";
       variables: GetSubordinateStatementVariables | reactQuery.SkipToken;
     }
@@ -13511,133 +13536,133 @@ export type QueryOperation =
       variables: GetTrustMarkOwnerVariables | reactQuery.SkipToken;
     }
   | {
-      path: "/subordinates/metadata-policies/{entityType}/{claim}/{operator}";
+      path: "/api/v1/admin/subordinates/metadata-policies/{entityType}/{claim}/{operator}";
       operationId: "getGeneralMetadataPolicyOperator";
       variables:
         | GetGeneralMetadataPolicyOperatorVariables
         | reactQuery.SkipToken;
     }
   | {
-      path: "/subordinates/metadata-policies/{entityType}/{claim}";
+      path: "/api/v1/admin/subordinates/metadata-policies/{entityType}/{claim}";
       operationId: "getGeneralMetadataPolicyClaim";
       variables: GetGeneralMetadataPolicyClaimVariables | reactQuery.SkipToken;
     }
   | {
-      path: "/subordinates/metadata-policies/{entityType}";
+      path: "/api/v1/admin/subordinates/metadata-policies/{entityType}";
       operationId: "getGeneralEntityTypedMetadataPolicy";
       variables:
         | GetGeneralEntityTypedMetadataPolicyVariables
         | reactQuery.SkipToken;
     }
   | {
-      path: "/subordinates/metadata-policies";
+      path: "/api/v1/admin/subordinates/metadata-policies";
       operationId: "getGeneralMetadataPolicies";
       variables: GetGeneralMetadataPoliciesVariables | reactQuery.SkipToken;
     }
   | {
-      path: "/subordinates/{subordinateID}";
+      path: "/api/v1/admin/subordinates/{subordinateID}";
       operationId: "getSubordinateDetails";
       variables: GetSubordinateDetailsVariables | reactQuery.SkipToken;
     }
   | {
-      path: "/subordinates/{subordinateID}/history";
+      path: "/api/v1/admin/subordinates/{subordinateID}/history";
       operationId: "getSubordinateHistory";
       variables: GetSubordinateHistoryVariables | reactQuery.SkipToken;
     }
   | {
-      path: "/subordinates/{subordinateID}/jwks";
+      path: "/api/v1/admin/subordinates/{subordinateID}/jwks";
       operationId: "getSubordinateJWKS";
       variables: GetSubordinateJWKSVariables | reactQuery.SkipToken;
     }
   | {
-      path: "/subordinates/constraints";
+      path: "/api/v1/admin/subordinates/constraints";
       operationId: "getGeneralConstraints";
       variables: GetGeneralConstraintsVariables | reactQuery.SkipToken;
     }
   | {
-      path: "/subordinates/{subordinateID}/constraints";
+      path: "/api/v1/admin/subordinates/{subordinateID}/constraints";
       operationId: "getSubordinateConstraints";
       variables: GetSubordinateConstraintsVariables | reactQuery.SkipToken;
     }
   | {
-      path: "/subordinates/constraints/max-path-length";
+      path: "/api/v1/admin/subordinates/constraints/max-path-length";
       operationId: "getGeneralMaxPathLength";
       variables: GetGeneralMaxPathLengthVariables | reactQuery.SkipToken;
     }
   | {
-      path: "/subordinates/constraints/naming-constraints";
+      path: "/api/v1/admin/subordinates/constraints/naming-constraints";
       operationId: "getGeneralNamingConstraints";
       variables: GetGeneralNamingConstraintsVariables | reactQuery.SkipToken;
     }
   | {
-      path: "/subordinates/constraints/allowed-entity-types";
+      path: "/api/v1/admin/subordinates/constraints/allowed-entity-types";
       operationId: "getGeneralAllowedEntityTypes";
       variables: GetGeneralAllowedEntityTypesVariables | reactQuery.SkipToken;
     }
   | {
-      path: "/subordinates/{subordinateID}/constraints/max-path-length";
+      path: "/api/v1/admin/subordinates/{subordinateID}/constraints/max-path-length";
       operationId: "getSubordinateMaxPathLength";
       variables: GetSubordinateMaxPathLengthVariables | reactQuery.SkipToken;
     }
   | {
-      path: "/subordinates/{subordinateID}/constraints/naming-constraints";
+      path: "/api/v1/admin/subordinates/{subordinateID}/constraints/naming-constraints";
       operationId: "getSubordinateNamingConstraints";
       variables:
         | GetSubordinateNamingConstraintsVariables
         | reactQuery.SkipToken;
     }
   | {
-      path: "/subordinates/{subordinateID}/constraints/allowed-entity-types";
+      path: "/api/v1/admin/subordinates/{subordinateID}/constraints/allowed-entity-types";
       operationId: "getSubordinateAllowedEntityTypes";
       variables:
         | GetSubordinateAllowedEntityTypesVariables
         | reactQuery.SkipToken;
     }
   | {
-      path: "/subordinates/{subordinateID}/metadata/{entityType}/{claim}";
+      path: "/api/v1/admin/subordinates/{subordinateID}/metadata/{entityType}/{claim}";
       operationId: "getSubordinateMetadataClaim";
       variables: GetSubordinateMetadataClaimVariables | reactQuery.SkipToken;
     }
   | {
-      path: "/subordinates/{subordinateID}/metadata/{entityType}";
+      path: "/api/v1/admin/subordinates/{subordinateID}/metadata/{entityType}";
       operationId: "getSubordinateEntityTypedMetadata";
       variables:
         | GetSubordinateEntityTypedMetadataVariables
         | reactQuery.SkipToken;
     }
   | {
-      path: "/subordinates/{subordinateID}/metadata";
+      path: "/api/v1/admin/subordinates/{subordinateID}/metadata";
       operationId: "getSubordinateMetadata";
       variables: GetSubordinateMetadataVariables | reactQuery.SkipToken;
     }
   | {
-      path: "/subordinates/{subordinateID}/metadata-policies/{entityType}/{claim}/{operator}";
+      path: "/api/v1/admin/subordinates/{subordinateID}/metadata-policies/{entityType}/{claim}/{operator}";
       operationId: "getSubordinateMetadataPolicyOperator";
       variables:
         | GetSubordinateMetadataPolicyOperatorVariables
         | reactQuery.SkipToken;
     }
   | {
-      path: "/subordinates/{subordinateID}/metadata-policies/{entityType}/{claim}";
+      path: "/api/v1/admin/subordinates/{subordinateID}/metadata-policies/{entityType}/{claim}";
       operationId: "getSubordinateMetadataPolicyClaim";
       variables:
         | GetSubordinateMetadataPolicyClaimVariables
         | reactQuery.SkipToken;
     }
   | {
-      path: "/subordinates/{subordinateID}/metadata-policies/{entityType}";
+      path: "/api/v1/admin/subordinates/{subordinateID}/metadata-policies/{entityType}";
       operationId: "getSubordinateEntityTypedMetadataPolicy";
       variables:
         | GetSubordinateEntityTypedMetadataPolicyVariables
         | reactQuery.SkipToken;
     }
   | {
-      path: "/subordinates/{subordinateID}/metadata-policies";
+      path: "/api/v1/admin/subordinates/{subordinateID}/metadata-policies";
       operationId: "getSubordinateMetadataPolicies";
       variables: GetSubordinateMetadataPoliciesVariables | reactQuery.SkipToken;
     }
   | {
-      path: "/subordinates/metadata-policy-crit";
+      path: "/api/v1/admin/subordinates/metadata-policy-crit";
       operationId: "getCriticalMetadataPolicyOperators";
       variables:
         | GetCriticalMetadataPolicyOperatorsVariables
