@@ -93,12 +93,7 @@ export function AdminEntityApprovals() {
         )}
 
         <div className="flex items-center justify-between">
-          <div>
-            <h1 className="text-3xl font-bold tracking-tight">Entity Approvals</h1>
-            <p className="text-muted-foreground">
-              Review and approve or reject pending entity registrations
-            </p>
-          </div>
+          
           <Button
             variant="outline"
             size="sm"

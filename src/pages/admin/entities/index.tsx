@@ -101,20 +101,9 @@ export function AdminEntities() {
     <RequireRole roles={[UserRole.ADMIN, UserRole.TECHNICAL_CONTACT]}>
       <div className="space-y-6">
         <div className="flex items-center justify-between">
-          <div>
-            <h1 className="text-3xl font-bold tracking-tight">Entity Management</h1>
-            <p className="text-muted-foreground">
-              Manage all registered entities in the federation
-            </p>
-          </div>
+          
           <div className="flex gap-2">
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => refetch()}
-            >
-              <RefreshCw className="h-4 w-4" />
-            </Button>
+            
             <Button onClick={() => navigate("/admin/entities/new")}>
               <Plus className="mr-2 h-4 w-4" />
               Register Entity
