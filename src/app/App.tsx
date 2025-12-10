@@ -24,6 +24,7 @@ import { AdminUserDetail } from "@/pages/admin/users/[id]";
 import { AdminUserNew } from "@/pages/admin/users/new";
 import { AdminApprovals } from "@/pages/admin/approvals";
 import { AdminTrustAnchors } from "@/pages/admin/trust-anchors";
+import { ConfigureTrustAnchor } from "@/pages/admin/trust-anchors/configure";
 import { AdminEntities } from "@/pages/admin/entities";
 import { AdminEntityNew } from "@/pages/admin/entities/new";
 import { AdminEntityApprovals } from "@/pages/admin/entity-approvals";
@@ -66,6 +67,11 @@ export function App() {
               <Route path={PlatformSections.ADMIN.trustAnchors.path} element={
                 <RequireRole role={UserRole.ADMIN}>
                   <AdminTrustAnchors />
+                </RequireRole>
+              } />
+              <Route path="/admin/trust-anchors/configure" element={
+                <RequireRole role={UserRole.ADMIN}>
+                  <ConfigureTrustAnchor />
                 </RequireRole>
               } />
               <Route path={PlatformSections.ADMIN.entities.path} element={
