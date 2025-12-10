@@ -3,6 +3,9 @@ import { useNavigate } from "react-router-dom";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Separator } from "@/components/ui/separator";
@@ -17,6 +20,14 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import {
   Key,
   Shield,
   FileText,
@@ -29,6 +40,8 @@ import {
   ExternalLink,
   Copy,
   CheckCircle2,
+  Edit,
+  Link2,
 } from "lucide-react";
 import {
   useGetEntityConfiguration,
@@ -37,6 +50,11 @@ import {
   useRevokeKey,
   useListEntityConfigurationTrustMarks,
   useDeleteEntityConfigurationTrustMark,
+  useGetAuthorityHints,
+  useCreateAuthorityHint,
+  useDeleteAuthorityHint,
+  useGetEntityConfigurationLifetime,
+  useUpdateEntityConfigurationLifetime,
 } from "../../../../generated/api/apiComponents";
 import { RequireRole } from "@/components/auth/RequireRole";
 import { UserRole } from "@/types/auth";
@@ -50,16 +68,28 @@ export function ConfigureTrustAnchor() {
   const [keyToDelete, setKeyToDelete] = useState<string | null>(null);
   const [tmToDelete, setTmToDelete] = useState<string | null>(null);
   const [copiedKid, setCopiedKid] = useState<string | null>(null);
+  const [hintToDelete, setHintToDelete] = useState<string | null>(null);
+  const [showAddHint, setShowAddHint] = useState(false);
+  const [showLifetimeEditor, setShowLifetimeEditor] = useState(false);
+  const [newHintEntityId, setNewHintEntityId] = useState("");
+  const [newHintDescription, setNewHintDescription] = useState("");
+  const [newLifetime, setNewLifetime] = useState<number>(86400);
+  const [lifetimeError, setLifetimeError] = useState<string | null>(null);
 
   // Fetch entity configuration
   const { data: entityConfig, isLoading: configLoading } = useGetEntityConfiguration({});
   const { data: keysResponse, isLoading: keysLoading } = useGetKeys({});
   const { data: trustMarks, isLoading: trustMarksLoading } = useListEntityConfigurationTrustMarks({});
+  const { data: authorityHints, isLoading: hintsLoading } = useGetAuthorityHints({});
+  const { data: currentLifetime, isLoading: lifetimeLoading } = useGetEntityConfigurationLifetime({});
 
   // Mutations
   const createKeyMutation = useCreateKey();
   const revokeKeyMutation = useRevokeKey();
   const deleteTrustMarkMutation = useDeleteEntityConfigurationTrustMark();
+  const createHintMutation = useCreateAuthorityHint();
+  const deleteHintMutation = useDeleteAuthorityHint();
+  const updateLifetimeMutation = useUpdateEntityConfigurationLifetime();
 
   const keys = keysResponse?.jwks || [];
 
@@ -99,6 +129,56 @@ export function ConfigureTrustAnchor() {
       setTmToDelete(null);
     } catch (error) {
       console.error("Failed to delete trust mark:", error);
+    }
+  };
+
+  const handleAddAuthorityHint = async () => {
+    if (!newHintEntityId.trim()) {
+      return;
+    }
+    try {
+      await createHintMutation.mutateAsync({
+        body: {
+          entity_id: newHintEntityId.trim(),
+          description: newHintDescription.trim() || undefined,
+        },
+      });
+      queryClient.invalidateQueries({ queryKey: ["getAuthorityHints"] });
+      setShowAddHint(false);
+      setNewHintEntityId("");
+      setNewHintDescription("");
+    } catch (error) {
+      console.error("Failed to add authority hint:", error);
+    }
+  };
+
+  const handleDeleteAuthorityHint = async (id: string) => {
+    try {
+      await deleteHintMutation.mutateAsync({
+        pathParams: { authorityHintID: id },
+      });
+      queryClient.invalidateQueries({ queryKey: ["getAuthorityHints"] });
+      setHintToDelete(null);
+    } catch (error) {
+      console.error("Failed to delete authority hint:", error);
+    }
+  };
+
+  const handleUpdateLifetime = async () => {
+    if (newLifetime < 0) {
+      setLifetimeError("Lifetime must be at least 0 seconds");
+      return;
+    }
+    try {
+      await updateLifetimeMutation.mutateAsync({
+        body: newLifetime,
+      });
+      queryClient.invalidateQueries({ queryKey: ["getEntityConfigurationLifetime"] });
+      queryClient.invalidateQueries({ queryKey: ["getEntityConfiguration"] });
+      setShowLifetimeEditor(false);
+      setLifetimeError(null);
+    } catch (error: any) {
+      setLifetimeError(error?.message || "Failed to update lifetime");
     }
   };
 
@@ -183,6 +263,9 @@ export function ConfigureTrustAnchor() {
             <TabsTrigger value="keys">Keys</TabsTrigger>
             <TabsTrigger value="metadata">Metadata</TabsTrigger>
             <TabsTrigger value="trust-marks">Trust Marks</TabsTrigger>
+            <TabsTrigger value="authority-hints" className="text-muted-foreground">
+              Authority Hints
+            </TabsTrigger>
           </TabsList>
 
           {/* Overview Tab */}
@@ -223,10 +306,22 @@ export function ConfigureTrustAnchor() {
                 </div>
 
                 <div>
-                  <label className="text-sm font-medium">Lifetime</label>
+                  <div className="flex items-center justify-between">
+                    <label className="text-sm font-medium">Lifetime</label>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => {
+                        setNewLifetime(currentLifetime || 86400);
+                        setShowLifetimeEditor(true);
+                      }}
+                    >
+                      <Edit className="h-4 w-4" />
+                    </Button>
+                  </div>
                   <div className="text-sm text-muted-foreground mt-1">
-                    {entityConfig?.exp && entityConfig?.iat
-                      ? `${entityConfig.exp - entityConfig.iat} seconds`
+                    {currentLifetime !== undefined
+                      ? `${currentLifetime} seconds (${Math.round(currentLifetime / 3600)} hours)`
                       : "Not configured"}
                   </div>
                 </div>
@@ -471,6 +566,88 @@ export function ConfigureTrustAnchor() {
               </CardContent>
             </Card>
           </TabsContent>
+
+          {/* Authority Hints Tab */}
+          <TabsContent value="authority-hints" className="space-y-4">
+            <Alert>
+              <Info className="h-4 w-4" />
+              <AlertDescription>
+                Authority hints specify superior entities in the federation hierarchy. Root Trust
+                Anchors typically have no authority hints (they are self-sovereign). Only
+                Intermediate Authorities point to superior TAs.
+              </AlertDescription>
+            </Alert>
+
+            <Card className="opacity-60">
+              <CardHeader className="flex flex-row items-center justify-between">
+                <div>
+                  <CardTitle className="text-muted-foreground">Authority Hints</CardTitle>
+                  <CardDescription>
+                    Superior entities in the trust chain (disabled for root TAs)
+                  </CardDescription>
+                </div>
+                <Button
+                  variant="outline"
+                  onClick={() => setShowAddHint(true)}
+                  disabled={true}
+                  className="opacity-50"
+                >
+                  <Plus className="mr-2 h-4 w-4" />
+                  Add Authority Hint
+                </Button>
+              </CardHeader>
+              <CardContent>
+                {hintsLoading ? (
+                  <div className="flex items-center justify-center p-8">
+                    <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
+                  </div>
+                ) : !authorityHints || authorityHints.length === 0 ? (
+                  <Alert>
+                    <Info className="h-4 w-4" />
+                    <AlertDescription>
+                      No authority hints configured. This is normal for root Trust Anchors.
+                    </AlertDescription>
+                  </Alert>
+                ) : (
+                  <div className="space-y-3">
+                    {authorityHints.map((hint: Schemas.AuthorityHint) => (
+                      <Card key={hint.id}>
+                        <CardContent className="pt-6">
+                          <div className="flex items-start justify-between">
+                            <div className="space-y-2 flex-1">
+                              <div>
+                                <label className="text-sm font-medium">Entity ID</label>
+                                <div className="text-sm text-muted-foreground mt-1 font-mono">
+                                  {hint.entity_id}
+                                </div>
+                              </div>
+                              {hint.description && (
+                                <div>
+                                  <label className="text-sm font-medium">Description</label>
+                                  <div className="text-sm text-muted-foreground mt-1">
+                                    {hint.description}
+                                  </div>
+                                </div>
+                              )}
+                            </div>
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => setHintToDelete(String(hint.id))}
+                              className="text-destructive hover:text-destructive"
+                              disabled={true}
+                            >
+                              <Trash2 className="h-4 w-4" />
+                            </Button>
+                          </div>
+                        </CardContent>
+                      </Card>
+                    ))}
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+          </TabsContent>
         </Tabs>
 
         {/* Delete Key Confirmation Dialog */}
@@ -523,6 +700,183 @@ export function ConfigureTrustAnchor() {
             </AlertDialogFooter>
           </AlertDialogContent>
         </AlertDialog>
+
+        {/* Delete Authority Hint Confirmation Dialog */}
+        <AlertDialog open={!!hintToDelete} onOpenChange={() => setHintToDelete(null)}>
+          <AlertDialogContent>
+            <AlertDialogHeader>
+              <AlertDialogTitle>Remove Authority Hint?</AlertDialogTitle>
+              <AlertDialogDescription>
+                This will remove the authority hint from this entity's configuration. This may affect
+                trust chain resolution.
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter>
+              <AlertDialogCancel>Cancel</AlertDialogCancel>
+              <AlertDialogAction
+                onClick={() => hintToDelete && handleDeleteAuthorityHint(hintToDelete)}
+                className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+              >
+                {deleteHintMutation.isPending ? (
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                ) : null}
+                Remove
+              </AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
+
+        {/* Add Authority Hint Dialog */}
+        <Dialog open={showAddHint} onOpenChange={setShowAddHint}>
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>Add Authority Hint</DialogTitle>
+              <DialogDescription>
+                Add a superior entity to the authority hints list
+              </DialogDescription>
+            </DialogHeader>
+            <div className="space-y-4 py-4">
+              <div className="space-y-2">
+                <Label htmlFor="hint_entity_id">Entity ID *</Label>
+                <Input
+                  id="hint_entity_id"
+                  type="url"
+                  value={newHintEntityId}
+                  onChange={(e: React.ChangeEvent<HTMLInputElement>) => setNewHintEntityId(e.target.value)}
+                  placeholder="https://authority.example.com"
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="hint_description">Description (optional)</Label>
+                <Textarea
+                  id="hint_description"
+                  value={newHintDescription}
+                  onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => setNewHintDescription(e.target.value)}
+                  placeholder="Primary federation authority..."
+                  rows={2}
+                />
+              </div>
+            </div>
+            <DialogFooter>
+              <Button variant="outline" onClick={() => setShowAddHint(false)}>
+                Cancel
+              </Button>
+              <Button onClick={handleAddAuthorityHint} disabled={createHintMutation.isPending}>
+                {createHintMutation.isPending ? (
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                ) : null}
+                Add Hint
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
+
+        {/* Lifetime Editor Dialog */}
+        <Dialog open={showLifetimeEditor} onOpenChange={setShowLifetimeEditor}>
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>Edit Entity Statement Lifetime</DialogTitle>
+              <DialogDescription>
+                Set the validity period for entity statements issued by this TA
+              </DialogDescription>
+            </DialogHeader>
+            <div className="space-y-4 py-4">
+              <div className="space-y-2">
+                <Label htmlFor="lifetime">Lifetime (seconds)</Label>
+                <Input
+                  id="lifetime"
+                  type="number"
+                  min="0"
+                  value={newLifetime}
+                  onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                    setNewLifetime(parseInt(e.target.value) || 0);
+                    setLifetimeError(null);
+                  }}
+                  className={lifetimeError ? "border-destructive" : ""}
+                />
+                {lifetimeError && (
+                  <p className="text-sm text-destructive">{lifetimeError}</p>
+                )}
+                <p className="text-sm text-muted-foreground">
+                  {newLifetime > 0
+                    ? `≈ ${Math.round(newLifetime / 3600)} hours (${Math.round(newLifetime / 86400)} days)`
+                    : "0 seconds"}
+                </p>
+              </div>
+
+              <div className="space-y-2">
+                <Label>Common Presets</Label>
+                <div className="grid grid-cols-2 gap-2">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setNewLifetime(3600)}
+                    type="button"
+                  >
+                    1 Hour
+                  </Button>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setNewLifetime(86400)}
+                    type="button"
+                  >
+                    1 Day
+                  </Button>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setNewLifetime(604800)}
+                    type="button"
+                  >
+                    7 Days
+                  </Button>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setNewLifetime(2592000)}
+                    type="button"
+                  >
+                    30 Days
+                  </Button>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setNewLifetime(7776000)}
+                    type="button"
+                  >
+                    3 Months
+                  </Button>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setNewLifetime(31536000)}
+                    type="button"
+                  >
+                    1 Year
+                  </Button>
+                </div>
+              </div>
+            </div>
+            <DialogFooter>
+              <Button
+                variant="outline"
+                onClick={() => {
+                  setShowLifetimeEditor(false);
+                  setLifetimeError(null);
+                }}
+              >
+                Cancel
+              </Button>
+              <Button onClick={handleUpdateLifetime} disabled={updateLifetimeMutation.isPending}>
+                {updateLifetimeMutation.isPending ? (
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                ) : null}
+                Update Lifetime
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
       </div>
     </RequireRole>
   );

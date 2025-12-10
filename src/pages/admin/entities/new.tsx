@@ -9,10 +9,10 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { ArrowLeft, Save, Loader2, AlertCircle } from "lucide-react";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { useCreateSubordinate } from "../../../../generated/api/apiComponents";
+import * as Schemas from "../../../../generated/api/apiSchemas";
 import { ENTITY_TYPES, ENTITY_TYPE_LABELS, ENTITY_STATUS } from "@/types/constants";
 import { RequireRole } from "@/components/auth/RequireRole";
 import { UserRole } from "@/types/auth";
-import type { Schemas } from "../../../../generated/api/apiSchemas";
 
 export function AdminEntityNew() {
   const navigate = useNavigate();
