@@ -207,23 +207,23 @@ export const menuItems = [
     adminOnly: true,
   },
 
-  {
-    title: PlatformSections.ADMIN.entities.name,
-    url: PlatformSections.ADMIN.entities.path,
-    icon: Building2,
-    section: PlatformSections.ADMIN.name,
-    desciption: "Manage all entities",
-    adminOnly: false, // Available to technical contacts too
-  },
+  // {
+  //   title: PlatformSections.ADMIN.entities.name,
+  //   url: PlatformSections.ADMIN.entities.path,
+  //   icon: Building2,
+  //   section: PlatformSections.ADMIN.name,
+  //   desciption: "Manage all entities",
+  //   adminOnly: false, // Available to technical contacts too
+  // },
 
-  {
-    title: PlatformSections.ADMIN.entity_approvals.name,
-    url: PlatformSections.ADMIN.entity_approvals.path,
-    icon: CheckSquare,
-    section: PlatformSections.ADMIN.name,
-    desciption: "Approve pending entities",
-    adminOnly: true,
-  },
+  // {
+  //   title: PlatformSections.ADMIN.entity_approvals.name,
+  //   url: PlatformSections.ADMIN.entity_approvals.path,
+  //   icon: CheckSquare,
+  //   section: PlatformSections.ADMIN.name,
+  //   desciption: "Approve pending entities",
+  //   adminOnly: true,
+  // },
 
   {
     title: PlatformSections.ADMIN.trustAnchors.name,

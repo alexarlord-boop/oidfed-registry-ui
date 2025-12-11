@@ -86,12 +86,12 @@ export function App() {
                   <AddTrustMark />
                 </RequireRole>
               } />
-              <Route path={PlatformSections.ADMIN.entities.path} element={
+              {/* <Route path={PlatformSections.ADMIN.entities.path} element={
                 <RequireRole roles={[UserRole.ADMIN, UserRole.TECHNICAL_CONTACT]}>
                   <AdminEntities />
                 </RequireRole>
-              } />
-              <Route path={PlatformSections.ADMIN.entities_new.path} element={
+              } /> */}
+              {/* <Route path={PlatformSections.ADMIN.entities_new.path} element={
                 <RequireRole roles={[UserRole.ADMIN, UserRole.TECHNICAL_CONTACT]}>
                   <AdminEntityNew />
                 </RequireRole>
@@ -100,7 +100,7 @@ export function App() {
                 <RequireRole role={UserRole.ADMIN}>
                   <AdminEntityApprovals />
                 </RequireRole>
-              } />
+              } /> */}
 
               {/* Management - Available to technical contacts and admins */}
               <Route path="entities" element={
