@@ -73,12 +73,7 @@ export function AdminTrustAnchors() {
     <RequireRole role={UserRole.ADMIN}>
       <div className="space-y-6">
         <div className="flex items-center justify-between">
-          <div>
-            <h1 className="text-3xl font-bold">Trust Anchors</h1>
-            <p className="text-muted-foreground mt-1">
-              Manage trust anchors, federations, and subordinate entities
-            </p>
-          </div>
+          
           <div className="flex gap-2">
             <Button variant="outline" onClick={() => navigate("/admin/trust-anchors/configure")}>
               <Settings className="mr-2 h-4 w-4" />
