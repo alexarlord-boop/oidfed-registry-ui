@@ -104,29 +104,7 @@ export function AppSidebar() {
           </SidebarGroup>
         )}
 
-        {/* Management section - for technical contacts and admins */}
-        {canManageEntities(user) && (
-          <SidebarGroup>
-            <SidebarGroupLabel>{t(PlatformSections.MANAGEMENT.name)}</SidebarGroupLabel>
-            <SidebarGroupContent>
-            <SidebarMenu>
-                {visibleMenuItems.filter(item => item.section === PlatformSections.MANAGEMENT.name).map((item) => (
-                  <SidebarMenuItem key={item.url}>
-                    <SidebarMenuButton
-                      asChild
-                      isActive={location.pathname === item.url}
-                    >
-                      <Link to={item.url}>
-                        <item.icon />
-                        <span>{t(item.title)}</span>
-                      </Link>
-                    </SidebarMenuButton>
-                  </SidebarMenuItem>
-                ))}
-              </SidebarMenu>
-            </SidebarGroupContent>
-          </SidebarGroup>
-        )}
+       
 
         <SidebarGroup>
           <SidebarGroupLabel>{t(PlatformSections.SETTINGS.name)}</SidebarGroupLabel>
