@@ -48,9 +48,14 @@ export function App() {
               {/* Home */}
               <Route index element={<Home />} />
               <Route path={PlatformSections.HOME.dashboard.path} element={<RequireAuth><Dashboard /></RequireAuth>}  />
-              <Route path={PlatformSections.HOME.audit.path} element={<RequireAuth><Empty title="Audit" description="Trace logs, check requests" /></RequireAuth>} />
 
               {/* Admin-only routes */}
+              <Route path={PlatformSections.ADMIN.audit.path} element={
+                <RequireRole role={UserRole.ADMIN}>
+                  <Empty title="Audit" description="Trace logs, check requests" />
+                </RequireRole>
+              } />
+
               <Route path={PlatformSections.ADMIN.users.path} element={
                 <RequireRole role={UserRole.ADMIN}>
                   <AdminUsers />

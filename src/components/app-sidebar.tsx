@@ -189,15 +189,16 @@ export const menuItems = [
     adminOnly: false,
   },
 
+
+  // Admin-only section
   {
-    title: PlatformSections.HOME.audit.name,
-    url: PlatformSections.HOME.audit.path,
+    title: PlatformSections.ADMIN.audit.name,
+    url: PlatformSections.ADMIN.audit.path,
     icon: Braces,
-    section: PlatformSections.HOME.name,
+    section: PlatformSections.ADMIN.name,
     adminOnly: false,
   },
 
-  // Admin-only section
   {
     title: PlatformSections.ADMIN.users.name,
     url: PlatformSections.ADMIN.users.path,

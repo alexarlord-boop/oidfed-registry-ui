@@ -39,10 +39,10 @@ export const PlatformSections = {
         name: 'Home',
         home: { name: 'Home', path: '/' },
         dashboard: { name: 'Dashboard', path: '/dashboard' },
-        audit: { name: 'Audit', path: '/audit' },
     },
     ADMIN: {
         name: 'Administration',
+        audit: { name: 'Audit', path: '/audit' },
         users: { name: 'Users', path: '/admin/users' },
         users_new: { name: 'Create New User', path: '/admin/users/new' },
         users_detail: { name: 'User Details', path: '/admin/users/:id' },
