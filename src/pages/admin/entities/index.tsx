@@ -98,7 +98,7 @@ export function AdminEntities() {
   }
 
   return (
-    <RequireRole roles={[UserRole.ADMIN, UserRole.TECHNICAL_CONTACT]}>
+    <RequireRole role={UserRole.ADMIN}>
       <div className="space-y-6">
         <div className="flex items-center justify-between">
           

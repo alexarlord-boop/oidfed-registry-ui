@@ -109,7 +109,7 @@ export function App() {
 
               {/* Management - Available to technical contacts and admins */}
               <Route path="entities" element={
-                <RequireRole roles={[UserRole.ADMIN, UserRole.TECHNICAL_CONTACT]}>
+                <RequireRole role={UserRole.ADMIN}>
                   <Empty title="Entities" description="Manage entities" />
                 </RequireRole>
               } />

@@ -90,7 +90,7 @@ export function AdminEntityNew() {
   };
 
   return (
-    <RequireRole roles={[UserRole.ADMIN, UserRole.TECHNICAL_CONTACT]}>
+    <RequireRole role={UserRole.ADMIN}>
       <div className="space-y-6">
         {error && (
           <Alert variant="destructive" className="fixed top-4 right-4 w-auto max-w-md z-50 shadow-lg">
