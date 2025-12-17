@@ -74,10 +74,16 @@ export function AdminTrustAnchors() {
       <div className="space-y-6">
         <div className="flex items-center justify-between">
           
-          <Button onClick={() => navigate("/admin/entities/new")}>
-            <Plus className="mr-2 h-4 w-4" />
-            Add Trust Anchor
-          </Button>
+          <div className="flex gap-2">
+            <Button variant="outline" onClick={() => navigate("/admin/trust-anchors/configure")}>
+              <Settings className="mr-2 h-4 w-4" />
+              Configure This TA
+            </Button>
+            <Button onClick={() => navigate("/admin/entities/new")}>
+              <Plus className="mr-2 h-4 w-4" />
+              Add Subordinate
+            </Button>
+          </div>
         </div>
 
       <div className="grid gap-4 md:grid-cols-4">
@@ -135,20 +141,20 @@ export function AdminTrustAnchors() {
         <CardHeader>
           <CardTitle>Configured Trust Anchors</CardTitle>
           <CardDescription>
-            View and manage all trust anchors and federations
+            Subordinate entities registered under this Trust Anchor
           </CardDescription>
         </CardHeader>
         <CardContent>
           {trustAnchors.length === 0 ? (
             <div className="flex flex-col items-center justify-center py-12 text-center">
               <Globe2 className="h-12 w-12 text-muted-foreground mb-4" />
-              <p className="text-lg font-medium">No Trust Anchors Configured</p>
+              <p className="text-lg font-medium">No Subordinates Registered</p>
               <p className="text-sm text-muted-foreground mt-2 mb-4">
-                Register your first trust anchor to begin building your federation
+                Register your first subordinate entity (OP, RP, or IA) to begin
               </p>
               <Button onClick={() => navigate("/admin/entities/new")}>
                 <Plus className="mr-2 h-4 w-4" />
-                Add Trust Anchor
+                Add Subordinate
               </Button>
             </div>
           ) : (

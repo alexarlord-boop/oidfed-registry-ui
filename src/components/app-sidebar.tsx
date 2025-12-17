@@ -104,29 +104,7 @@ export function AppSidebar() {
           </SidebarGroup>
         )}
 
-        {/* Management section - for technical contacts and admins */}
-        {canManageEntities(user) && (
-          <SidebarGroup>
-            <SidebarGroupLabel>{t(PlatformSections.MANAGEMENT.name)}</SidebarGroupLabel>
-            <SidebarGroupContent>
-            <SidebarMenu>
-                {visibleMenuItems.filter(item => item.section === PlatformSections.MANAGEMENT.name).map((item) => (
-                  <SidebarMenuItem key={item.url}>
-                    <SidebarMenuButton
-                      asChild
-                      isActive={location.pathname === item.url}
-                    >
-                      <Link to={item.url}>
-                        <item.icon />
-                        <span>{t(item.title)}</span>
-                      </Link>
-                    </SidebarMenuButton>
-                  </SidebarMenuItem>
-                ))}
-              </SidebarMenu>
-            </SidebarGroupContent>
-          </SidebarGroup>
-        )}
+       
 
         <SidebarGroup>
           <SidebarGroupLabel>{t(PlatformSections.SETTINGS.name)}</SidebarGroupLabel>
@@ -229,23 +207,23 @@ export const menuItems = [
     adminOnly: true,
   },
 
-  {
-    title: PlatformSections.ADMIN.entities.name,
-    url: PlatformSections.ADMIN.entities.path,
-    icon: Building2,
-    section: PlatformSections.ADMIN.name,
-    desciption: "Manage all entities",
-    adminOnly: false, // Available to technical contacts too
-  },
+  // {
+  //   title: PlatformSections.ADMIN.entities.name,
+  //   url: PlatformSections.ADMIN.entities.path,
+  //   icon: Building2,
+  //   section: PlatformSections.ADMIN.name,
+  //   desciption: "Manage all entities",
+  //   adminOnly: false, // Available to technical contacts too
+  // },
 
-  {
-    title: PlatformSections.ADMIN.entity_approvals.name,
-    url: PlatformSections.ADMIN.entity_approvals.path,
-    icon: CheckSquare,
-    section: PlatformSections.ADMIN.name,
-    desciption: "Approve pending entities",
-    adminOnly: true,
-  },
+  // {
+  //   title: PlatformSections.ADMIN.entity_approvals.name,
+  //   url: PlatformSections.ADMIN.entity_approvals.path,
+  //   icon: CheckSquare,
+  //   section: PlatformSections.ADMIN.name,
+  //   desciption: "Approve pending entities",
+  //   adminOnly: true,
+  // },
 
   {
     title: PlatformSections.ADMIN.trustAnchors.name,
