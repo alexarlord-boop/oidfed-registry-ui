@@ -47,10 +47,13 @@ export const PlatformSections = {
         users_new: { name: 'Create New User', path: '/admin/users/new' },
         users_detail: { name: 'User Details', path: '/admin/users/:id' },
         trustAnchors: { name: 'Trust Anchors', path: '/admin/trust-anchors' },
-        // entities: { name: 'Entities', path: '/admin/entities' },
-        // entities_new: { name: 'Register Entity', path: '/admin/entities/new' },
-        // entities_detail: { name: 'Entity Details', path: '/admin/entities/:id' },
-        // entity_approvals: { name: 'Entity Approvals', path: '/admin/entity-approvals' },
+        entities_new: { name: 'Register Entity', path: '/admin/entities/new' },
+        entities_detail: { name: 'Entity Details', path: '/admin/entities/:id' },
+        entity_approvals: { name: 'Pending Approvals', path: '/admin/entity-approvals' },
+    },
+    TECHNICAL_CONTACT: {
+        name: 'Technical Contact',
+        trustAnchors_request: { name: 'Request New TA', path: '/admin/trust-anchors/request' },
     },
     MANAGEMENT: {
         name: 'Management',

@@ -104,6 +104,30 @@ export function AppSidebar() {
           </SidebarGroup>
         )}
 
+        {/* Technical Contact section */}
+        {isTechnicalContact(user) && !isAdmin(user) && (
+          <SidebarGroup>
+            <SidebarGroupLabel>{t(PlatformSections.TECHNICAL_CONTACT.name)}</SidebarGroupLabel>
+            <SidebarGroupContent>
+              <SidebarMenu>
+                {visibleMenuItems.filter(item => item.section === PlatformSections.TECHNICAL_CONTACT.name).map((item) => (
+                  <SidebarMenuItem key={item.url}>
+                    <SidebarMenuButton
+                      asChild
+                      isActive={location.pathname === item.url}
+                    >
+                      <Link to={item.url}>
+                        <item.icon />
+                        <span>{t(item.title)}</span>
+                      </Link>
+                    </SidebarMenuButton>
+                  </SidebarMenuItem>
+                ))}
+              </SidebarMenu>
+            </SidebarGroupContent>
+          </SidebarGroup>
+        )}
+
        
 
         <SidebarGroup>
@@ -208,31 +232,33 @@ export const menuItems = [
     adminOnly: true,
   },
 
-  // {
-  //   title: PlatformSections.ADMIN.entities.name,
-  //   url: PlatformSections.ADMIN.entities.path,
-  //   icon: Building2,
-  //   section: PlatformSections.ADMIN.name,
-  //   desciption: "Manage all entities",
-  //   adminOnly: false, // Available to technical contacts too
-  // },
-
-  // {
-  //   title: PlatformSections.ADMIN.entity_approvals.name,
-  //   url: PlatformSections.ADMIN.entity_approvals.path,
-  //   icon: CheckSquare,
-  //   section: PlatformSections.ADMIN.name,
-  //   desciption: "Approve pending entities",
-  //   adminOnly: true,
-  // },
-
   {
     title: PlatformSections.ADMIN.trustAnchors.name,
     url: PlatformSections.ADMIN.trustAnchors.path,
     icon: Globe2,
     section: PlatformSections.ADMIN.name,
-    desciption: "Manage federations and trust anchors",
+    desciption: "View trust anchors and federations",
     adminOnly: true,
+  },
+
+  {
+    title: PlatformSections.ADMIN.entity_approvals.name,
+    url: PlatformSections.ADMIN.entity_approvals.path,
+    icon: CheckSquare,
+    section: PlatformSections.ADMIN.name,
+    desciption: "Approve pending entity requests",
+    adminOnly: true,
+  },
+
+  // Technical Contact section
+
+  {
+    title: PlatformSections.TECHNICAL_CONTACT.trustAnchors_request.name,
+    url: PlatformSections.TECHNICAL_CONTACT.trustAnchors_request.path,
+    icon: FileText,
+    section: PlatformSections.TECHNICAL_CONTACT.name,
+    desciption: "Submit new TA registration request",
+    adminOnly: false,
   },
 
   // Management (available to technical contacts and admins)

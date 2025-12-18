@@ -27,6 +27,7 @@ import { AdminTrustAnchors } from "@/pages/admin/trust-anchors";
 import { ConfigureTrustAnchor } from "@/pages/admin/trust-anchors/configure";
 import { EditMetadata } from "@/pages/admin/trust-anchors/configure/metadata/edit";
 import { AddTrustMark } from "@/pages/admin/trust-anchors/configure/trust-marks/add";
+import { RequestTrustAnchor } from "@/pages/admin/trust-anchors/request";
 import { AdminEntities } from "@/pages/admin/entities";
 import { AdminEntityNew } from "@/pages/admin/entities/new";
 import { AdminEntityApprovals } from "@/pages/admin/entity-approvals";
@@ -72,9 +73,14 @@ export function App() {
                 </RequireRole>
               } />
               <Route path={PlatformSections.ADMIN.trustAnchors.path} element={
-                <RequireRole role={UserRole.ADMIN}>
+                <RequireAuth>
                   <AdminTrustAnchors />
-                </RequireRole>
+                </RequireAuth>
+              } />
+              <Route path="/admin/trust-anchors/request" element={
+                <RequireAuth>
+                  <RequestTrustAnchor />
+                </RequireAuth>
               } />
               <Route path="/admin/trust-anchors/configure" element={
                 <RequireRole role={UserRole.ADMIN}>
@@ -91,26 +97,19 @@ export function App() {
                   <AddTrustMark />
                 </RequireRole>
               } />
-              {/* <Route path={PlatformSections.ADMIN.entities.path} element={
-                <RequireRole roles={[UserRole.ADMIN, UserRole.TECHNICAL_CONTACT]}>
+              <Route path="/admin/entities" element={
+                <RequireAuth>
                   <AdminEntities />
-                </RequireRole>
-              } /> */}
-              {/* <Route path={PlatformSections.ADMIN.entities_new.path} element={
-                <RequireRole roles={[UserRole.ADMIN, UserRole.TECHNICAL_CONTACT]}>
+                </RequireAuth>
+              } />
+              <Route path="/admin/entities/new" element={
+                <RequireRole role={UserRole.ADMIN}>
                   <AdminEntityNew />
                 </RequireRole>
               } />
-              <Route path={PlatformSections.ADMIN.entity_approvals.path} element={
+              <Route path="/admin/entity-approvals" element={
                 <RequireRole role={UserRole.ADMIN}>
                   <AdminEntityApprovals />
-                </RequireRole>
-              } /> */}
-
-              {/* Management - Available to technical contacts and admins */}
-              <Route path="entities" element={
-                <RequireRole role={UserRole.ADMIN}>
-                  <Empty title="Entities" description="Manage entities" />
                 </RequireRole>
               } />
               

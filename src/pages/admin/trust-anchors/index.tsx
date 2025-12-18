@@ -10,12 +10,14 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Plus, Globe2, Settings, Loader2, ExternalLink } from "lucide-react";
+import { Plus, Globe2, Settings, Loader2, ExternalLink, FileText } from "lucide-react";
 import { useListSubordinates } from "../../../../generated/api/apiComponents";
 import { ENTITY_TYPES, ENTITY_TYPE_LABELS, ENTITY_STATUS } from "@/types/constants";
-import { RequireRole } from "@/components/auth/RequireRole";
-import { UserRole } from "@/types/auth";
+import { RequireAuth } from "@/components/auth/RequireAuth";
+import { UserRole, isAdmin } from "@/types/auth";
+import { useAuth } from "@/hooks/useAuth";
 import type { Schemas } from "../../../../generated/api/apiSchemas";
+import { PageHeader } from "@/components/page-header";
 
 // Trust Anchor entity types
 const TA_ENTITY_TYPES = [
@@ -47,6 +49,7 @@ function getPrimaryType(entityTypes: string[] | undefined): string {
 
 export function AdminTrustAnchors() {
   const navigate = useNavigate();
+  const { user } = useAuth();
 
   // Fetch all subordinates and filter for TA types (client-side filtering)
   const { data: allEntities, isLoading } = useListSubordinates({});
@@ -70,19 +73,34 @@ export function AdminTrustAnchors() {
   }
 
   return (
-    <RequireRole role={UserRole.ADMIN}>
+    <RequireAuth>
       <div className="space-y-6">
+        <PageHeader
+          title="Trust Anchors & Federations"
+          description="Manage federation trust anchors and intermediate authorities"
+        />
         <div className="flex items-center justify-between">
-          
           <div className="flex gap-2">
-            <Button variant="outline" onClick={() => navigate("/admin/trust-anchors/configure")}>
-              <Settings className="mr-2 h-4 w-4" />
-              Configure This TA
-            </Button>
-            <Button onClick={() => navigate("/admin/entities/new")}>
-              <Plus className="mr-2 h-4 w-4" />
-              Add Subordinate
-            </Button>
+            {!isAdmin(user) && (
+              <Button onClick={() => navigate("/admin/trust-anchors/request")}>
+                <FileText className="mr-2 h-4 w-4" />
+                Request New TA
+              </Button>
+            )}
+          </div>
+          <div className="flex gap-2">
+            {isAdmin(user) && (
+              <>
+                <Button variant="outline" onClick={() => navigate("/admin/trust-anchors/configure")}>
+                  <Settings className="mr-2 h-4 w-4" />
+                  Configure This TA
+                </Button>
+                <Button onClick={() => navigate("/admin/entities/new")}>
+                  <Plus className="mr-2 h-4 w-4" />
+                  Add Subordinate
+                </Button>
+              </>
+            )}
           </div>
         </div>
 
@@ -215,66 +233,68 @@ export function AdminTrustAnchors() {
         </CardContent>
       </Card>
 
-      <Card>
-        <CardHeader>
-          <CardTitle>Quick Actions</CardTitle>
-          <CardDescription>
-            Register different types of trust anchors
-          </CardDescription>
-        </CardHeader>
-        <CardContent className="grid gap-4 md:grid-cols-2">
-          <Button
-            variant="outline"
-            className="justify-start h-auto p-4"
-            onClick={() => navigate("/admin/entities/new")}
-          >
-            <div className="text-left">
-              <div className="font-semibold">Add Federation TA</div>
-              <div className="text-sm text-muted-foreground">
-                Register a new federation trust anchor
+      {isAdmin(user) && (
+        <Card>
+          <CardHeader>
+            <CardTitle>Quick Actions</CardTitle>
+            <CardDescription>
+              Register different types of trust anchors (Admin Only)
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="grid gap-4 md:grid-cols-2">
+            <Button
+              variant="outline"
+              className="justify-start h-auto p-4"
+              onClick={() => navigate("/admin/entities/new")}
+            >
+              <div className="text-left">
+                <div className="font-semibold">Add Federation TA</div>
+                <div className="text-sm text-muted-foreground">
+                  Register a new federation trust anchor
+                </div>
               </div>
-            </div>
-          </Button>
-          <Button
-            variant="outline"
-            className="justify-start h-auto p-4"
-            onClick={() => navigate("/admin/entities/new")}
-          >
-            <div className="text-left">
-              <div className="font-semibold">Add Interfederation IA</div>
-              <div className="text-sm text-muted-foreground">
-                Connect to an interfederation aggregator
+            </Button>
+            <Button
+              variant="outline"
+              className="justify-start h-auto p-4"
+              onClick={() => navigate("/admin/entities/new")}
+            >
+              <div className="text-left">
+                <div className="font-semibold">Add Interfederation IA</div>
+                <div className="text-sm text-muted-foreground">
+                  Connect to an interfederation aggregator
+                </div>
               </div>
-            </div>
-          </Button>
-          <Button
-            variant="outline"
-            className="justify-start h-auto p-4"
-            onClick={() => navigate("/admin/entities/new")}
-          >
-            <div className="text-left">
-              <div className="font-semibold">Create Test Environment</div>
-              <div className="text-sm text-muted-foreground">
-                Set up a test federation for development
+            </Button>
+            <Button
+              variant="outline"
+              className="justify-start h-auto p-4"
+              onClick={() => navigate("/admin/entities/new")}
+            >
+              <div className="text-left">
+                <div className="font-semibold">Create Test Environment</div>
+                <div className="text-sm text-muted-foreground">
+                  Set up a test federation for development
+                </div>
               </div>
-            </div>
-          </Button>
-          <Button
-            variant="outline"
-            className="justify-start h-auto p-4"
-            onClick={() => navigate("/admin/entities/new")}
-          >
-            <div className="text-left">
-              <div className="font-semibold">Create Training Environment</div>
-              <div className="text-sm text-muted-foreground">
-                Set up a training federation for demos
+            </Button>
+            <Button
+              variant="outline"
+              className="justify-start h-auto p-4"
+              onClick={() => navigate("/admin/entities/new")}
+            >
+              <div className="text-left">
+                <div className="font-semibold">Create Training Environment</div>
+                <div className="text-sm text-muted-foreground">
+                  Set up a training federation for demos
+                </div>
               </div>
-            </div>
-          </Button>
-        </CardContent>
-      </Card>
+            </Button>
+          </CardContent>
+        </Card>
+      )}
       </div>
-    </RequireRole>
+    </RequireAuth>
   );
 }
 
