@@ -1,3 +1,14 @@
+      |   
+  \  ___  /     
+ _  /   \  _    GÉANT
+    |   |       Trust & Identity
+     \_/        Incubator
+      =
+  _________
+  |  * *  |     Co-Funded by
+  | *   * |     the European
+  |__*_*__|     Union
+
 # bun-react-tailwind-shadcn-template
 
 To install dependencies:
